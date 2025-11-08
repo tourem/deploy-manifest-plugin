@@ -14,6 +14,7 @@ This tool scans Maven projects (single or multi-module) and generates a detailed
 - **Deployment metadata** (Java version, main class, server ports, Actuator endpoints)
 - **Environment configurations** per profile (dev, staging, prod)
 - **Local dependencies** between modules
+- **Generation timestamp** (ISO 8601 format with LocalDateTime)
 
 ## 🚀 Quick Start
 
@@ -168,6 +169,13 @@ Examples:
 - ✅ Extracts custom base paths
 - ✅ Generates health and info endpoint paths
 - ✅ Per-environment Actuator configurations
+
+### 6. Metadata & Traceability
+
+- ✅ **Generation timestamp** - Automatically captures when the descriptor was generated
+- ✅ **ISO 8601 format** - Uses `LocalDateTime` for precise timestamp (e.g., `2025-11-08T22:21:36.63808`)
+- ✅ **Project statistics** - Total modules count and deployable modules count
+- ✅ **Project information** - GroupId, ArtifactId, Version, Name, Description
 
 ## 🛠️ Development
 
