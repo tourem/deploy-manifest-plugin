@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: maven-project-descriptor
+  main:
+    banner-mode: off
+    web-application-type: none
+
+logging:
+  level:
+    root: INFO
+    com.larbotech.maven.descriptor: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
