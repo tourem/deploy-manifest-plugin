@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Archive support**: Generate ZIP, TAR.GZ, TAR.BZ2, JAR archives of the descriptor JSON
+- **Artifact attachment**: Attach descriptor archives to Maven project for deployment
+- **Classifier support**: Customize artifact classifier (default: "descriptor")
+- **Format parameter**: Specify archive format (zip, tar.gz, tar.bz2, jar)
+- **Attach parameter**: Control whether to attach artifact to project
+- **Maven repository deployment**: Deploy descriptor archives to Nexus/JFrog automatically
 - GitHub Actions CI/CD workflow for automated releases to JFrog Artifactory
 - Automated release workflow with manual trigger (workflow_dispatch)
 - Automatic version management: next SNAPSHOT version calculation
@@ -15,9 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI workflow for continuous integration (build and test on push/PR)
 - Comprehensive release documentation in README.md
 - Release best practices and troubleshooting guide
+- Apache Commons Compress dependency for archive creation
 
 ### Changed
 - Fixed date serialization to ISO-8601 format (e.g., "2025-11-09T00:47:09.317185") instead of array format
+- Default output directory changed from project root to `${project.build.directory}` (target/)
+- Enhanced logging with archive size and deployment information
 
 ### Technical Details - Release Workflow
 - **Trigger**: Manual via GitHub Actions UI

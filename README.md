@@ -69,6 +69,29 @@ mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
   -Ddescriptor.prettyPrint=false
 ```
 
+#### 5. Generate ZIP archive
+```bash
+mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+  -Ddescriptor.format=zip
+```
+Output: `target/myapp-1.0-SNAPSHOT-descriptor.zip`
+
+#### 6. Generate TAR.GZ archive with custom classifier
+```bash
+mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+  -Ddescriptor.format=tar.gz \
+  -Ddescriptor.classifier=deployment
+```
+Output: `target/myapp-1.0-SNAPSHOT-deployment.tar.gz`
+
+#### 7. Generate and attach to project for deployment
+```bash
+mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+  -Ddescriptor.format=zip \
+  -Ddescriptor.attach=true
+```
+The artifact will be deployed to Maven repository during `mvn deploy`
+
 ### POM Configuration
 
 Configure the plugin to run automatically during the build:
@@ -92,6 +115,15 @@ Configure the plugin to run automatically during the build:
 
                 <!-- Skip execution (default: false) -->
                 <skip>false</skip>
+
+                <!-- Archive format: zip, tar.gz, tar.bz2, jar (default: none) -->
+                <format>zip</format>
+
+                <!-- Classifier for the artifact (default: descriptor) -->
+                <classifier>descriptor</classifier>
+
+                <!-- Attach artifact to project for deployment (default: false) -->
+                <attach>true</attach>
             </configuration>
             <executions>
                 <execution>
@@ -107,6 +139,81 @@ Configure the plugin to run automatically during the build:
 </build>
 ```
 
+### Archive Formats and Deployment
+
+The plugin supports creating archives of the descriptor JSON file, similar to the `maven-assembly-plugin` behavior.
+
+#### Supported Archive Formats
+
+| Format | Extension | Description |
+|--------|-----------|-------------|
+| `zip` | `.zip` | ZIP archive (most common) |
+| `jar` | `.zip` | JAR archive (same as ZIP) |
+| `tar.gz` | `.tar.gz` | Gzipped TAR archive |
+| `tgz` | `.tar.gz` | Alias for tar.gz |
+| `tar.bz2` | `.tar.bz2` | Bzip2 compressed TAR archive |
+| `tbz2` | `.tar.bz2` | Alias for tar.bz2 |
+
+#### Archive Naming Convention
+
+Archives follow Maven's standard naming convention:
+
+```
+{artifactId}-{version}-{classifier}.{extension}
+```
+
+Examples:
+- `myapp-1.0.0-descriptor.zip`
+- `myapp-1.0.0-deployment.tar.gz`
+- `myapp-2.1.0-SNAPSHOT-descriptor.tar.bz2`
+
+#### Deploying to Maven Repository
+
+When `attach=true`, the descriptor archive is attached to the Maven project and will be:
+
+1. **Installed** to local repository (`~/.m2/repository`) during `mvn install`
+2. **Deployed** to remote repository (Nexus, JFrog, etc.) during `mvn deploy`
+
+**Example workflow:**
+
+```bash
+# 1. Build project and generate descriptor archive
+mvn clean package
+
+# 2. Install to local repository
+mvn install
+
+# 3. Deploy to remote repository (Nexus/JFrog)
+mvn deploy
+```
+
+The descriptor archive will be deployed alongside your main artifact:
+
+```
+Repository structure:
+com/larbotech/myapp/1.0.0/
+├── myapp-1.0.0.jar                    # Main artifact
+├── myapp-1.0.0.pom                    # POM file
+├── myapp-1.0.0-descriptor.zip         # Descriptor archive
+└── myapp-1.0.0-sources.jar            # Sources (if configured)
+```
+
+#### Downloading Descriptor from Repository
+
+Once deployed, you can download the descriptor from your Maven repository:
+
+```bash
+# Using Maven dependency plugin
+mvn dependency:get \
+  -Dartifact=com.larbotech:myapp:1.0.0:zip:descriptor \
+  -Ddest=./descriptor.zip
+
+# Or using curl (Nexus example)
+curl -u user:password \
+  https://nexus.example.com/repository/releases/com/larbotech/myapp/1.0.0/myapp-1.0.0-descriptor.zip \
+  -o descriptor.zip
+```
+
 Then simply run:
 ```bash
 mvn clean package
@@ -116,10 +223,13 @@ mvn clean package
 
 | Parameter | System Property | Default | Description |
 |-----------|----------------|---------|-------------|
-| `outputFile` | `descriptor.outputFile` | `descriptor.json` | Name of the output file |
-| `outputDirectory` | `descriptor.outputDirectory` | Project root | Output directory (absolute or relative path) |
+| `outputFile` | `descriptor.outputFile` | `descriptor.json` | Name of the output JSON file |
+| `outputDirectory` | `descriptor.outputDirectory` | `${project.build.directory}` (target/) | Output directory (absolute or relative path) |
 | `prettyPrint` | `descriptor.prettyPrint` | `true` | Format JSON with indentation |
 | `skip` | `descriptor.skip` | `false` | Skip plugin execution |
+| `format` | `descriptor.format` | none | Archive format: `zip`, `tar.gz`, `tar.bz2`, `jar` |
+| `classifier` | `descriptor.classifier` | `descriptor` | Classifier for the attached artifact |
+| `attach` | `descriptor.attach` | `false` | Attach artifact to project for deployment |
 
 ## Output Example
 

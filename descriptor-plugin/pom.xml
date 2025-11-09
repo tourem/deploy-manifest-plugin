@@ -58,6 +58,13 @@
       <version>${jackson.version}</version>
     </dependency>
 
+    <!-- Apache Commons Compress for archive creation -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.25.0</version>
+    </dependency>
+
     <!-- Testing -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

@@ -52,6 +52,29 @@ mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
   -Ddescriptor.prettyPrint=false
 ```
 
+#### Générer une archive ZIP
+```bash
+mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+  -Ddescriptor.format=zip
+```
+Résultat : `target/monapp-1.0-SNAPSHOT-descriptor.zip`
+
+#### Générer une archive TAR.GZ avec classifier personnalisé
+```bash
+mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+  -Ddescriptor.format=tar.gz \
+  -Ddescriptor.classifier=deployment
+```
+Résultat : `target/monapp-1.0-SNAPSHOT-deployment.tar.gz`
+
+#### Générer et attacher au projet pour déploiement
+```bash
+mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+  -Ddescriptor.format=zip \
+  -Ddescriptor.attach=true
+```
+L'artifact sera déployé vers le repository Maven lors de `mvn deploy`
+
 ### 2. Configuration dans le POM
 
 Vous pouvez configurer le plugin directement dans votre `pom.xml` :
@@ -75,6 +98,15 @@ Vous pouvez configurer le plugin directement dans votre `pom.xml` :
 
                 <!-- Skip l'exécution du plugin (défaut: false) -->
                 <skip>false</skip>
+
+                <!-- Format d'archive: zip, tar.gz, tar.bz2, jar (défaut: aucun) -->
+                <format>zip</format>
+
+                <!-- Classifier pour l'artifact (défaut: descriptor) -->
+                <classifier>descriptor</classifier>
+
+                <!-- Attacher l'artifact au projet pour déploiement (défaut: false) -->
+                <attach>true</attach>
             </configuration>
             <executions>
                 <execution>
@@ -102,10 +134,13 @@ mvn clean package
 
 | Paramètre | Propriété système | Défaut | Description |
 |-----------|------------------|--------|-------------|
-| `outputFile` | `descriptor.outputFile` | `descriptor.json` | Nom du fichier de sortie |
-| `outputDirectory` | `descriptor.outputDirectory` | Racine du projet | Répertoire de sortie (absolu ou relatif) |
+| `outputFile` | `descriptor.outputFile` | `descriptor.json` | Nom du fichier JSON de sortie |
+| `outputDirectory` | `descriptor.outputDirectory` | `${project.build.directory}` (target/) | Répertoire de sortie (absolu ou relatif) |
 | `prettyPrint` | `descriptor.prettyPrint` | `true` | Formater le JSON avec indentation |
 | `skip` | `descriptor.skip` | `false` | Ignorer l'exécution du plugin |
+| `format` | `descriptor.format` | aucun | Format d'archive: `zip`, `tar.gz`, `tar.bz2`, `jar` |
+| `classifier` | `descriptor.classifier` | `descriptor` | Classifier pour l'artifact attaché |
+| `attach` | `descriptor.attach` | `false` | Attacher l'artifact au projet pour déploiement |
 
 ## Exemple de sortie
 
@@ -195,8 +230,66 @@ Le plugin détecte automatiquement :
 ✅ **Spring Boot** : Exécutables, profils, configurations  
 ✅ **Environnements** : dev, hml, prod avec configurations spécifiques  
 ✅ **Actuator** : Endpoints health, info, métriques  
-✅ **Maven Assembly** : Artefacts ZIP, TAR.GZ  
-✅ **Métadonnées** : Version Java, classe principale, ports  
+✅ **Maven Assembly** : Artefacts ZIP, TAR.GZ
+✅ **Métadonnées** : Version Java, classe principale, ports
+
+## Formats d'archive et déploiement
+
+Le plugin supporte la création d'archives du fichier JSON descriptor, similaire au comportement du `maven-assembly-plugin`.
+
+### Formats d'archive supportés
+
+| Format | Extension | Description |
+|--------|-----------|-------------|
+| `zip` | `.zip` | Archive ZIP (le plus courant) |
+| `jar` | `.zip` | Archive JAR (identique à ZIP) |
+| `tar.gz` | `.tar.gz` | Archive TAR compressée avec Gzip |
+| `tgz` | `.tar.gz` | Alias pour tar.gz |
+| `tar.bz2` | `.tar.bz2` | Archive TAR compressée avec Bzip2 |
+| `tbz2` | `.tar.bz2` | Alias pour tar.bz2 |
+
+### Convention de nommage
+
+Les archives suivent la convention Maven standard :
+
+```
+{artifactId}-{version}-{classifier}.{extension}
+```
+
+Exemples :
+- `monapp-1.0.0-descriptor.zip`
+- `monapp-1.0.0-deployment.tar.gz`
+
+### Déploiement vers Maven Repository
+
+Lorsque `attach=true`, l'archive est déployée vers Nexus/JFrog lors de `mvn deploy`.
+
+**Exemple :**
+
+```bash
+mvn clean deploy
+```
+
+L'archive sera disponible dans le repository :
+```
+com/larbotech/monapp/1.0.0/
+├── monapp-1.0.0.jar
+├── monapp-1.0.0-descriptor.zip  ← Archive descriptor
+```
+
+### Téléchargement depuis le repository
+
+```bash
+# Maven dependency plugin
+mvn dependency:get \
+  -Dartifact=com.larbotech:monapp:1.0.0:zip:descriptor \
+  -Ddest=./descriptor.zip
+
+# Curl (Nexus)
+curl -u user:password \
+  https://nexus.example.com/.../monapp-1.0.0-descriptor.zip \
+  -o descriptor.zip
+```
 
 ## Support
 
