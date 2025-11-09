@@ -95,27 +95,27 @@ public class MavenProjectAnalyzer {
             
             // Analyze root project
             totalModules++;
-            DeployableModule rootModule = analyzeModule(rootModel, projectRootPath, projectRootPath);
+            DeployableModule rootModule = analyzeModule(rootModel, projectRootPath, projectRootPath, null);
             if (rootModule != null) {
                 deployableModules.add(rootModule);
             }
-            
+
             // Analyze sub-modules
             if (rootModel.getModules() != null && !rootModel.getModules().isEmpty()) {
                 for (String moduleName : rootModel.getModules()) {
                     Path modulePath = projectRootPath.resolve(moduleName);
                     File modulePom = modulePath.resolve("pom.xml").toFile();
-                    
+
                     if (modulePom.exists()) {
                         totalModules++;
                         Model moduleModel = parsePom(modulePom);
-                        DeployableModule module = analyzeModule(moduleModel, modulePath, projectRootPath);
+                        DeployableModule module = analyzeModule(moduleModel, modulePath, projectRootPath, rootModel);
                         if (module != null) {
                             deployableModules.add(module);
                         }
-                        
+
                         // Recursively analyze nested modules
-                        totalModules += analyzeNestedModules(moduleModel, modulePath, projectRootPath, deployableModules);
+                        totalModules += analyzeNestedModules(moduleModel, modulePath, projectRootPath, deployableModules, rootModel);
                     }
                 }
             }
@@ -169,36 +169,41 @@ public class MavenProjectAnalyzer {
     /**
      * Recursively analyze nested modules.
      */
-    private int analyzeNestedModules(Model parentModel, Path parentPath, Path projectRoot, 
-                                     List<DeployableModule> deployableModules) throws Exception {
+    private int analyzeNestedModules(Model parentModel, Path parentPath, Path projectRoot,
+                                     List<DeployableModule> deployableModules, Model rootModel) throws Exception {
         int count = 0;
-        
+
         if (parentModel.getModules() != null && !parentModel.getModules().isEmpty()) {
             for (String moduleName : parentModel.getModules()) {
                 Path modulePath = parentPath.resolve(moduleName);
                 File modulePom = modulePath.resolve("pom.xml").toFile();
-                
+
                 if (modulePom.exists()) {
                     count++;
                     Model moduleModel = parsePom(modulePom);
-                    DeployableModule module = analyzeModule(moduleModel, modulePath, projectRoot);
+                    DeployableModule module = analyzeModule(moduleModel, modulePath, projectRoot, rootModel);
                     if (module != null) {
                         deployableModules.add(module);
                     }
-                    
+
                     // Continue recursion
-                    count += analyzeNestedModules(moduleModel, modulePath, projectRoot, deployableModules);
+                    count += analyzeNestedModules(moduleModel, modulePath, projectRoot, deployableModules, rootModel);
                 }
             }
         }
-        
+
         return count;
     }
     
     /**
      * Analyze a single module and determine if it's deployable.
+     *
+     * @param model the module's Maven model
+     * @param modulePath the path to the module
+     * @param projectRoot the root path of the project
+     * @param parentModel the parent Maven model (can be null for root module)
      */
-    private DeployableModule analyzeModule(Model model, Path modulePath, Path projectRoot) {
+    private DeployableModule analyzeModule(Model model, Path modulePath, Path projectRoot, Model parentModel) {
         String packaging = model.getPackaging() != null ? model.getPackaging() : "jar";
         PackagingType packagingType = PackagingType.fromString(packaging);
         
@@ -246,7 +251,7 @@ public class MavenProjectAnalyzer {
         }
 
         // Detect deployment metadata
-        String javaVersion = metadataDetector.detectJavaVersion(model);
+        String javaVersion = metadataDetector.detectJavaVersion(model, parentModel);
         String mainClass = isSpringBoot ? metadataDetector.detectMainClass(model) : null;
         Boolean actuatorEnabled = isSpringBoot ? metadataDetector.detectActuatorEnabled(model) : null;
 

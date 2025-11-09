@@ -27,28 +27,37 @@ public class DeploymentMetadataDetector {
      * Detect Java version from Maven compiler configuration.
      */
     public String detectJavaVersion(Model model) {
+        return detectJavaVersion(model, null);
+    }
+
+    /**
+     * Detect Java version from Maven compiler configuration with parent model support.
+     * This method checks the module model first, then falls back to the parent model
+     * to resolve inherited properties.
+     */
+    public String detectJavaVersion(Model model, Model parentModel) {
         // Check maven.compiler.release property (preferred in modern Maven)
-        String release = getProperty(model, "maven.compiler.release");
+        String release = getPropertyWithInheritance(model, parentModel, "maven.compiler.release");
         if (release != null) {
             log.debug("Found Java version from maven.compiler.release: {}", release);
             return release;
         }
-        
+
         // Check maven.compiler.source property
-        String source = getProperty(model, "maven.compiler.source");
+        String source = getPropertyWithInheritance(model, parentModel, "maven.compiler.source");
         if (source != null) {
             log.debug("Found Java version from maven.compiler.source: {}", source);
             return source;
         }
-        
+
         // Check maven.compiler.target property
-        String target = getProperty(model, "maven.compiler.target");
+        String target = getPropertyWithInheritance(model, parentModel, "maven.compiler.target");
         if (target != null) {
             log.debug("Found Java version from maven.compiler.target: {}", target);
             return target;
         }
-        
-        // Check compiler plugin configuration
+
+        // Check compiler plugin configuration in module
         if (model.getBuild() != null && model.getBuild().getPlugins() != null) {
             for (Plugin plugin : model.getBuild().getPlugins()) {
                 if ("maven-compiler-plugin".equals(plugin.getArtifactId())) {
@@ -63,7 +72,23 @@ public class DeploymentMetadataDetector {
                 }
             }
         }
-        
+
+        // Check compiler plugin configuration in parent
+        if (parentModel != null && parentModel.getBuild() != null && parentModel.getBuild().getPlugins() != null) {
+            for (Plugin plugin : parentModel.getBuild().getPlugins()) {
+                if ("maven-compiler-plugin".equals(plugin.getArtifactId())) {
+                    Object config = plugin.getConfiguration();
+                    if (config != null) {
+                        String version = extractJavaVersionFromPluginConfig(config);
+                        if (version != null) {
+                            log.debug("Found Java version from parent compiler plugin: {}", version);
+                            return version;
+                        }
+                    }
+                }
+            }
+        }
+
         log.debug("No Java version found, using default");
         return null;
     }
@@ -226,12 +251,31 @@ public class DeploymentMetadataDetector {
     }
     
     // Helper methods
-    
+
     private String getProperty(Model model, String propertyName) {
         if (model.getProperties() == null) {
             return null;
         }
         return model.getProperties().getProperty(propertyName);
+    }
+
+    /**
+     * Get property from model with inheritance support.
+     * Checks the module model first, then falls back to parent model.
+     */
+    private String getPropertyWithInheritance(Model model, Model parentModel, String propertyName) {
+        // Check module properties first
+        String value = getProperty(model, propertyName);
+        if (value != null) {
+            return value;
+        }
+
+        // Fall back to parent properties
+        if (parentModel != null) {
+            return getProperty(parentModel, propertyName);
+        }
+
+        return null;
     }
     
     private String extractJavaVersionFromPluginConfig(Object config) {
