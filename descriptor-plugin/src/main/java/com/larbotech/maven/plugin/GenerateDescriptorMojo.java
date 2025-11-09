@@ -820,6 +820,8 @@ public class GenerateDescriptorMojo extends AbstractMojo {
         html.append("    code { background: #2d2d2d; color: #f8f8f2; padding: 4px 8px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 0.9em; }\n");
         html.append("    a { color: #667eea; text-decoration: none; transition: color 0.3s; }\n");
         html.append("    a:hover { color: #764ba2; text-decoration: underline; }\n");
+        html.append("    .repo-link { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; font-weight: 600; font-size: 0.9em; transition: transform 0.2s, box-shadow 0.2s; }\n");
+        html.append("    .repo-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); text-decoration: none; color: white; }\n");
 
         // Section Headers
         html.append("    .section-header { font-size: 1.4em; font-weight: bold; color: #333; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; }\n");
@@ -1081,6 +1083,12 @@ public class GenerateDescriptorMojo extends AbstractMojo {
                 html.append("            <div class=\"info-label\">Repository Path</div>\n");
                 html.append("            <div class=\"info-value\"><code>").append(escapeHtml(module.getRepositoryPath())).append("</code></div>\n");
                 html.append("          </div>\n");
+                if (module.getRepositoryUrl() != null) {
+                    html.append("          <div class=\"info-item\" style=\"grid-column: 1 / -1;\">\n");
+                    html.append("            <div class=\"info-label\">Maven Repository</div>\n");
+                    html.append("            <div class=\"info-value\"><a href=\"").append(escapeHtml(module.getRepositoryUrl())).append("\" target=\"_blank\" class=\"repo-link\">🔗 ").append(escapeHtml(module.getRepositoryUrl())).append("</a></div>\n");
+                    html.append("          </div>\n");
+                }
                 html.append("        </div>\n");
 
                 // Build Plugins
@@ -1166,12 +1174,19 @@ public class GenerateDescriptorMojo extends AbstractMojo {
                         html.append("        </div>\n");
                         html.append("        <div class=\"table-container\">\n");
                         html.append("          <table>\n");
-                        html.append("            <tr><th>Assembly ID</th><th>Format</th><th>Repository Path</th></tr>\n");
+                        html.append("            <tr><th>Assembly ID</th><th>Format</th><th>Repository Path</th><th>Maven Repository</th></tr>\n");
                         module.getAssemblyArtifacts().forEach(assembly -> {
                             html.append("            <tr>\n");
                             html.append("              <td><strong>").append(escapeHtml(assembly.assemblyId())).append("</strong></td>\n");
                             html.append("              <td><span class=\"badge badge-war\">").append(escapeHtml(assembly.format().toUpperCase())).append("</span></td>\n");
                             html.append("              <td><code>").append(escapeHtml(assembly.repositoryPath())).append("</code></td>\n");
+                            html.append("              <td>");
+                            if (assembly.repositoryUrl() != null) {
+                                html.append("<a href=\"").append(escapeHtml(assembly.repositoryUrl())).append("\" target=\"_blank\" class=\"repo-link\">🔗 Download</a>");
+                            } else {
+                                html.append("-");
+                            }
+                            html.append("</td>\n");
                             html.append("            </tr>\n");
                         });
                         html.append("          </table>\n");

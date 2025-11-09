@@ -123,6 +123,29 @@ public class MavenProjectAnalyzer {
             // Collect build info
             var buildInfo = gitInfoCollector.collectBuildInfo(projectRootPath);
 
+            // Extract Maven repository URL from distributionManagement
+            String mavenRepositoryUrl = extractMavenRepositoryUrl(rootModel);
+
+            // Enrich modules with repository URLs
+            if (mavenRepositoryUrl != null) {
+                deployableModules.forEach(module -> {
+                    if (module.getRepositoryPath() != null) {
+                        module.setRepositoryUrl(mavenRepositoryUrl + "/" + module.getRepositoryPath());
+                    }
+                    if (module.getAssemblyArtifacts() != null) {
+                        List<AssemblyArtifact> enrichedAssemblies = module.getAssemblyArtifacts().stream()
+                            .map(assembly -> AssemblyArtifact.builder()
+                                .assemblyId(assembly.assemblyId())
+                                .format(assembly.format())
+                                .repositoryPath(assembly.repositoryPath())
+                                .repositoryUrl(mavenRepositoryUrl + "/" + assembly.repositoryPath())
+                                .build())
+                            .collect(Collectors.toList());
+                        module.setAssemblyArtifacts(enrichedAssemblies);
+                    }
+                });
+            }
+
             return ProjectDescriptor.builder()
                     .projectGroupId(resolveGroupId(rootModel))
                     .projectArtifactId(rootModel.getArtifactId())
@@ -134,6 +157,7 @@ public class MavenProjectAnalyzer {
                     .totalModules(totalModules)
                     .deployableModulesCount(deployableModules.size())
                     .buildInfo(buildInfo)
+                    .mavenRepositoryUrl(mavenRepositoryUrl)
                     .build();
                     
         } catch (Exception e) {
@@ -311,7 +335,37 @@ public class MavenProjectAnalyzer {
         }
         throw new IllegalStateException("Cannot resolve version for module: " + model.getArtifactId());
     }
-    
+
+    /**
+     * Extract Maven repository URL from distributionManagement section.
+     * Looks for repository or snapshotRepository URL.
+     */
+    private String extractMavenRepositoryUrl(Model model) {
+        if (model.getDistributionManagement() == null) {
+            log.debug("No distributionManagement found in POM");
+            return null;
+        }
+
+        var distMgmt = model.getDistributionManagement();
+
+        // Try to get release repository URL
+        if (distMgmt.getRepository() != null && distMgmt.getRepository().getUrl() != null) {
+            String url = distMgmt.getRepository().getUrl();
+            log.info("Found Maven repository URL: {}", url);
+            return url;
+        }
+
+        // Try to get snapshot repository URL
+        if (distMgmt.getSnapshotRepository() != null && distMgmt.getSnapshotRepository().getUrl() != null) {
+            String url = distMgmt.getSnapshotRepository().getUrl();
+            log.info("Found Maven snapshot repository URL: {}", url);
+            return url;
+        }
+
+        log.debug("No repository URL found in distributionManagement");
+        return null;
+    }
+
     /**
      * Determine the final name of the artifact.
      * This may be customized in the build configuration.
