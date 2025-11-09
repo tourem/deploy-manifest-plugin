@@ -63,6 +63,43 @@ public class GenerateDescriptorMojo extends AbstractMojo {
     @Component
     private MavenProjectHelper projectHelper;
 
+    /** UX/DX options **/
+    /**
+     * Print a human-friendly summary of the descriptor in the console after generation.
+     */
+    @Parameter(property = "descriptor.summary", defaultValue = "false")
+    private boolean summary;
+
+    /**
+     * Only print the summary without writing files to disk.
+     */
+    @Parameter(property = "descriptor.summaryOnly", defaultValue = "false")
+    private boolean summaryOnly;
+
+    /**
+     * Also generate an HTML documentation file from the descriptor.
+     */
+    @Parameter(property = "descriptor.generateHtml", defaultValue = "false")
+    private boolean generateHtml;
+
+    /**
+     * Optional local command to run after generation (post-hook). Example: "./scripts/post.sh".
+     */
+    @Parameter(property = "descriptor.postCommand")
+    private String postCommand;
+
+    /**
+     * Working directory for the postCommand. Defaults to project baseDir if not set.
+     */
+    @Parameter(property = "descriptor.postCommandDir")
+    private String postCommandDir;
+
+    /**
+     * Timeout in seconds for the postCommand.
+     */
+    @Parameter(property = "descriptor.postCommandTimeout", defaultValue = "60")
+    private int postCommandTimeout;
+
     /**
      * Output file name for the generated descriptor.
      * Default: descriptor.json
@@ -215,6 +252,15 @@ public class GenerateDescriptorMojo extends AbstractMojo {
                 validateDescriptor(descriptor);
             }
 
+            // Handle summary output before writing files
+            if (summary || summaryOnly) {
+                printSummary(descriptor);
+                if (summaryOnly) {
+                    getLog().info("SummaryOnly enabled, skipping file generation.");
+                    return;
+                }
+            }
+
             // Determine output path
             Path outputPath = resolveOutputPath();
             getLog().info("Generating descriptor: " + outputPath.toAbsolutePath());
@@ -291,9 +337,21 @@ public class GenerateDescriptorMojo extends AbstractMojo {
                 attachArtifact(finalArtifact);
             }
 
+            // Optionally generate HTML documentation
+            if (generateHtml) {
+                Path htmlPath = changeExtension(primaryOutput, ".html");
+                generateHtmlDoc(descriptor, htmlPath);
+                getLog().info("✓ HTML documentation generated: " + htmlPath.toAbsolutePath());
+            }
+
             // Send webhook notification if configured
             if (webhookUrl != null && !webhookUrl.trim().isEmpty()) {
                 sendWebhookNotification(descriptor, primaryOutput);
+            }
+
+            // Run local post-generation command if configured
+            if (postCommand != null && !postCommand.trim().isEmpty()) {
+                runPostCommand(primaryOutput);
             }
 
         } catch (IOException e) {
@@ -615,6 +673,121 @@ public class GenerateDescriptorMojo extends AbstractMojo {
             getLog().warn("Failed to send webhook notification: " + e.getMessage());
             getLog().debug("Webhook error details", e);
         }
+    }
+    
+    /**
+     * Print a concise summary of the generated descriptor to the console.
+     */
+    private void printSummary(ProjectDescriptor d) {
+        getLog().info("\n===== Descriptor Summary =====");
+        getLog().info("Project: " + coalesce(d.projectName(), d.projectArtifactId()));
+        getLog().info("Version: " + d.projectVersion());
+        if (d.buildInfo() != null) {
+            getLog().info("Git: " + coalesce(d.buildInfo().gitCommitSha(), "n/a") +
+                    " @ " + coalesce(d.buildInfo().gitBranch(), "n/a"));
+            if (d.buildInfo().ciProvider() != null) {
+                getLog().info("CI: " + d.buildInfo().ciProvider() +
+                        (d.buildInfo().ciBuildId() != null ? (" #" + d.buildInfo().ciBuildId()) : ""));
+            }
+        }
+        getLog().info("Modules: total=" + d.totalModules() + ", deployable=" + d.deployableModulesCount());
+        if (d.deployableModules() != null && !d.deployableModules().isEmpty()) {
+            getLog().info(String.format("%-30s %-10s %-6s %-12s %-30s",
+                    "artifactId", "version", "pack", "frameworks", "repoPath"));
+            for (var m : d.deployableModules()) {
+                String frameworks = m.getFrameworks() == null ? (m.isSpringBootExecutable() ? "spring-boot" : "-")
+                        : String.join(",", m.getFrameworks());
+                getLog().info(String.format("%-30s %-10s %-6s %-12s %-30s",
+                        m.getArtifactId(), coalesce(m.getVersion(), ""), coalesce(m.getPackaging(), ""),
+                        frameworks, coalesce(m.getRepositoryPath(), "")));
+            }
+        }
+        getLog().info("==============================\n");
+    }
+
+    private String coalesce(String a, String b) { return (a == null || a.isEmpty()) ? b : a; }
+
+    /**
+     * Generate a simple static HTML documentation for the descriptor.
+     */
+    private void generateHtmlDoc(ProjectDescriptor d, Path htmlPath) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Descriptor ")
+          .append(escape(coalesce(d.projectName(), d.projectArtifactId())))
+          .append("</title><style>body{font-family:Arial,Helvetica,sans-serif;margin:20px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ddd;padding:8px;}th{background:#f5f5f5;text-align:left;}code{background:#f0f0f0;padding:2px 4px;border-radius:3px;}</style></head><body>");
+        sb.append("<h1>")
+          .append(escape(coalesce(d.projectName(), d.projectArtifactId())))
+          .append("</h1>");
+        sb.append("<p><strong>Version:</strong> ").append(escape(d.projectVersion())).append("</p>");
+        if (d.buildInfo() != null) {
+            sb.append("<p><strong>Git:</strong> ")
+              .append(escape(coalesce(d.buildInfo().gitCommitSha(), "n/a")))
+              .append(" @ ")
+              .append(escape(coalesce(d.buildInfo().gitBranch(), "n/a")))
+              .append("</p>");
+        }
+        sb.append("<h2>Modules</h2>");
+        sb.append("<table><thead><tr><th>Artifact</th><th>Version</th><th>Packaging</th><th>Frameworks</th><th>Repository Path</th></tr></thead><tbody>");
+        if (d.deployableModules() != null) {
+            for (var m : d.deployableModules()) {
+                String frameworks = m.getFrameworks() == null ? (m.isSpringBootExecutable() ? "spring-boot" : "-")
+                        : String.join(",", m.getFrameworks());
+                sb.append("<tr><td>").append(escape(m.getArtifactId())).append("</td>")
+                  .append("<td>").append(escape(coalesce(m.getVersion(), ""))).append("</td>")
+                  .append("<td>").append(escape(coalesce(m.getPackaging(), ""))).append("</td>")
+                  .append("<td>").append(escape(frameworks)).append("</td>")
+                  .append("<td><code>").append(escape(coalesce(m.getRepositoryPath(), ""))).append("</code></td></tr>");
+            }
+        }
+        sb.append("</tbody></table>");
+        sb.append("</body></html>");
+        Files.writeString(htmlPath, sb.toString(), StandardCharsets.UTF_8);
+    }
+
+    private String escape(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+    /**
+     * Run an optional post-generation local command.
+     */
+    private void runPostCommand(Path primaryOutput) {
+        try {
+            getLog().info("✓ Running post command: " + postCommand);
+            ProcessBuilder pb;
+            if (isWindows()) {
+                pb = new ProcessBuilder("cmd", "/c", postCommand);
+            } else {
+                pb = new ProcessBuilder("sh", "-c", postCommand);
+            }
+            pb.redirectErrorStream(true);
+            pb.environment().put("DESCRIPTOR_FILE", primaryOutput.toAbsolutePath().toString());
+            pb.directory(postCommandDir != null && !postCommandDir.isEmpty() ?
+                    new File(postCommandDir) : project.getBasedir());
+            Process p = pb.start();
+            boolean finished = p.waitFor(postCommandTimeout, java.util.concurrent.TimeUnit.SECONDS);
+            if (!finished) {
+                p.destroyForcibly();
+                getLog().warn("Post command timed out after " + postCommandTimeout + "s");
+            } else {
+                int exit = p.exitValue();
+                String output = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                if (exit == 0) {
+                    getLog().info("Post command completed successfully");
+                } else {
+                    getLog().warn("Post command exited with code " + exit);
+                }
+                if (!output.isBlank()) getLog().debug(output);
+            }
+        } catch (Exception e) {
+            getLog().warn("Failed to run post command: " + e.getMessage());
+            getLog().debug("Post command error", e);
+        }
+    }
+
+    private boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 }
 

@@ -1,9 +1,7 @@
 package com.larbotech.maven.descriptor.service;
 
-import com.larbotech.maven.descriptor.model.AssemblyArtifact;
-import com.larbotech.maven.descriptor.model.DeployableModule;
-import com.larbotech.maven.descriptor.model.PackagingType;
-import com.larbotech.maven.descriptor.model.ProjectDescriptor;
+import com.larbotech.maven.descriptor.model.*;
+import com.larbotech.maven.descriptor.service.spi.FrameworkDetector;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -14,15 +12,15 @@ import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.*;
 
 /**
  * Service to analyze Maven projects and extract deployable modules.
  */
 @Slf4j
 public class MavenProjectAnalyzer {
+
+    private static final String DESCRIPTOR_VERSION = "1.1.0";
 
     private final MavenRepositoryPathGenerator pathGenerator;
     private final SpringBootDetector springBootDetector;
@@ -31,6 +29,8 @@ public class MavenProjectAnalyzer {
     private final DeploymentMetadataDetector metadataDetector;
     private final EnvironmentConfigDetector environmentConfigDetector;
     private final ExecutablePluginDetector executablePluginDetector;
+    private final GitInfoCollector gitInfoCollector;
+    private final List<FrameworkDetector> frameworkDetectors;
 
     /**
      * Default constructor that initializes all dependencies.
@@ -43,8 +43,16 @@ public class MavenProjectAnalyzer {
         this.environmentConfigDetector = new EnvironmentConfigDetector();
         this.metadataDetector = new DeploymentMetadataDetector();
         this.executablePluginDetector = new ExecutablePluginDetector();
+        this.gitInfoCollector = new GitInfoCollector();
+        this.frameworkDetectors = loadFrameworkDetectors();
     }
     
+    private List<FrameworkDetector> loadFrameworkDetectors() {
+        List<FrameworkDetector> detectors = new ArrayList<>();
+        ServiceLoader.load(FrameworkDetector.class).forEach(detectors::add);
+        return detectors;
+    }
+
     /**
      * Analyze a Maven project and generate a descriptor.
      *
@@ -95,6 +103,8 @@ public class MavenProjectAnalyzer {
                 }
             }
             
+            BuildInfo buildInfo = gitInfoCollector.collect(projectRootPath);
+
             return ProjectDescriptor.builder()
                     .projectGroupId(resolveGroupId(rootModel))
                     .projectArtifactId(rootModel.getArtifactId())
@@ -105,6 +115,8 @@ public class MavenProjectAnalyzer {
                     .deployableModules(deployableModules)
                     .totalModules(totalModules)
                     .deployableModulesCount(deployableModules.size())
+                    .descriptorVersion(DESCRIPTOR_VERSION)
+                    .buildInfo(buildInfo)
                     .build();
                     
         } catch (Exception e) {
@@ -218,6 +230,24 @@ public class MavenProjectAnalyzer {
             buildPlugins = null; // Don't include empty list in JSON
         }
 
+        // Framework detectors via SPI
+        List<String> frameworks = new ArrayList<>();
+        Map<String, Object> frameworkDetails = new HashMap<>();
+        for (FrameworkDetector detector : frameworkDetectors) {
+            try {
+                Optional<Map<String, Object>> detected = detector.detect(model, modulePath);
+                if (detected.isPresent()) {
+                    String fwName = detector.name();
+                    frameworks.add(fwName);
+                    frameworkDetails.put(fwName, detected.get());
+                }
+            } catch (Exception ex) {
+                log.debug("Framework detector {} failed for module {}: {}", detector.name(), artifactId, ex.getMessage());
+            }
+        }
+        if (frameworks.isEmpty()) frameworks = null;
+        if (frameworkDetails.isEmpty()) frameworkDetails = null;
+
         return DeployableModule.builder()
                 .groupId(groupId)
                 .artifactId(artifactId)
@@ -234,6 +264,8 @@ public class MavenProjectAnalyzer {
                 .mainClass(mainClass)
                 .localDependencies(localDeps)
                 .buildPlugins(buildPlugins)
+                .frameworks(frameworks)
+                .frameworkDetails(frameworkDetails)
                 .build();
     }
     

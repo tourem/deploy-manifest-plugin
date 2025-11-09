@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a deployable module in a Maven project.
@@ -97,5 +98,15 @@ public class DeployableModule {
      *           maven-assembly-plugin, jib-maven-plugin, dockerfile-maven-plugin
      */
     private List<String> buildPlugins;
+
+    /**
+     * Names of detected frameworks for this module (e.g., spring-boot, quarkus).
+     */
+    private List<String> frameworks;
+
+    /**
+     * Arbitrary framework-specific details keyed by framework name.
+     */
+    private Map<String, Object> frameworkDetails;
 }
 
