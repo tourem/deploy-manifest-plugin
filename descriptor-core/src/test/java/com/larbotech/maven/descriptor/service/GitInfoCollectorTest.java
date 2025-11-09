@@ -64,29 +64,23 @@ class GitInfoCollectorTest {
         BuildInfo buildInfo = gitInfoCollector.collectBuildInfo(Path.of("."));
 
         // Then: CI provider may or may not be detected depending on actual environment
-        // This test just verifies the method doesn't crash
+        // This test just verifies the method doesn't crash and returns valid data
         assertThat(buildInfo).isNotNull();
-        // CI provider could be null or a valid provider name
+
+        // CI provider could be null (local environment) or a valid provider name (CI environment)
         if (buildInfo.ciProvider() != null) {
             assertThat(buildInfo.ciProvider()).isNotEmpty();
+            // If CI provider is detected, at least some CI fields should be present
+            assertThat(buildInfo.ciBuildId()).isNotNull();
+        } else {
+            // If not in CI, all CI fields should be null
+            assertThat(buildInfo.ciBuildId()).isNull();
+            assertThat(buildInfo.ciBuildNumber()).isNull();
+            assertThat(buildInfo.ciBuildUrl()).isNull();
+            assertThat(buildInfo.ciJobName()).isNull();
+            assertThat(buildInfo.ciActor()).isNull();
+            assertThat(buildInfo.ciEventName()).isNull();
         }
-    }
-
-
-
-    @Test
-    void shouldReturnNullCIProviderWhenNotInCI() {
-        // When: Collecting build info without CI environment variables
-        BuildInfo buildInfo = gitInfoCollector.collectBuildInfo(Path.of("."));
-        
-        // Then: CI provider should be null
-        assertThat(buildInfo.ciProvider()).isNull();
-        assertThat(buildInfo.ciBuildId()).isNull();
-        assertThat(buildInfo.ciBuildNumber()).isNull();
-        assertThat(buildInfo.ciBuildUrl()).isNull();
-        assertThat(buildInfo.ciJobName()).isNull();
-        assertThat(buildInfo.ciActor()).isNull();
-        assertThat(buildInfo.ciEventName()).isNull();
     }
 }
 
