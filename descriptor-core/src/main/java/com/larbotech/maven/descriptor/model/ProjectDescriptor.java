@@ -18,6 +18,7 @@ import java.util.List;
  * @param deployableModules List of all deployable modules found in the project
  * @param totalModules Total number of modules analyzed (including non-deployable)
  * @param deployableModulesCount Number of deployable modules
+ * @param buildInfo Git and CI/CD metadata for traceability
  */
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -30,6 +31,7 @@ public record ProjectDescriptor(
     LocalDateTime generatedAt,
     List<DeployableModule> deployableModules,
     int totalModules,
-    int deployableModulesCount
+    int deployableModulesCount,
+    BuildInfo buildInfo
 ) {}
 

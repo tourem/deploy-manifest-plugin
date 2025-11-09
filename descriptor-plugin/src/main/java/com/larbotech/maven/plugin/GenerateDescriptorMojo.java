@@ -192,6 +192,41 @@ public class GenerateDescriptorMojo extends AbstractMojo {
     @Parameter(property = "descriptor.webhookTimeout", defaultValue = "10")
     private int webhookTimeout;
 
+    /**
+     * Dry-run mode: print summary to console without generating files.
+     * Default: false
+     *
+     * When enabled, analyzes the project and displays a dashboard in the console
+     * but does not write any files to disk.
+     */
+    @Parameter(property = "descriptor.summary", defaultValue = "false")
+    private boolean summary;
+
+    /**
+     * Generate HTML documentation from the descriptor.
+     * Default: false
+     *
+     * When enabled, creates an HTML page with a human-readable view of the descriptor.
+     * Useful for non-technical teams to review deployment information.
+     */
+    @Parameter(property = "descriptor.generateHtml", defaultValue = "false")
+    private boolean generateHtml;
+
+    /**
+     * Local post-generation hook: script or command to execute after generation.
+     * Optional parameter.
+     *
+     * This is different from webhookUrl (which sends HTTP requests).
+     * This executes a local script/command on the build machine.
+     *
+     * Examples:
+     * - "/path/to/script.sh"
+     * - "python /path/to/process.py"
+     * - "echo 'Descriptor generated'"
+     */
+    @Parameter(property = "descriptor.postGenerationHook")
+    private String postGenerationHook;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
@@ -213,6 +248,12 @@ public class GenerateDescriptorMojo extends AbstractMojo {
             // Validate descriptor if requested
             if (validate) {
                 validateDescriptor(descriptor);
+            }
+
+            // If summary mode, print dashboard and exit
+            if (summary) {
+                printSummaryDashboard(descriptor);
+                return;
             }
 
             // Determine output path
@@ -291,9 +332,19 @@ public class GenerateDescriptorMojo extends AbstractMojo {
                 attachArtifact(finalArtifact);
             }
 
+            // Generate HTML documentation if requested
+            if (generateHtml) {
+                generateHtmlDocumentation(descriptor, outputPath);
+            }
+
             // Send webhook notification if configured
             if (webhookUrl != null && !webhookUrl.trim().isEmpty()) {
                 sendWebhookNotification(descriptor, primaryOutput);
+            }
+
+            // Execute post-generation hook if configured
+            if (postGenerationHook != null && !postGenerationHook.trim().isEmpty()) {
+                executePostGenerationHook(primaryOutput);
             }
 
         } catch (IOException e) {
@@ -614,6 +665,198 @@ public class GenerateDescriptorMojo extends AbstractMojo {
         } catch (Exception e) {
             getLog().warn("Failed to send webhook notification: " + e.getMessage());
             getLog().debug("Webhook error details", e);
+        }
+    }
+
+    /**
+     * Print a summary dashboard to the console.
+     */
+    private void printSummaryDashboard(ProjectDescriptor descriptor) {
+        getLog().info("");
+        getLog().info("╔═══════════════════════════════════════════════════════════════════════╗");
+        getLog().info("║                    DESCRIPTOR SUMMARY (DRY-RUN)                       ║");
+        getLog().info("╚═══════════════════════════════════════════════════════════════════════╝");
+        getLog().info("");
+        getLog().info("  Project: " + descriptor.projectName());
+        getLog().info("  Group ID: " + descriptor.projectGroupId());
+        getLog().info("  Artifact ID: " + descriptor.projectArtifactId());
+        getLog().info("  Version: " + descriptor.projectVersion());
+        getLog().info("  Generated At: " + descriptor.generatedAt());
+        getLog().info("");
+        getLog().info("┌───────────────────────────────────────────────────────────────────────┐");
+        getLog().info("│ MODULES SUMMARY                                                       │");
+        getLog().info("├───────────────────────────────────────────────────────────────────────┤");
+        getLog().info("│ Total Modules:      " + String.format("%-50d", descriptor.totalModules()) + "│");
+        getLog().info("│ Deployable Modules: " + String.format("%-50d", descriptor.deployableModulesCount()) + "│");
+        getLog().info("└───────────────────────────────────────────────────────────────────────┘");
+        getLog().info("");
+
+        if (descriptor.deployableModules() != null && !descriptor.deployableModules().isEmpty()) {
+            getLog().info("┌───────────────────────────────────────────────────────────────────────┐");
+            getLog().info("│ DEPLOYABLE MODULES                                                    │");
+            getLog().info("├───────────────────────────────────────────────────────────────────────┤");
+
+            descriptor.deployableModules().forEach(module -> {
+                getLog().info("│                                                                       │");
+                getLog().info("│ • " + module.getArtifactId() + " (" + module.getPackaging() + ")");
+                getLog().info("│   Path: " + module.getRepositoryPath());
+                if (module.isSpringBootExecutable()) {
+                    getLog().info("│   Type: Spring Boot Executable");
+                    if (module.getMainClass() != null) {
+                        getLog().info("│   Main Class: " + module.getMainClass());
+                    }
+                }
+                if (module.getEnvironments() != null && !module.getEnvironments().isEmpty()) {
+                    getLog().info("│   Environments: " + module.getEnvironments().size());
+                }
+            });
+
+            getLog().info("│                                                                       │");
+            getLog().info("└───────────────────────────────────────────────────────────────────────┘");
+        }
+
+        if (descriptor.buildInfo() != null) {
+            getLog().info("");
+            getLog().info("┌───────────────────────────────────────────────────────────────────────┐");
+            getLog().info("│ BUILD INFO                                                            │");
+            getLog().info("├───────────────────────────────────────────────────────────────────────┤");
+            if (descriptor.buildInfo().gitCommitSha() != null) {
+                getLog().info("│ Git Commit: " + descriptor.buildInfo().gitCommitShortSha());
+            }
+            if (descriptor.buildInfo().gitBranch() != null) {
+                getLog().info("│ Git Branch: " + descriptor.buildInfo().gitBranch());
+            }
+            if (descriptor.buildInfo().ciProvider() != null) {
+                getLog().info("│ CI Provider: " + descriptor.buildInfo().ciProvider());
+            }
+            getLog().info("└───────────────────────────────────────────────────────────────────────┘");
+        }
+
+        getLog().info("");
+        getLog().info("✓ Dry-run complete. No files were generated.");
+        getLog().info("  To generate files, run without -Ddescriptor.summary=true");
+        getLog().info("");
+    }
+
+    /**
+     * Generate HTML documentation from the descriptor.
+     */
+    private void generateHtmlDocumentation(ProjectDescriptor descriptor, Path jsonOutputPath) throws IOException {
+        Path htmlPath = jsonOutputPath.getParent().resolve(
+            jsonOutputPath.getFileName().toString().replace(".json", ".html")
+        );
+
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html>\n");
+        html.append("<html lang=\"en\">\n");
+        html.append("<head>\n");
+        html.append("  <meta charset=\"UTF-8\">\n");
+        html.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
+        html.append("  <title>Deployment Descriptor - ").append(descriptor.projectName()).append("</title>\n");
+        html.append("  <style>\n");
+        html.append("    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }\n");
+        html.append("    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }\n");
+        html.append("    h1 { color: #333; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }\n");
+        html.append("    h2 { color: #555; margin-top: 30px; border-bottom: 2px solid #ddd; padding-bottom: 8px; }\n");
+        html.append("    .info-grid { display: grid; grid-template-columns: 200px 1fr; gap: 10px; margin: 20px 0; }\n");
+        html.append("    .info-label { font-weight: bold; color: #666; }\n");
+        html.append("    .info-value { color: #333; }\n");
+        html.append("    .module { background: #f9f9f9; padding: 15px; margin: 15px 0; border-left: 4px solid #4CAF50; border-radius: 4px; }\n");
+        html.append("    .module-title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 10px; }\n");
+        html.append("    .badge { display: inline-block; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; margin-right: 5px; }\n");
+        html.append("    .badge-spring { background: #6DB33F; color: white; }\n");
+        html.append("    .badge-jar { background: #2196F3; color: white; }\n");
+        html.append("    .badge-war { background: #FF9800; color: white; }\n");
+        html.append("    table { width: 100%; border-collapse: collapse; margin: 15px 0; }\n");
+        html.append("    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }\n");
+        html.append("    th { background: #4CAF50; color: white; }\n");
+        html.append("    .timestamp { color: #999; font-size: 14px; }\n");
+        html.append("  </style>\n");
+        html.append("</head>\n");
+        html.append("<body>\n");
+        html.append("  <div class=\"container\">\n");
+        html.append("    <h1>").append(descriptor.projectName()).append("</h1>\n");
+        html.append("    <p class=\"timestamp\">Generated: ").append(descriptor.generatedAt()).append("</p>\n");
+
+        // Project Info
+        html.append("    <h2>Project Information</h2>\n");
+        html.append("    <div class=\"info-grid\">\n");
+        html.append("      <div class=\"info-label\">Group ID:</div><div class=\"info-value\">").append(descriptor.projectGroupId()).append("</div>\n");
+        html.append("      <div class=\"info-label\">Artifact ID:</div><div class=\"info-value\">").append(descriptor.projectArtifactId()).append("</div>\n");
+        html.append("      <div class=\"info-label\">Version:</div><div class=\"info-value\">").append(descriptor.projectVersion()).append("</div>\n");
+        html.append("      <div class=\"info-label\">Total Modules:</div><div class=\"info-value\">").append(descriptor.totalModules()).append("</div>\n");
+        html.append("      <div class=\"info-label\">Deployable:</div><div class=\"info-value\">").append(descriptor.deployableModulesCount()).append("</div>\n");
+        html.append("    </div>\n");
+
+        // Deployable Modules
+        if (descriptor.deployableModules() != null && !descriptor.deployableModules().isEmpty()) {
+            html.append("    <h2>Deployable Modules</h2>\n");
+            descriptor.deployableModules().forEach(module -> {
+                html.append("    <div class=\"module\">\n");
+                html.append("      <div class=\"module-title\">").append(module.getArtifactId()).append("</div>\n");
+                html.append("      <span class=\"badge badge-").append(module.getPackaging()).append("\">").append(module.getPackaging().toUpperCase()).append("</span>\n");
+                if (module.isSpringBootExecutable()) {
+                    html.append("      <span class=\"badge badge-spring\">SPRING BOOT</span>\n");
+                }
+                html.append("      <div class=\"info-grid\" style=\"margin-top: 10px;\">\n");
+                html.append("        <div class=\"info-label\">Repository Path:</div><div class=\"info-value\">").append(module.getRepositoryPath()).append("</div>\n");
+                if (module.getMainClass() != null) {
+                    html.append("        <div class=\"info-label\">Main Class:</div><div class=\"info-value\">").append(module.getMainClass()).append("</div>\n");
+                }
+                if (module.getJavaVersion() != null) {
+                    html.append("        <div class=\"info-label\">Java Version:</div><div class=\"info-value\">").append(module.getJavaVersion()).append("</div>\n");
+                }
+                html.append("      </div>\n");
+                html.append("    </div>\n");
+            });
+        }
+
+        html.append("  </div>\n");
+        html.append("</body>\n");
+        html.append("</html>\n");
+
+        Files.writeString(htmlPath, html.toString(), StandardCharsets.UTF_8);
+        getLog().info("✓ HTML documentation generated: " + htmlPath.toAbsolutePath());
+    }
+
+    /**
+     * Execute post-generation hook script/command.
+     */
+    private void executePostGenerationHook(Path generatedFile) {
+        try {
+            getLog().info("Executing post-generation hook: " + postGenerationHook);
+
+            ProcessBuilder pb = new ProcessBuilder();
+            pb.command("sh", "-c", postGenerationHook);
+            pb.directory(project.getBasedir());
+
+            // Set environment variable with generated file path
+            pb.environment().put("DESCRIPTOR_FILE", generatedFile.toAbsolutePath().toString());
+            pb.environment().put("PROJECT_NAME", project.getName());
+            pb.environment().put("PROJECT_VERSION", project.getVersion());
+
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            // Read output
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    getLog().info("  [hook] " + line);
+                }
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                getLog().info("✓ Post-generation hook completed successfully");
+            } else {
+                getLog().warn("Post-generation hook exited with code: " + exitCode);
+            }
+
+        } catch (Exception e) {
+            getLog().warn("Failed to execute post-generation hook: " + e.getMessage());
+            getLog().debug("Hook execution error details", e);
         }
     }
 }
