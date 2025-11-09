@@ -4,15 +4,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.larbotech</groupId>
+    <groupId>io.github.tourem</groupId>
     <artifactId>descriptor-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>descriptor-core</artifactId>
   <packaging>jar</packaging>
 
-  <name>Descriptor Core</name>
+  <name>Maven Descriptor Plugin - Core</name>
   <description>Core library for Maven project analysis and descriptor generation</description>
 
   <dependencies>

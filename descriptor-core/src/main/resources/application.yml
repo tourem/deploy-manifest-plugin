@@ -8,7 +8,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.larbotech.maven.descriptor: DEBUG
+    io.github.tourem.maven.descriptor: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 

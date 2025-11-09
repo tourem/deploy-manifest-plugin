@@ -1,6 +1,12 @@
-# Descriptor Plugin
+# Maven Descriptor Plugin
 
-A Maven plugin that automatically generates comprehensive JSON deployment descriptors for your Maven projects, including Spring Boot applications, multi-module projects, and environment-specific configurations.
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.tourem/descriptor-plugin.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.tourem/descriptor-plugin)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Java Version](https://img.shields.io/badge/Java-21%2B-blue)](https://openjdk.org/)
+
+A Maven plugin that automatically generates comprehensive deployment descriptors for your Maven projects, including Spring Boot applications, multi-module projects, and environment-specific configurations.
+
+**Published on Maven Central:** `io.github.tourem:descriptor-plugin`
 
 ## Features
 
@@ -38,12 +44,18 @@ Add the plugin to your project's `pom.xml`:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.larbotech</groupId>
+            <groupId>io.github.tourem</groupId>
             <artifactId>descriptor-plugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </plugin>
     </plugins>
 </build>
+```
+
+Or use it directly without adding to POM:
+
+```bash
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate
 ```
 
 ### Basic Usage
@@ -51,7 +63,7 @@ Add the plugin to your project's `pom.xml`:
 Generate a deployment descriptor at your project root:
 
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate
 ```
 
 This creates a `descriptor.json` file containing all deployment information.
@@ -62,39 +74,39 @@ This creates a `descriptor.json` file containing all deployment information.
 
 #### 1. Generate with default settings
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate
 ```
 Output: `descriptor.json` at project root
 
 #### 2. Custom output file name
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.outputFile=deployment-info.json
 ```
 
 #### 3. Custom output directory
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.outputDirectory=target \
   -Ddescriptor.outputFile=deployment-descriptor.json
 ```
 
 #### 4. Compact JSON (no pretty print)
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.prettyPrint=false
 ```
 
 #### 5. Generate ZIP archive
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.format=zip
 ```
 Output: `target/myapp-1.0-SNAPSHOT-descriptor.zip`
 
 #### 6. Generate TAR.GZ archive with custom classifier
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.format=tar.gz \
   -Ddescriptor.classifier=deployment
 ```
@@ -102,7 +114,7 @@ Output: `target/myapp-1.0-SNAPSHOT-deployment.tar.gz`
 
 #### 7. Generate and attach to project for deployment
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.format=zip \
   -Ddescriptor.attach=true
 ```
@@ -110,21 +122,21 @@ The artifact will be deployed to Maven repository during `mvn deploy`
 
 #### 8. Generate YAML format
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.exportFormat=yaml
 ```
 Output: `target/descriptor.yaml`
 
 #### 9. Generate both JSON and YAML
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.exportFormat=both
 ```
 Output: `target/descriptor.json` and `target/descriptor.yaml`
 
 #### 10. Generate with validation and digital signature
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.validate=true \
   -Ddescriptor.sign=true
 ```
@@ -132,14 +144,14 @@ Output: `target/descriptor.json` and `target/descriptor.json.sha256`
 
 #### 11. Generate with compression
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.compress=true
 ```
 Output: `target/descriptor.json` and `target/descriptor.json.gz`
 
 #### 12. Send webhook notification
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.webhookUrl=https://api.example.com/webhooks/descriptor \
   -Ddescriptor.webhookToken=your-secret-token
 ```
@@ -147,28 +159,28 @@ Sends HTTP POST with descriptor content to the specified URL
 
 #### 13. Dry-run mode (preview without generating files)
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.summary=true
 ```
 Displays an ASCII dashboard in the console with project overview
 
 #### 14. Generate HTML documentation
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.generateHtml=true
 ```
 Output: `target/descriptor.html` - Readable HTML page for non-technical teams
 
 #### 15. Execute post-generation hook
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.postGenerationHook="./scripts/notify.sh"
 ```
 Executes a local script/command after descriptor generation
 
 #### 16. All features combined
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.exportFormat=both \
   -Ddescriptor.validate=true \
   -Ddescriptor.sign=true \
@@ -188,7 +200,7 @@ Configure the plugin to run automatically during the build:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.larbotech</groupId>
+            <groupId>io.github.tourem</groupId>
             <artifactId>descriptor-plugin</artifactId>
             <version>1.0-SNAPSHOT</version>
             <configuration>
@@ -279,7 +291,7 @@ The descriptor archive will be deployed alongside your main artifact:
 
 ```
 Repository structure:
-com/larbotech/myapp/1.0.0/
+io/github/tourem/myapp/1.0.0/
 ├── myapp-1.0.0.jar                    # Main artifact
 ├── myapp-1.0.0.pom                    # POM file
 ├── myapp-1.0.0-descriptor.zip         # Descriptor archive
@@ -293,12 +305,12 @@ Once deployed, you can download the descriptor from your Maven repository:
 ```bash
 # Using Maven dependency plugin
 mvn dependency:get \
-  -Dartifact=com.larbotech:myapp:1.0.0:zip:descriptor \
+  -Dartifact=io.github.tourem:myapp:1.0.0:zip:descriptor \
   -Ddest=./descriptor.zip
 
 # Or using curl (Nexus example)
 curl -u user:password \
-  https://nexus.example.com/repository/releases/com/larbotech/myapp/1.0.0/myapp-1.0.0-descriptor.zip \
+  https://nexus.example.com/repository/releases/io/github/tourem/myapp/1.0.0/myapp-1.0.0-descriptor.zip \
   -o descriptor.zip
 ```
 
@@ -557,7 +569,7 @@ public class MicronautFrameworkDetector implements FrameworkDetector {
 }
 ```
 
-2. Register via ServiceLoader in `META-INF/services/com.larbotech.maven.descriptor.spi.FrameworkDetector`:
+2. Register via ServiceLoader in `META-INF/services/io.github.tourem.maven.descriptor.spi.FrameworkDetector`:
 ```
 com.example.MicronautFrameworkDetector
 ```
@@ -682,7 +694,7 @@ jobs:
 deploy:
   stage: deploy
   script:
-    - mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate
+    - mvn io.github.tourem:descriptor-plugin:1.0.0:generate
     - |
       jq -r '.deployableModules[]' descriptor.json | while read -r module; do
         echo "Processing module: $module"
@@ -697,7 +709,7 @@ deploy:
 # deploy.sh - Automated deployment script
 
 # Generate deployment descriptor
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate
 
 # Extract deployable modules
 MODULES=$(jq -r '.deployableModules[] | select(.springBootExecutable == true)' descriptor.json)
@@ -723,13 +735,13 @@ done
 descriptor-parent/
 ├── descriptor-core/             # Core library
 │   └── src/main/java/
-│       └── com/larbotech/maven/descriptor/
+│       └── io/github/tourem/maven/descriptor/
 │           ├── model/           # Data models
 │           └── service/         # Analysis services
 │
 └── descriptor-plugin/           # Maven plugin
     └── src/main/java/
-        └── com/larbotech/maven/plugin/
+        └── io/github/tourem/maven/plugin/
             └── GenerateDescriptorMojo.java
 ```
 
@@ -742,7 +754,7 @@ descriptor-parent/
 
 ```bash
 # Clone the repository
-git clone https://github.com/larbotech/mavenflow.git
+git clone https://github.io/github/tourem/mavenflow.git
 cd mavenflow
 
 # Build and install
@@ -857,7 +869,7 @@ After a successful release, you can use the plugin in your projects:
 #### Maven Dependency
 ```xml
 <dependency>
-    <groupId>com.larbotech</groupId>
+    <groupId>io.github.tourem</groupId>
     <artifactId>descriptor-plugin</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -868,7 +880,7 @@ After a successful release, you can use the plugin in your projects:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.larbotech</groupId>
+            <groupId>io.github.tourem</groupId>
             <artifactId>descriptor-plugin</artifactId>
             <version>1.0.0</version>
         </plugin>
@@ -878,7 +890,7 @@ After a successful release, you can use the plugin in your projects:
 
 #### Command Line
 ```bash
-mvn com.larbotech:descriptor-plugin:1.0.0:generate
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate
 ```
 
 ### Configuring Your Maven Settings

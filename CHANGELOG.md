@@ -99,12 +99,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Technical Details - Release Workflow
 - **Trigger**: Manual via GitHub Actions UI
 - **Parameters**: Release version, JFrog URL, JFrog username, JFrog token
-- **Version Logic**: Increments minor version for next SNAPSHOT (e.g., 1.0.0 → 1.1.0-SNAPSHOT)
+- **Version Logic**: Increments minor version for next SNAPSHOT (e.g., 1.0.0 → 1.1.0.0)
 - **Deployment**: Artifacts deployed to JFrog Artifactory
 - **Git Tags**: Automatic tag creation (e.g., v1.0.0)
 - **GitHub Release**: Automatic creation with Maven coordinates and usage examples
 
-## [1.0-SNAPSHOT] - 2025-11-09
+## [1.0.0] - 2025-11-09
 
 ### Added
 - Initial release of the Descriptor Plugin
@@ -138,9 +138,9 @@ descriptor-parent/
 ```
 
 #### Plugin Configuration
-- **groupId**: `com.larbotech`
+- **groupId**: `io.github.tourem`
 - **artifactId**: `descriptor-plugin`
-- **version**: `1.0-SNAPSHOT`
+- **version**: `1.0.0`
 
 #### System Properties
 - `descriptor.outputFile` - Output file name (default: `descriptor.json`)
@@ -151,10 +151,10 @@ descriptor-parent/
 #### Usage
 ```bash
 # Basic usage
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate
 
 # With custom output
-mvn com.larbotech:descriptor-plugin:1.0-SNAPSHOT:generate \
+mvn io.github.tourem:descriptor-plugin:1.0.0:generate \
   -Ddescriptor.outputFile=deployment.json \
   -Ddescriptor.outputDirectory=target
 ```

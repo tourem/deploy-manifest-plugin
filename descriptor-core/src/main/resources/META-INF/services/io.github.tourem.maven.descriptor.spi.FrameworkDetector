@@ -1,0 +1,7 @@
+# Framework Detectors registered via ServiceLoader
+# Add your custom framework detectors here
+
+# Built-in detectors
+io.github.tourem.maven.descriptor.spi.impl.SpringBootFrameworkDetector
+io.github.tourem.maven.descriptor.spi.impl.QuarkusFrameworkDetector
+
