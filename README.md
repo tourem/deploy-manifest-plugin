@@ -350,7 +350,7 @@ mvn clean package
   "projectVersion": "1.0.0",
   "projectName": "My Application",
   "projectDescription": "Multi-module Spring Boot application",
-  "generatedAt": [2025, 11, 9, 0, 20, 48, 83495000],
+  "generatedAt": "2025-11-09T14:20:48.083495",
   "deployableModules": [
     {
       "groupId": "com.example",
@@ -384,33 +384,91 @@ mvn clean package
     }
   ],
   "totalModules": 5,
-  "deployableModulesCount": 3
+  "deployableModulesCount": 3,
+  "buildInfo": {
+    "gitCommitSha": "a6b5ba8f2c1d3e4f5a6b7c8d9e0f1a2b3c4d5e6f",
+    "gitCommitShortSha": "a6b5ba8",
+    "gitBranch": "feature/advanced-features",
+    "gitDirty": false,
+    "gitRemoteUrl": "https://github.com/user/my-application.git",
+    "gitCommitMessage": "feat: Add advanced features",
+    "gitCommitAuthor": "John Doe",
+    "gitCommitTime": "2025-11-09T13:15:30",
+    "buildTimestamp": "2025-11-09T14:20:48.083495",
+    "buildHost": "build-server-01",
+    "buildUser": "jenkins"
+  }
 }
 ```
+
+> **Note**: The `buildInfo` section is **automatically collected** when the plugin runs. It includes Git metadata (commit, branch, author) and build information (timestamp, host, user). If running in a CI/CD environment (GitHub Actions, GitLab CI, Jenkins, etc.), additional CI metadata will be included.
 
 ## Advanced Features Guide
 
 ### 🔍 Git and CI/CD Metadata
 
-The plugin automatically collects Git and CI/CD metadata for complete traceability:
+The plugin **automatically collects** Git and CI/CD metadata for complete traceability. No configuration needed!
 
-**Git Metadata Collected:**
-- Commit SHA (full and short)
-- Branch name
-- Tag (if any)
-- Dirty state (uncommitted changes)
-- Remote URL
-- Commit message, author, timestamp
+#### How It Works
 
-**CI/CD Providers Detected:**
-- GitHub Actions
-- GitLab CI
-- Jenkins
-- Travis CI
-- CircleCI
-- Azure Pipelines
+When you run the plugin, it automatically:
+1. ✅ Detects if the project is in a Git repository
+2. ✅ Collects Git metadata (commit, branch, author, etc.)
+3. ✅ Detects CI/CD environment variables
+4. ✅ Adds all metadata to the `buildInfo` section of the descriptor
 
-**Example Output:**
+#### Git Metadata Collected
+
+- **Commit SHA** (full and short 7-char version)
+- **Branch name** (e.g., `main`, `develop`, `feature/xyz`)
+- **Tag** (if the current commit is tagged, e.g., `v1.0.0`)
+- **Dirty state** (whether there are uncommitted changes)
+- **Remote URL** (e.g., `https://github.com/user/repo.git`)
+- **Commit message** (last commit message)
+- **Commit author** (name of the author)
+- **Commit timestamp** (when the commit was made)
+
+#### Build Metadata Collected
+
+- **Build timestamp** (when the descriptor was generated)
+- **Build host** (hostname of the machine running the build)
+- **Build user** (username running the build)
+
+#### CI/CD Providers Detected
+
+The plugin automatically detects and collects metadata from:
+
+| Provider | Environment Variables Used |
+|----------|---------------------------|
+| **GitHub Actions** | `GITHUB_ACTIONS`, `GITHUB_RUN_ID`, `GITHUB_RUN_NUMBER`, `GITHUB_WORKFLOW`, `GITHUB_ACTOR`, `GITHUB_EVENT_NAME`, `GITHUB_REPOSITORY` |
+| **GitLab CI** | `GITLAB_CI`, `CI_PIPELINE_ID`, `CI_PIPELINE_IID`, `CI_PIPELINE_URL`, `CI_JOB_NAME`, `CI_COMMIT_REF_NAME`, `GITLAB_USER_LOGIN` |
+| **Jenkins** | `JENKINS_URL`, `BUILD_ID`, `BUILD_NUMBER`, `BUILD_URL`, `JOB_NAME`, `GIT_BRANCH`, `BUILD_USER` |
+| **Travis CI** | `TRAVIS`, `TRAVIS_BUILD_ID`, `TRAVIS_BUILD_NUMBER`, `TRAVIS_BUILD_WEB_URL`, `TRAVIS_JOB_NAME`, `TRAVIS_EVENT_TYPE` |
+| **CircleCI** | `CIRCLECI`, `CIRCLE_BUILD_NUM`, `CIRCLE_BUILD_URL`, `CIRCLE_JOB`, `CIRCLE_USERNAME` |
+| **Azure Pipelines** | `TF_BUILD`, `BUILD_BUILDID`, `BUILD_BUILDNUMBER`, `BUILD_DEFINITIONNAME`, `BUILD_REQUESTEDFOR` |
+
+#### Example Output (Local Build)
+
+```json
+{
+  "buildInfo": {
+    "gitCommitSha": "a6b5ba8f2c1d3e4f5a6b7c8d9e0f1a2b3c4d5e6f",
+    "gitCommitShortSha": "a6b5ba8",
+    "gitBranch": "feature/advanced-features",
+    "gitDirty": false,
+    "gitRemoteUrl": "https://github.com/user/repo.git",
+    "gitCommitMessage": "feat: Add advanced features",
+    "gitCommitAuthor": "John Doe",
+    "gitCommitTime": "2025-11-09T13:15:30",
+    "buildTimestamp": "2025-11-09T14:20:48.083495",
+    "buildHost": "macbook-pro.local",
+    "buildUser": "johndoe"
+  }
+}
+```
+
+#### Example Output (GitHub Actions)
+
 ```json
 {
   "buildInfo": {
@@ -435,6 +493,29 @@ The plugin automatically collects Git and CI/CD metadata for complete traceabili
     "buildUser": "runner"
   }
 }
+```
+
+#### Use Cases
+
+**Traceability**: Know exactly which Git commit was used to build each artifact
+```bash
+# Extract commit SHA from descriptor
+jq -r '.buildInfo.gitCommitSha' descriptor.json
+# Output: a6b5ba8f2c1d3e4f5a6b7c8d9e0f1a2b3c4d5e6f
+```
+
+**Reproducibility**: Rebuild the exact same version
+```bash
+# Get the commit and rebuild
+COMMIT=$(jq -r '.buildInfo.gitCommitSha' descriptor.json)
+git checkout $COMMIT
+mvn clean package
+```
+
+**Audit Trail**: Track who built what and when
+```bash
+# Show build information
+jq '.buildInfo | {author: .gitCommitAuthor, timestamp: .buildTimestamp, host: .buildHost}' descriptor.json
 ```
 
 ### 🔌 Framework Extensibility (SPI)
