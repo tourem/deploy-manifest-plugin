@@ -1,5 +1,7 @@
 # Enhanced Executable Detection - Feature Summary
 
+> Availability: Introduced in version 1.1.0
+
 ## 🎯 Objectif
 
 Corriger le bug où les modules Spring Boot sans `spring-boot-maven-plugin` n'étaient pas détectés comme exécutables, même s'ils utilisaient des plugins alternatifs (maven-shade-plugin, maven-assembly-plugin, etc.) pour créer des JARs/WARs exécutables.
@@ -153,7 +155,7 @@ src/main/resources/
 ```java
 public class DeployableModule {
     // ... champs existants ...
-    
+
     /**
      * Detailed executable information (type, method, structure, etc.)
      */
@@ -220,19 +222,19 @@ public class DeployableModule {
 ## 🔍 Cas d'Usage Résolus
 
 ### Cas 1: Spring Boot + Shade Plugin
-**Avant :** Non détecté comme Spring Boot  
+**Avant :** Non détecté comme Spring Boot
 **Après :** ✅ Détecté avec `springBootApplication: true`
 
 ### Cas 2: Spring Boot + Assembly Plugin
-**Avant :** Non détecté comme Spring Boot  
+**Avant :** Non détecté comme Spring Boot
 **Après :** ✅ Détecté avec `springBootApplication: true`
 
 ### Cas 3: Spring Boot sans plugin exécutable
-**Avant :** Non détecté  
+**Avant :** Non détecté
 **Après :** ✅ Détecté avec warning explicite
 
 ### Cas 4: Profils Spring Boot sans plugin
-**Avant :** Profils non détectés  
+**Avant :** Profils non détectés
 **Après :** ✅ Profils détectés même sans plugin
 
 ## 📝 Documentation
@@ -264,7 +266,7 @@ mvn test -Dtest=EnhancedExecutableDetectorTest
 ### Génération du Descriptor
 ```bash
 # Générer le descriptor JSON
-mvn io.github.tourem:descriptor-plugin:1.1.0-SNAPSHOT:generate
+mvn io.github.tourem:descriptor-plugin:1.1.0:generate
 
 # Voir les informations exécutables
 cat target/descriptor.json | jq '.deployableModules[].executableInfo'
@@ -312,8 +314,8 @@ git push origin main
 
 ---
 
-**Auteur :** Augment Agent  
-**Date :** 2025-11-10  
-**Branche :** `feature/enhanced-executable-detection`  
+**Auteur :** Augment Agent
+**Date :** 2025-11-10
+**Branche :** `feature/enhanced-executable-detection`
 **Commit :** `e44c836`
 
