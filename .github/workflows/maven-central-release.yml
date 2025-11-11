@@ -70,12 +70,19 @@ jobs:
       - name: Set release version
         run: |
           echo "Setting version to ${{ steps.validate_version.outputs.release_version }}"
-          mvn versions:set -DnewVersion=${{ steps.validate_version.outputs.release_version }} -DgenerateBackupPoms=false -B
+          for i in 1 2 3; do
+            mvn -B -e -Dmaven.wagon.http.retryHandler.count=5 -Dmaven.wagon.http.pool=false \
+              versions:set -DnewVersion=${{ steps.validate_version.outputs.release_version }} -DgenerateBackupPoms=false \
+              && break || { echo "versions:set failed (attempt $i). Retrying..."; sleep 5; }
+          done
       
       - name: Build and test
         run: |
           echo "Building release version ${{ steps.validate_version.outputs.release_version }}"
-          mvn clean verify -B
+          for i in 1 2 3; do
+            mvn -B -e -Dmaven.wagon.http.retryHandler.count=5 -Dmaven.wagon.http.pool=false clean verify \
+              && break || { echo "build failed (attempt $i). Retrying..."; sleep 5; }
+          done
       
       - name: Deploy to Maven Central
         env:
@@ -84,7 +91,10 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           echo "Deploying to Maven Central..."
-          mvn deploy -Prelease -DskipTests -B
+          for i in 1 2 3; do
+            mvn -B -e -Dmaven.wagon.http.retryHandler.count=5 -Dmaven.wagon.http.pool=false deploy -Prelease -DskipTests \
+              && break || { echo "deploy failed (attempt $i). Retrying..."; sleep 5; }
+          done
       
       - name: Commit release version
         run: |
@@ -96,7 +106,11 @@ jobs:
       - name: Set next snapshot version
         run: |
           echo "Setting next snapshot version to ${{ steps.validate_version.outputs.next_snapshot }}"
-          mvn versions:set -DnewVersion=${{ steps.validate_version.outputs.next_snapshot }} -DgenerateBackupPoms=false -B
+          for i in 1 2 3; do
+            mvn -B -e -Dmaven.wagon.http.retryHandler.count=5 -Dmaven.wagon.http.pool=false \
+              versions:set -DnewVersion=${{ steps.validate_version.outputs.next_snapshot }} -DgenerateBackupPoms=false \
+              && break || { echo "versions:set (next snapshot) failed (attempt $i). Retrying..."; sleep 5; }
+          done
       
       - name: Commit next snapshot version
         run: |
