@@ -8,35 +8,17 @@ A Maven plugin that automatically generates comprehensive deployment descriptors
 
 **Published on Maven Central:** `io.github.tourem:descriptor-plugin`
 
-## Features
+## Features (concise)
 
-### 🎯 Core Features
-✅ **Automatic Module Detection**: Identifies deployable modules (JAR, WAR, EAR)
-✅ **Spring Boot Support**: Detects Spring Boot executables, profiles, and configurations
-✅ **Environment Configurations**: Extracts dev, hml, prod environment settings
-✅ **Actuator Endpoints**: Discovers health, info, and metrics endpoints
-✅ **Maven Assembly**: Detects assembly artifacts (ZIP, TAR.GZ)
-✅ **Deployment Metadata**: Java version, main class, server ports, context paths
-✅ **Multi-Module Projects**: Full support for Maven reactor builds
+- Core: automatic module detection (JAR/WAR/EAR), Spring Boot support, environment/configs, actuator endpoints, assembly artifacts, deployment metadata, multi‑module projects.
+- Advanced: Git & CI/CD metadata, HTML documentation, dry‑run, post‑generation hooks, SPI extensibility (Spring Boot, Quarkus, Micronaut).
+- Container Images: detects Jib, Spring Boot build-image, Fabric8, Quarkus, Micronaut, JKube and includes image coordinates.
+- Dependency Tree (optional): per executable module summary + details; interactive HTML (search, filters, Flat/Tree, CSV export, duplicates).
 
-### 🚀 Advanced Features
-✅ **Git & CI/CD Metadata**: Complete traceability with commit SHA, branch, author, CI provider
-✅ **Framework Extensibility (SPI)**: Pluggable framework detection (Spring Boot, Quarkus, Micronaut)
-✅ **Dry-Run Mode**: Preview descriptor in console without generating files
-✅ **HTML Documentation**: Generate readable HTML reports for non-technical teams
-✅ **Post-Generation Hooks**: Execute custom scripts after descriptor generation
-- ✅ Container Images: Detect maintained Maven container plugins (Jib, Spring Boot build-image, Fabric8, Quarkus, Micronaut, JKube) and include image coordinates in the descriptor
-
-- ✅ Dependency Tree (optional): Collect per-executable module dependencies with summary; interactive HTML (search, filters, table/tree views, CSV export, duplicates detection)
-
-
-### 🎁 Bonus Features
-✅ **Multiple Export Formats**: JSON, YAML, or both
-✅ **Validation**: Validate descriptor structure before generation
-✅ **Digital Signature**: SHA-256 signature for integrity verification
-✅ **Compression**: GZIP compression to reduce file size
-✅ **Webhook Notifications**: HTTP POST notifications with configurable endpoint
-✅ **Archive Support**: ZIP, TAR.GZ, TAR.BZ2 formats with Maven deployment
+### 🎁 Bonus
+- Export formats: JSON, YAML, or both
+- Validation and digital signature (SHA-256)
+- GZIP compression, webhook notifications, archive support (ZIP, TAR.GZ, TAR.BZ2)
 
 ## Quick Start
 
@@ -111,6 +93,7 @@ Configure the plugin to run automatically during the build:
                 <!-- Output directory (default: project root) -->
                 <outputDirectory>target</outputDirectory>
 
+
                 <!-- Pretty print JSON (default: true) -->
                 <prettyPrint>true</prettyPrint>
 
@@ -140,8 +123,73 @@ Configure the plugin to run automatically during the build:
 </build>
 ```
 
+## Example JSON output
+
+Below is a concise example of the descriptor. Fields may be omitted when not applicable.
+
+```json
+{
+  "projectGroupId": "com.example",
+  "projectArtifactId": "demo",
+  "projectVersion": "1.0.0",
+  "deployableModules": [
+    {
+      "groupId": "com.example",
+      "artifactId": "demo",
+      "version": "1.0.0",
+      "packaging": "jar",
+      "springBootExecutable": true,
+      "container": {
+        "tool": "jib",
+        "image": "ghcr.io/acme/demo",
+        "tag": "1.0.0"
+      },
+      "dependencies": {
+        "summary": {
+          "total": 2,
+          "direct": 2,
+          "transitive": 0,
+          "scopes": { "compile": 1, "runtime": 1 },
+          "optional": 0
+        },
+        "flat": [
+          {
+            "groupId": "g",
+            "artifactId": "a",
+            "version": "1.0",
+            "scope": "compile",
+            "type": "jar",
+            "optional": false,
+            "depth": 1,
+            "path": "g:a:jar:1.0"
+          },
+          {
+            "groupId": "g",
+            "artifactId": "r",
+            "version": "2.0",
+            "scope": "runtime",
+            "type": "jar",
+            "optional": false,
+            "depth": 1,
+            "path": "g:r:jar:2.0"
+          }
+        ]
+      }
+    }
+  ],
+  "totalModules": 1,
+  "deployableModulesCount": 1
+}
+```
+
+
 
 ## Configuration Parameters
+
+For brevity, the full parameter tables are collapsed.
+
+<details>
+<summary>Show all parameters</summary>
 
 ### Core Parameters
 
@@ -176,6 +224,8 @@ Configure the plugin to run automatically during the build:
 | `webhookTimeout` | `descriptor.webhookTimeout` | `10` | Webhook timeout in seconds |
 
 
+</details>
+
 
 #### Build Metadata
 
@@ -200,34 +250,28 @@ Screenshots:
 - ![Descriptor HTML – Overview](images/html1.jpg)
 - ![Descriptor HTML – Modules](images/html2.jpg)
 
-### Dependency Tree Feature (optional)
+### Dependency Tree (optional)
 
-Disabled by default to preserve backward compatibility. When enabled, the plugin collects dependencies for each deployable/executable module and exposes them in the JSON/YAML descriptor, plus an interactive section in the HTML report.
+Disabled by default for backward compatibility. When enabled, dependencies are collected per deployable/executable module and exposed in JSON/YAML, plus an interactive section in the HTML report.
 
-- Enable feature (CLI):
+- Quick enable (CLI):
 ```
 mvn io.github.tourem:descriptor-plugin:1.3.0:generate -Ddescriptor.includeDependencyTree=true
 ```
-- Control depth (-1=unlimited, 0=direct only):
+- Common options: `dependencyTreeDepth` (-1=unlimited, 0=direct), `dependencyScopes` (default: compile,runtime), `dependencyTreeFormat` (flat|tree|both), `includeOptional` (default: false)
+
+<details>
+<summary>More examples (CLI + POM)</summary>
+
 ```
 mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyTreeDepth=1
-```
-- Filter by scopes (CSV, default: compile,runtime):
-```
 mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyScopes=compile,runtime
-```
-- Choose format: flat | tree | both (default: flat)
-```
 mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyTreeFormat=both
-```
-- Exclude transitives / include optional flags:
-```
 mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.excludeTransitive=false -Ddescriptor.includeOptional=false
 ```
 
-POM configuration example:
-
-```
+POM configuration:
+```xml
 <plugin>
   <groupId>io.github.tourem</groupId>
   <artifactId>descriptor-plugin</artifactId>
@@ -244,8 +288,9 @@ POM configuration example:
 ```
 
 Notes:
-- First iteration collects direct dependencies declared in the POM; transitive resolution is planned in a subsequent iteration.
-- The HTML report (when `-Ddescriptor.generateHtml=true`) adds an interactive Dependencies section inside each module card: search, scope/depth filters, view selector (Flat/Tree), CSV export, and duplicate detection.
+- First iteration collects direct dependencies from the POM; transitive resolution planned next.
+- With `-Ddescriptor.generateHtml=true`, the HTML adds an interactive Dependencies section.
+</details>
 
 
 
@@ -264,32 +309,13 @@ mvn clean install
 mvn test
 ```
 
-## What Gets Detected
+## What Gets Detected (high level)
 
-The plugin automatically analyzes your Maven project and detects:
+- Modules and packaging, executable detection (Spring Boot), main class and Java version
+- Environment and actuator settings, assembly artifacts, container images
+- Optional dependency tree per executable module (summary + flat/tree details)
 
-- **Module Information**: Group ID, Artifact ID, Version, Packaging type
-- **Spring Boot Applications**: Executables, main class, profiles
-- **Environment Configurations**: Server port, context path, actuator settings
-- **Actuator Endpoints**: Health, info, metrics endpoints
-- **Maven Assembly**: Assembly descriptors, formats, repository paths
-- **Build Plugins**: spring-boot-maven-plugin, maven-assembly-plugin
-- **Container Images**: image coordinates (registry/group/name), tag(s), tool used (jib, spring-boot, fabric8, quarkus, micronaut, jkube), base or builder images when available
-
-- **Dependency Tree (optional)**: Per executable module; summary (total/direct/transitive/scopes/optional) and details in flat and/or tree formats
-
-Example snippet in descriptor.json for a module:
-
-```json
-{
-  "container": {
-    "tool": "jib",
-    "image": "ghcr.io/acme/demo",
-    "tag": "1.0.0",
-    "additionalTags": ["latest"]
-  }
-}
-```
+See "Example JSON output" below for structure.
 
 
 
