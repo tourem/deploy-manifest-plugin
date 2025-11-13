@@ -297,6 +297,35 @@ public class GenerateDescriptorMojo extends AbstractMojo {
     @Parameter(property = "descriptor.includeTransitiveLicenses", defaultValue = "true")
     private boolean includeTransitiveLicenses;
 
+    // =============================
+    // Properties Feature Options
+    // =============================
+
+    /** Enable properties collection (disabled by default). */
+    @Parameter(property = "descriptor.includeProperties", defaultValue = "false")
+    private boolean includeProperties;
+
+    /** Include Java/system properties. */
+    @Parameter(property = "descriptor.includeSystemProperties", defaultValue = "true")
+    private boolean includeSystemProperties;
+
+    /** Include environment variables (use with care). */
+    @Parameter(property = "descriptor.includeEnvironmentVariables", defaultValue = "false")
+    private boolean includeEnvironmentVariables;
+
+    /** Filter sensitive properties by key name (password, secret, token, ...). */
+    @Parameter(property = "descriptor.filterSensitiveProperties", defaultValue = "true")
+    private boolean filterSensitiveProperties;
+
+    /** Mask sensitive values instead of dropping them. */
+    @Parameter(property = "descriptor.maskSensitiveValues", defaultValue = "true")
+    private boolean maskSensitiveValues;
+
+    /** Comma-separated list of extra sensitive key patterns (case-insensitive). */
+    @Parameter(property = "descriptor.propertyExclusions", defaultValue = "password,secret,token,apikey,api-key,api_key,credentials,auth,key")
+    private String propertyExclusions;
+
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
@@ -348,8 +377,29 @@ public class GenerateDescriptorMojo extends AbstractMojo {
                 .incompatibleLicenses(licIncompatSet)
                 .build();
 
-            MavenProjectAnalyzer analyzer = new MavenProjectAnalyzer(dtOptionsBuilder.build(), licOpts);
+            // Build property options for core analyzer
+            java.util.Set<String> exclusions = new java.util.HashSet<>();
+            if (propertyExclusions != null && !propertyExclusions.isBlank()) {
+                for (String t : propertyExclusions.split(",")) {
+                    if (t != null && !t.isBlank()) exclusions.add(t.trim());
+                }
+            }
+            io.github.tourem.maven.descriptor.model.PropertyOptions propOpts = io.github.tourem.maven.descriptor.model.PropertyOptions.builder()
+                    .include(includeProperties)
+                    .includeSystemProperties(includeSystemProperties)
+                    .includeEnvironmentVariables(includeEnvironmentVariables)
+                    .filterSensitiveProperties(filterSensitiveProperties)
+                    .maskSensitiveValues(maskSensitiveValues)
+                    .propertyExclusions(exclusions)
+                    .build();
+
+            MavenProjectAnalyzer analyzer = new MavenProjectAnalyzer(dtOptionsBuilder.build(), licOpts, propOpts);
             ProjectDescriptor descriptor = analyzer.analyzeProject(projectDir.toPath());
+
+            // Optionally enrich BuildInfo with properties, profiles, goals and Maven runtime
+            if (includeProperties) {
+                descriptor = enrichBuildInfoWithProperties(descriptor);
+            }
 
             // Validate descriptor if requested
             if (validate) {
@@ -2355,6 +2405,75 @@ d af f CSV</button>\\n");
         }
         html.append("</li>\n");
     }
+
+
+    /**
+     * Enrich BuildInfo with Maven runtime and executed goals (plugin-only info).
+     */
+    private io.github.tourem.maven.descriptor.model.ProjectDescriptor enrichBuildInfoWithProperties(io.github.tourem.maven.descriptor.model.ProjectDescriptor descriptor) {
+        if (descriptor == null || descriptor.buildInfo() == null) return descriptor;
+        var bi = descriptor.buildInfo();
+
+        String mvnVersion = session != null && session.getSystemProperties() != null
+                ? session.getSystemProperties().getProperty("maven.version")
+                : System.getProperty("maven.version");
+        String mvnHome = session != null && session.getSystemProperties() != null
+                ? session.getSystemProperties().getProperty("maven.home")
+                : System.getProperty("maven.home");
+        var maven = io.github.tourem.maven.descriptor.model.MavenRuntimeInfo.builder()
+                .version(mvnVersion)
+                .home(mvnHome)
+                .build();
+
+        java.util.List<String> executed = session != null && session.getGoals() != null
+                ? new java.util.ArrayList<>(session.getGoals())
+                : null;
+        var goals = io.github.tourem.maven.descriptor.model.BuildGoals.builder()
+                .defaultGoal(project.getDefaultGoal())
+                .executed(executed == null || executed.isEmpty() ? null : executed)
+                .build();
+
+        var newBuildInfo = io.github.tourem.maven.descriptor.model.BuildInfo.builder()
+                .gitCommitSha(bi.gitCommitSha())
+                .gitCommitShortSha(bi.gitCommitShortSha())
+                .gitBranch(bi.gitBranch())
+                .gitTag(bi.gitTag())
+                .gitDirty(bi.gitDirty())
+                .gitRemoteUrl(bi.gitRemoteUrl())
+                .gitCommitMessage(bi.gitCommitMessage())
+                .gitCommitAuthor(bi.gitCommitAuthor())
+                .gitCommitTime(bi.gitCommitTime())
+                .ciProvider(bi.ciProvider())
+                .ciBuildId(bi.ciBuildId())
+                .ciBuildNumber(bi.ciBuildNumber())
+                .ciBuildUrl(bi.ciBuildUrl())
+                .ciJobName(bi.ciJobName())
+                .ciActor(bi.ciActor())
+                .ciEventName(bi.ciEventName())
+                .buildTimestamp(bi.buildTimestamp())
+                .buildHost(bi.buildHost())
+                .buildUser(bi.buildUser())
+                .properties(bi.properties())
+                .profiles(bi.profiles())
+                .maven(maven)
+                .goals(goals)
+                .build();
+
+        return io.github.tourem.maven.descriptor.model.ProjectDescriptor.builder()
+                .projectGroupId(descriptor.projectGroupId())
+                .projectArtifactId(descriptor.projectArtifactId())
+                .projectVersion(descriptor.projectVersion())
+                .projectName(descriptor.projectName())
+                .projectDescription(descriptor.projectDescription())
+                .generatedAt(descriptor.generatedAt())
+                .deployableModules(descriptor.deployableModules())
+                .totalModules(descriptor.totalModules())
+                .deployableModulesCount(descriptor.deployableModulesCount())
+                .buildInfo(newBuildInfo)
+                .mavenRepositoryUrl(descriptor.mavenRepositoryUrl())
+                .build();
+    }
+
 
 
     /**

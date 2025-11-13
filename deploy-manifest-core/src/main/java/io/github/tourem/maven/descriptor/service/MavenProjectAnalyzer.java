@@ -44,6 +44,8 @@ public class MavenProjectAnalyzer {
     private final io.github.tourem.maven.descriptor.model.DependencyTreeOptions dependencyTreeOptions;
     private final LicenseCollector licenseCollector;
     private final io.github.tourem.maven.descriptor.model.LicenseOptions licenseOptions;
+    private final PropertyCollector propertyCollector;
+    private final io.github.tourem.maven.descriptor.model.PropertyOptions propertyOptions;
 
     /**
      * Default constructor that initializes all dependencies.
@@ -71,6 +73,15 @@ public class MavenProjectAnalyzer {
      */
     public MavenProjectAnalyzer(io.github.tourem.maven.descriptor.model.DependencyTreeOptions depOptions,
                                 io.github.tourem.maven.descriptor.model.LicenseOptions licenseOptions) {
+        this(depOptions, licenseOptions, io.github.tourem.maven.descriptor.model.PropertyOptions.builder().include(false).build());
+    }
+
+    /**
+     * Constructor allowing dependency tree, license and property options to be provided by the plugin.
+     */
+    public MavenProjectAnalyzer(io.github.tourem.maven.descriptor.model.DependencyTreeOptions depOptions,
+                                io.github.tourem.maven.descriptor.model.LicenseOptions licenseOptions,
+                                io.github.tourem.maven.descriptor.model.PropertyOptions propertyOptions) {
         this.pathGenerator = new MavenRepositoryPathGenerator();
         this.springBootDetector = new SpringBootDetector();
         this.profileDetector = new SpringBootProfileDetector();
@@ -86,6 +97,8 @@ public class MavenProjectAnalyzer {
         this.dependencyTreeOptions = depOptions != null ? depOptions : io.github.tourem.maven.descriptor.model.DependencyTreeOptions.builder().include(false).build();
         this.licenseCollector = new LicenseCollector();
         this.licenseOptions = licenseOptions != null ? licenseOptions : io.github.tourem.maven.descriptor.model.LicenseOptions.builder().include(false).build();
+        this.propertyCollector = new PropertyCollector();
+        this.propertyOptions = propertyOptions != null ? propertyOptions : io.github.tourem.maven.descriptor.model.PropertyOptions.builder().include(false).build();
     }
 
     /**
@@ -159,7 +172,47 @@ public class MavenProjectAnalyzer {
             }
 
             // Collect build info
-            var buildInfo = gitInfoCollector.collectBuildInfo(projectRootPath);
+            var gitBuildInfo = gitInfoCollector.collectBuildInfo(projectRootPath);
+
+            // Optionally collect properties and profiles
+            io.github.tourem.maven.descriptor.model.BuildProperties props = null;
+            io.github.tourem.maven.descriptor.model.ProfilesInfo profilesInfo = null;
+            try {
+                if (propertyOptions != null && propertyOptions.isInclude()) {
+                    var result = propertyCollector.collect(rootModel, projectRootPath, propertyOptions);
+                    props = result.properties();
+                    profilesInfo = result.profiles();
+                } else {
+                    profilesInfo = propertyCollector.collectProfiles(rootModel);
+                }
+            } catch (Exception e) {
+                log.debug("Property collection failed: {}", e.getMessage());
+            }
+
+            // Merge into BuildInfo
+            io.github.tourem.maven.descriptor.model.BuildInfo buildInfo = io.github.tourem.maven.descriptor.model.BuildInfo.builder()
+                    .gitCommitSha(gitBuildInfo.gitCommitSha())
+                    .gitCommitShortSha(gitBuildInfo.gitCommitShortSha())
+                    .gitBranch(gitBuildInfo.gitBranch())
+                    .gitTag(gitBuildInfo.gitTag())
+                    .gitDirty(gitBuildInfo.gitDirty())
+                    .gitRemoteUrl(gitBuildInfo.gitRemoteUrl())
+                    .gitCommitMessage(gitBuildInfo.gitCommitMessage())
+                    .gitCommitAuthor(gitBuildInfo.gitCommitAuthor())
+                    .gitCommitTime(gitBuildInfo.gitCommitTime())
+                    .ciProvider(gitBuildInfo.ciProvider())
+                    .ciBuildId(gitBuildInfo.ciBuildId())
+                    .ciBuildNumber(gitBuildInfo.ciBuildNumber())
+                    .ciBuildUrl(gitBuildInfo.ciBuildUrl())
+                    .ciJobName(gitBuildInfo.ciJobName())
+                    .ciActor(gitBuildInfo.ciActor())
+                    .ciEventName(gitBuildInfo.ciEventName())
+                    .buildTimestamp(gitBuildInfo.buildTimestamp())
+                    .buildHost(gitBuildInfo.buildHost())
+                    .buildUser(gitBuildInfo.buildUser())
+                    .properties(props)
+                    .profiles(profilesInfo)
+                    .build();
 
             // Extract Maven repository URL from distributionManagement
             String mavenRepositoryUrl = extractMavenRepositoryUrl(rootModel);
