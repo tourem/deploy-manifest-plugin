@@ -937,6 +937,13 @@ public class GenerateDescriptorMojo extends AbstractMojo {
         // Section Headers
         html.append("    .section-header { font-size: 1.4em; font-weight: bold; color: #333; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; }\n");
 
+        // Dependency Tree (collapsible)
+        html.append("    .dep-tree ul { list-style: none; margin: 6px 0 6px 14px; padding-left: 14px; border-left: 1px dashed #e0e0f0; }\n");
+        html.append("    .dep-tree .dep-node { margin: 4px 0; }\n");
+        html.append("    .dep-tree .dep-node.collapsed > ul { display: none; }\n");
+        html.append("    .dep-tree .tree-toggle { display: inline-block; width: 18px; color: #667eea; cursor: pointer; user-select: none; margin-right: 6px; }\n");
+        html.append("    .dep-tree .dep-label { color: #333; }\n");
+
         // Empty State
         html.append("    .empty-state { text-align: center; padding: 60px 20px; color: #999; }\n");
         html.append("    .empty-state-icon { font-size: 4em; margin-bottom: 20px; opacity: 0.3; }\n");
@@ -956,6 +963,10 @@ public class GenerateDescriptorMojo extends AbstractMojo {
         html.append("    body.dark-mode .module-card { background: #1a1a2e; border-color: #2a2a3e; }\n");
         html.append("    body.dark-mode .module-title { color: #e0e0e0; }\n");
         html.append("    body.dark-mode .info-label { color: #a0a0a0; }\n");
+        html.append("    body.dark-mode .dep-tree ul { border-left-color: #2a2a3e; }\n");
+        html.append("    body.dark-mode .dep-tree .dep-label { color: #e0e0e0; }\n");
+        html.append("    body.dark-mode .dep-tree .tree-toggle { color: #a0a0ff; }\n");
+
         html.append("    body.dark-mode .info-value { color: #e0e0e0; }\n");
         html.append("    body.dark-mode .section-header { color: #e0e0e0; border-bottom-color: #2a2a3e; }\n");
         html.append("    body.dark-mode table { background: #1a1a2e; }\n");
@@ -1399,6 +1410,15 @@ public class GenerateDescriptorMojo extends AbstractMojo {
 d af f CSV</button>\\n");
                     */
                     /*
+                    if (hasTree) {
+                        html.append("          <button type=\"button\" onclick=\"expandAll('")
+                            .append(moduleId)
+                            .append("')\" style=\"padding:8px 12px; border-radius:6px; border:1px solid #e0e0e0; background:#f8f9fa; cursor:pointer;\">Expand all</button>\n");
+                        html.append("          <button type=\"button\" onclick=\"collapseAll('")
+                            .append(moduleId)
+                            .append("')\" style=\"padding:8px 12px; border-radius:6px; border:1px solid #e0e0e0; background:#f8f9fa; cursor:pointer;\">Collapse all</button>\n");
+                    }
+
 
                     html.append("          <button type=\"button\" onclick=\"exportCsv('")
                         .append(moduleId)
@@ -1468,7 +1488,7 @@ d af f CSV</button>\\n");
 
                     // Tree view (top-level only for now)
                     if (hasTree) {
-                        html.append("        <div id=\"dep-tree-").append(moduleId).append("\" style=\"");
+                        html.append("        <div id='dep-tree-").append(moduleId).append("' class='dep-tree' style='");
                         if (!"tree".equals(defaultView)) html.append("display:none;");
                         html.append("\">\n");
                         html.append("          <ul style=\"padding-left:18px;\">\n");
@@ -1633,6 +1653,11 @@ d af f CSV</button>\\n");
     html.append("    // Dependencies UI\n");
     html.append("    function byId(id){ return document.getElementById(id); }\n");
     html.append("    function setDepView(modId){ const sel=byId('dep-view-'+modId); if(!sel) return; const v=sel.value; const flat=byId('dep-flat-'+modId); const tree=byId('dep-tree-'+modId); if(flat) flat.style.display=(v==='flat')?'':'none'; if(tree) tree.style.display=(v==='tree')?'':'none'; }\n");
+    html.append("    function toggleTreeNode(el){ const li=el.closest('.dep-node'); if(!li) return; const c=li.classList.toggle('collapsed'); el.textContent=c?'\u25b8':'\u25be'; }\n");
+    html.append("    function expandAll(modId){ document.querySelectorAll('#dep-tree-'+modId+' .dep-node.has-children').forEach(li=>{ li.classList.remove('collapsed'); const t=li.querySelector(':scope > .tree-toggle'); if(t) t.textContent='\u25be'; }); }\n");
+    html.append("    function collapseAll(modId){ document.querySelectorAll('#dep-tree-'+modId+' .dep-node.has-children').forEach(li=>{ li.classList.add('collapsed'); const t=li.querySelector(':scope > .tree-toggle'); if(t) t.textContent='\u25b8'; }); }\n");
+    html.append("    function initTreeCollapse(modId){ document.querySelectorAll('#dep-tree-'+modId+' .dep-node.has-children').forEach(li=>{ const depth=parseInt(li.dataset.depth||'1',10); const t=li.querySelector(':scope > .tree-toggle'); if(depth>1){ li.classList.add('collapsed'); if(t) t.textContent='\u25b8'; } else { if(t) t.textContent='\u25be'; } }); }\n");
+
     html.append("    function filterDependencies(modId){\n");
     html.append("      const term=(byId('dep-search-'+modId)?.value||'').toLowerCase();\n");
     html.append("      const depthLimit=parseInt(byId('dep-depth-'+modId)?.value||'-1',10);\n");
@@ -1658,16 +1683,44 @@ d af f CSV</button>\\n");
     html.append("        const entries=Object.entries(map).filter(([ga,set])=>set.size>1);\n");
     html.append("        if(entries.length){ dupesEl.innerHTML='⚠️ Duplicates detected: '+entries.map(([ga,set])=>ga+' → '+Array.from(set).join(', ')).join(' | '); } else { dupesEl.innerHTML=''; }\n");
     html.append("      }\n");
-    html.append("      const nodes=document.querySelectorAll('#dep-tree-'+modId+' .dep-node');\n");
-
-    html.append("      nodes.forEach(li=>{ const ga=(li.dataset.ga||'').toLowerCase(); const ver=(li.dataset.version||'').toLowerCase(); const scope=(li.dataset.scope||''); const depth=parseInt(li.dataset.depth||'1',10); let show=true; if(selected.size>0 && !selected.has(scope)) show=false; if(depthLimit>=0 && depth>depthLimit) show=false; if(term && !(ga.includes(term)||ver.includes(term))) show=false; li.style.display=show?'':'none'; });\n");
+    html.append("      const treeRoot=document.querySelector('#dep-tree-'+modId);\n");
+    html.append("      const nodes=Array.from(document.querySelectorAll('#dep-tree-'+modId+' .dep-node'));\n");
+    html.append("      nodes.forEach(li=>{\n");
+    html.append("        const ga=(li.dataset.ga||'').toLowerCase();\n");
+    html.append("        const ver=(li.dataset.version||'').toLowerCase();\n");
+    html.append("        const scope=(li.dataset.scope||'');\n");
+    html.append("        const depth=parseInt(li.dataset.depth||'1',10);\n");
+    html.append("        let ok=true;\n");
+    html.append("        if(selected.size>0 && !selected.has(scope)) ok=false;\n");
+    html.append("        if(depthLimit>=0 && depth>depthLimit) ok=false;\n");
+    html.append("        if(term && !(ga.includes(term)||ver.includes(term))) ok=false;\n");
+    html.append("        li.dataset.match=ok?'1':'';\n");
+    html.append("      });\n");
+    html.append("      nodes.forEach(li=>{\n");
+    html.append("        let show = li.dataset.match==='1' || !!li.querySelector('.dep-node[data-match=\"1\"]');\n");
+    html.append("        li.style.display=show?'':'none';\n");
+    html.append("        if(show && term){\n");
+    html.append("          let p=li.parentElement;\n");
+    html.append("          while(p && p!==treeRoot){\n");
+    html.append("            if(p.matches && p.matches('ul')){\n");
+    html.append("              const pli=p.closest('.dep-node');\n");
+    html.append("              if(pli){\n");
+    html.append("                pli.classList.remove('collapsed');\n");
+    html.append("                const t=pli.querySelector(':scope > .tree-toggle');\n");
+    html.append("                if(t) t.textContent='\u25be';\n");
+    html.append("              }\n");
+    html.append("            }\n");
+    html.append("            p=p.parentElement;\n");
+    html.append("          }\n");
+    html.append("        }\n");
+    html.append("      });\n");
     html.append("    }\n");
     html.append("    function initDependenciesSection(modId){\n");
     html.append("      const sel=byId('dep-view-'+modId); if(sel) sel.addEventListener('change',()=>setDepView(modId));\n");
     html.append("      const s=byId('dep-search-'+modId); if(s) s.addEventListener('input',()=>filterDependencies(modId));\n");
     html.append("      const d=byId('dep-depth-'+modId); if(d) d.addEventListener('input',()=>filterDependencies(modId));\n");
     html.append("      document.querySelectorAll('input[data-scope-check=\\''+modId+'\\']').forEach(cb=>cb.addEventListener('change',()=>filterDependencies(modId)));\n");
-    html.append("      setDepView(modId); filterDependencies(modId);\n");
+    html.append("      setDepView(modId); initTreeCollapse(modId); filterDependencies(modId);\n");
     html.append("    }\n");
     html.append("    function exportCsv(modId){\n");
     html.append("      const rows=Array.from(document.querySelectorAll('#dep-table-'+modId+' tr.dep-row')).filter(r=>r.style.display!=='none');\n");
@@ -1881,18 +1934,27 @@ d af f CSV</button>\\n");
         String version = n.getVersion() == null ? "" : n.getVersion();
         String type = n.getType() == null ? "" : n.getType();
         String optional = n.isOptional() ? "true" : "false";
-        html.append("            <li class=\"dep-node\" data-module=\"").append(moduleId)
+        boolean hasChildren = n.getChildren() != null && !n.getChildren().isEmpty();
+        html.append("            <li class=\"dep-node").append(hasChildren ? " has-children" : "")
+            .append("\" data-module=\"").append(moduleId)
             .append("\" data-ga=\"").append(escapeHtml(ga))
             .append("\" data-scope=\"").append(escapeHtml(scope))
             .append("\" data-version=\"").append(escapeHtml(version))
             .append("\" data-type=\"").append(escapeHtml(type))
             .append("\" data-optional=\"").append(optional)
             .append("\" data-depth=\"").append(String.valueOf(depth)).append("\">");
+        if (hasChildren) {
+            html.append("<span class=\"tree-toggle\" onclick=\"toggleTreeNode(this)\">\u25be</span>");
+        } else {
+            html.append("<span class=\"tree-toggle\" style=\"visibility:hidden\">\u2022</span>");
+        }
+        html.append("<span class=\"dep-label\">");
         html.append(escapeHtml(ga)).append(": ");
         html.append(" <code>").append(escapeHtml(version)).append("</code>");
         html.append(" [").append(escapeHtml(scope)).append("]");
-        if (n.getChildren() != null && !n.getChildren().isEmpty()) {
-            html.append("\n              <ul style=\"padding-left:18px;\">\n");
+        html.append("</span>");
+        if (hasChildren) {
+            html.append("\n              <ul>\n");
             for (io.github.tourem.maven.descriptor.model.DependencyNode ch : n.getChildren()) {
                 appendTreeNodeHtml(html, ch, moduleId, depth + 1);
             }
