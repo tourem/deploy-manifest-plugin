@@ -28,6 +28,14 @@ public class DependencyAnalysisResult {
     private RawResults rawResults;
     private Summary summary;
 
+    // Phase 3
+    private HealthScore healthScore;
+
+    // Phase 2 enrichments
+    private java.util.List<Recommendation> recommendations;
+    private java.util.List<VersionConflict> versionConflicts;
+    private MultiModuleAnalysis multiModule;
+
     @Data
     @Builder
     @NoArgsConstructor

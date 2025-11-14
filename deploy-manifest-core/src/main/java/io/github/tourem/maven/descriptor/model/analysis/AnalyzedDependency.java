@@ -17,6 +17,12 @@ public class AnalyzedDependency {
     private String version;
     private String scope;
 
+    private GitInfo git; // present when dependency is declared in pom and git blame is enabled
+
+    private Boolean suspectedFalsePositive;
+    private java.util.List<String> falsePositiveReasons;
+    private Double confidence; // 0..1 confidence the issue is real
+
     @Builder.Default
     private Metadata metadata = null;
 

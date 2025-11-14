@@ -86,6 +86,13 @@
       <version>${jackson.version}</version>
     </dependency>
 
+    <!-- JGit for git blame context -->
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+      <version>6.10.0.202406032230-r</version>
+    </dependency>
+
     <!-- Apache HttpClient for webhook notifications -->
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
