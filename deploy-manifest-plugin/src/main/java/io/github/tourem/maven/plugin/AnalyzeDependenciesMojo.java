@@ -12,7 +12,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.shared.dependency.analyzer.DefaultProjectDependencyAnalyzer;
 import org.apache.maven.shared.dependency.analyzer.ProjectDependencyAnalysis;
 import org.apache.maven.shared.dependency.analyzer.ProjectDependencyAnalyzer;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
@@ -49,6 +48,9 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
     @org.apache.maven.plugins.annotations.Component
     private DependencyGraphBuilder dependencyGraphBuilder;
 
+    @org.apache.maven.plugins.annotations.Component
+    private ProjectDependencyAnalyzer projectDependencyAnalyzer;
+
     /** Output directory for analysis JSON. */
     @Parameter(property = "deployment.analysisOutputDir")
     private File analysisOutputDir;
@@ -79,8 +81,7 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException {
         try {
-            ProjectDependencyAnalyzer analyzer = new DefaultProjectDependencyAnalyzer();
-            ProjectDependencyAnalysis result = analyzer.analyze(project);
+            ProjectDependencyAnalysis result = projectDependencyAnalyzer.analyze(project);
 
             List<AnalyzedDependency> unused = mapArtifacts(result.getUnusedDeclaredArtifacts());
             List<AnalyzedDependency> undeclared = mapArtifacts(result.getUsedUndeclaredArtifacts());
@@ -373,7 +374,6 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
     private io.github.tourem.maven.descriptor.model.analysis.MultiModuleAnalysis aggregateAcrossModules() {
         java.util.Map<String, java.util.List<String>> unusedModules = new java.util.HashMap<>();
         int count = 0; int analyzed = 0;
-        ProjectDependencyAnalyzer analyzer = new DefaultProjectDependencyAnalyzer();
         for (MavenProject p : session.getAllProjects()) {
             if (p.getPackaging()!=null && p.getPackaging().equals("pom")) continue;
             count++;
@@ -381,7 +381,7 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
                 File outDir = new File(p.getBuild().getOutputDirectory());
                 if (!outDir.exists()) continue; // skip not built
                 analyzed++;
-                ProjectDependencyAnalysis res = analyzer.analyze(p);
+                ProjectDependencyAnalysis res = projectDependencyAnalyzer.analyze(p);
                 for (Artifact a : res.getUnusedDeclaredArtifacts()) {
                     String ga = a.getGroupId()+":"+a.getArtifactId();
                     unusedModules.computeIfAbsent(ga, k -> new java.util.ArrayList<>()).add(p.getArtifactId());
@@ -442,7 +442,9 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
             throw new IOException("Cannot create output dir: " + dir);
         }
         File file = new File(dir, analysisOutputFile);
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper mapper = new ObjectMapper()
+                .enable(SerializationFeature.INDENT_OUTPUT)
+                .findAndRegisterModules(); // Auto-register JSR310 module for Instant support
         try (FileOutputStream fos = new FileOutputStream(file)) {
             mapper.writeValue(fos, out);
         }

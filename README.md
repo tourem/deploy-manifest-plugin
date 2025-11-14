@@ -213,6 +213,249 @@ mvn io.github.tourem:deploy-manifest-plugin:2.3.1:generate -Ddescriptor.summary=
 - `-Ddescriptor.attach=true [-Ddescriptor.format=zip]` — Attach artifact for repository deployment
 - `-Ddescriptor.includeDependencyTree=true [-Ddescriptor.dependencyTreeFormat=both]` — Include dependencies (Flat+Tree)
 
+---
+
+## Dependency Analysis (NEW in 2.4.0)
+
+**Intelligent dependency analysis with git context, false positive detection, and actionable recommendations.**
+
+### Quick Start
+
+```bash
+# Analyze dependencies with all intelligence features enabled
+mvn io.github.tourem:deploy-manifest-plugin:2.4.0-SNAPSHOT:analyze-dependencies
+```
+
+This generates:
+- `target/dependency-analysis.json` — Complete analysis results
+- `target/dependency-analysis.html` — Interactive dashboard with health score
+
+### What You Get
+
+**Phase 1 - Foundation:**
+- ✅ Unused declared dependencies detection
+- ✅ Used but undeclared dependencies detection
+- ✅ Metadata: file size, SHA-256, packaging, location
+- ✅ Summary statistics with potential savings
+
+**Phase 2 - Intelligence Layer:**
+- 🔍 **Git Context**: Who added each dependency and when (via git blame)
+- 🎯 **False Positive Detection**: Identifies annotation processors (Lombok), dev tools, runtime agents (AspectJ), provided scope
+- 💡 **Actionable Recommendations**: POM patches, verification commands, rollback plans
+- ⚠️ **Version Conflict Detection**: Multi-version detection with risk levels (LOW/MEDIUM/HIGH)
+- 📊 **Multi-Module Aggregation**: Cross-module unused dependency analysis
+
+**Phase 3 - Visualization & Scoring:**
+- 📈 **Health Score (0-100)**: Weighted scoring with letter grade (A+ to F)
+  - Cleanliness (40%): unused/undeclared dependencies
+  - Security (30%): placeholder for future SCA integration
+  - Maintainability (20%): version conflicts
+  - Licenses (10%): placeholder for future compliance integration
+- 🎨 **HTML Dashboard**: Dark theme, interactive tables, badges, responsive design
+- 🎯 **Actionable Improvements**: Prioritized quick wins with score impact and effort estimation
+
+### Configuration Options
+
+All options are enabled by default except `aggregateModules`:
+
+| Parameter | System Property | Default | Description |
+|-----------|----------------|---------|-------------|
+| `analysisOutputDir` | `deployment.analysisOutputDir` | `${project.build.directory}` | Output directory for analysis files |
+| `analysisOutputFile` | `deployment.analysisOutputFile` | `dependency-analysis.json` | JSON output filename |
+| `addGitContext` | `descriptor.addGitContext` | `true` | Add git blame context (commit, author, date) |
+| `handleFalsePositives` | `descriptor.handleFalsePositives` | `true` | Detect false positives (annotation processors, dev tools, etc.) |
+| `generateRecommendations` | `descriptor.generateRecommendations` | `true` | Generate actionable recommendations with POM patches |
+| `detectConflicts` | `descriptor.detectConflicts` | `true` | Detect version conflicts with risk assessment |
+| `aggregateModules` | `descriptor.aggregateModules` | `false` | Aggregate analysis across reactor modules |
+| `generateHtml` | `descriptor.generateHtml` | `true` | Generate HTML dashboard |
+
+### Usage Examples
+
+```bash
+# Full analysis (all features enabled)
+mvn io.github.tourem:deploy-manifest-plugin:2.4.0-SNAPSHOT:analyze-dependencies
+
+# Minimal analysis (Phase 1 only)
+mvn io.github.tourem:deploy-manifest-plugin:2.4.0-SNAPSHOT:analyze-dependencies \
+  -Ddescriptor.addGitContext=false \
+  -Ddescriptor.handleFalsePositives=false \
+  -Ddescriptor.generateRecommendations=false \
+  -Ddescriptor.detectConflicts=false \
+  -Ddescriptor.generateHtml=false
+
+# Multi-module aggregation
+mvn io.github.tourem:deploy-manifest-plugin:2.4.0-SNAPSHOT:analyze-dependencies \
+  -Ddescriptor.aggregateModules=true
+
+# Custom output location
+mvn io.github.tourem:deploy-manifest-plugin:2.4.0-SNAPSHOT:analyze-dependencies \
+  -Ddeployment.analysisOutputDir=reports \
+  -Ddeployment.analysisOutputFile=dep-analysis.json
+```
+
+### Example Output
+
+**JSON Structure:**
+```json
+{
+  "analyzer": "deploy-manifest-plugin",
+  "baseAnalyzer": "maven-dependency-analyzer",
+  "timestamp": "2025-11-14T22:33:07.817707Z",
+  "rawResults": {
+    "unused": [
+      {
+        "groupId": "org.apache.commons",
+        "artifactId": "commons-lang3",
+        "version": "3.12.0",
+        "scope": "compile",
+        "git": {
+          "commitId": "abc123...",
+          "authorName": "John Doe",
+          "authorEmail": "john@example.com",
+          "authorWhen": "2025-11-14T10:00:00Z",
+          "commitMessage": "Add commons-lang3",
+          "daysAgo": 5
+        },
+        "suspectedFalsePositive": false,
+        "confidence": 0.9,
+        "metadata": {
+          "sizeBytes": 587402,
+          "sizeKB": 573.63,
+          "sizeMB": 0.56,
+          "fileLocation": "/path/to/commons-lang3-3.12.0.jar",
+          "sha256": "d919d904...",
+          "packaging": "jar"
+        }
+      }
+    ],
+    "undeclared": []
+  },
+  "summary": {
+    "totalDependencies": 25,
+    "directDependencies": 10,
+    "transitiveDependencies": 15,
+    "issues": {
+      "unused": 3,
+      "undeclared": 0,
+      "totalIssues": 3
+    },
+    "potentialSavings": {
+      "bytes": 1234567,
+      "kb": 1205.63,
+      "mb": 1.18
+    }
+  },
+  "healthScore": {
+    "overall": 94,
+    "grade": "A",
+    "breakdown": {
+      "cleanliness": {
+        "score": 94,
+        "outOf": 100,
+        "weight": 0.4,
+        "details": "3 unused, 0 undeclared",
+        "factors": [
+          {
+            "factor": "3 unused dependencies",
+            "impact": -6,
+            "details": "2 points per unused (excluding false positives)"
+          }
+        ]
+      },
+      "security": {
+        "score": 100,
+        "outOf": 100,
+        "weight": 0.3,
+        "details": "Security not evaluated in this run"
+      },
+      "maintainability": {
+        "score": 100,
+        "outOf": 100,
+        "weight": 0.2,
+        "details": "0 MED, 0 HIGH conflicts"
+      },
+      "licenses": {
+        "score": 100,
+        "outOf": 100,
+        "weight": 0.1,
+        "details": "License compliance not evaluated in this run"
+      }
+    },
+    "actionableImprovements": [
+      {
+        "action": "Remove 3 unused dependencies",
+        "scoreImpact": 6,
+        "effort": "LOW",
+        "priority": 1
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "type": "REMOVE_DEPENDENCY",
+      "groupId": "org.apache.commons",
+      "artifactId": "commons-lang3",
+      "version": "3.12.0",
+      "pomPatch": "<!-- Remove unused dependency -->\n<!-- groupId: org.apache.commons, artifactId: commons-lang3 -->",
+      "verifyCommands": ["mvn -q -DskipTests -DskipITs clean verify"],
+      "rollbackCommands": ["git checkout -- pom.xml"],
+      "impact": {
+        "sizeSavingsBytes": 587402,
+        "sizeSavingsKB": 573.63,
+        "sizeSavingsMB": 0.56
+      }
+    }
+  ],
+  "versionConflicts": [
+    {
+      "riskLevel": "MEDIUM",
+      "groupId": "com.fasterxml.jackson.core",
+      "artifactId": "jackson-databind",
+      "versions": ["2.15.0", "2.15.3"],
+      "selectedVersion": "2.15.3"
+    }
+  ]
+}
+```
+
+### HTML Dashboard Features
+
+The generated HTML dashboard includes:
+- **Health Score Widget**: Large score display with letter grade
+- **Summary Cards**: Total dependencies, unused, undeclared, version conflicts
+- **Unused Dependencies Table**:
+  - Artifact details with scope and size
+  - Status badges (UNUSED vs FALSE POSITIVE)
+  - Git context (who added it and when)
+- **Version Conflicts Table**: Risk level badges (HIGH/MEDIUM/LOW)
+- **Recommendations List**: Actionable suggestions
+
+### Integration with CI/CD
+
+```yaml
+# GitHub Actions example
+- name: Analyze Dependencies
+  run: mvn io.github.tourem:deploy-manifest-plugin:2.4.0-SNAPSHOT:analyze-dependencies
+
+- name: Upload Analysis Report
+  uses: actions/upload-artifact@v3
+  with:
+    name: dependency-analysis
+    path: |
+      target/dependency-analysis.json
+      target/dependency-analysis.html
+
+- name: Check Health Score
+  run: |
+    SCORE=$(jq '.healthScore.overall' target/dependency-analysis.json)
+    if [ "$SCORE" -lt 80 ]; then
+      echo "Health score too low: $SCORE"
+      exit 1
+    fi
+```
+
+---
+
 ### POM Configuration
 
 Configure the plugin to run automatically during the build:
