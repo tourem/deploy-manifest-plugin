@@ -949,9 +949,10 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
         // Unused table
         if (out.getRawResults() != null && out.getRawResults().getUnused() != null && !out.getRawResults().getUnused().isEmpty()) {
             sb.append("<h2>🗑️ Unused Dependencies (").append(out.getRawResults().getUnused().size()).append(")</h2>\n");
-            sb.append("<table>\n<thead>\n<tr><th>Artifact</th><th>Scope</th><th>Size</th><th>Status</th><th>Repo Health</th><th>Available Versions</th><th>Added By</th></tr>\n</thead>\n<tbody>\n");
+            sb.append("<table>\n<thead>\n<tr><th>Artifact</th><th>Current</th><th>Scope</th><th>Size</th><th>Status</th><th>Repo Health</th><th>Available Versions</th><th>Latest</th><th>Added By</th></tr>\n</thead>\n<tbody>\n");
             for (AnalyzedDependency d : out.getRawResults().getUnused()) {
                 String ga = (d.getGroupId()==null?"":escapeHtml(d.getGroupId()))+":"+(d.getArtifactId()==null?"":escapeHtml(d.getArtifactId()));
+                String currentVersion = d.getVersion()==null?"":escapeHtml(d.getVersion());
                 String size = (d.getMetadata()!=null && d.getMetadata().getSizeKB()!=null)?(String.format("%.0f KB", d.getMetadata().getSizeKB())):"";
                 String status = Boolean.TRUE.equals(d.getSuspectedFalsePositive()) ? "<span class='badge ok'>FALSE POSITIVE</span>" : "<span class='badge warn'>UNUSED</span>";
                 String who = d.getGit()!=null ? (escapeHtml(d.getGit().getAuthorEmail())+" ("+d.getGit().getDaysAgo()+"d)") : "";
@@ -982,22 +983,38 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
                     }
                 }
 
-                // Available versions
+                // Available versions - display as list
                 String availableVersions = "";
                 if (d.getAvailableVersions() != null && !d.getAvailableVersions().isEmpty()) {
-                    availableVersions = "<span style='font-size:0.85em;color:#667eea;' title='" +
-                        escapeHtml(String.join(", ", d.getAvailableVersions())) + "'>📦 " +
-                        d.getAvailableVersions().size() + " newer</span>";
+                    StringBuilder versionList = new StringBuilder();
+                    for (int i = 0; i < d.getAvailableVersions().size(); i++) {
+                        if (i > 0) versionList.append("<br>");
+                        versionList.append("<span style='font-size:0.85em;color:#667eea;'>")
+                                  .append(escapeHtml(d.getAvailableVersions().get(i)))
+                                  .append("</span>");
+                    }
+                    availableVersions = versionList.toString();
                 } else {
                     availableVersions = "<span style='font-size:0.85em;color:#999;'>-</span>";
                 }
 
-                sb.append("<tr>\n<td><strong>").append(ga).append(":").append(d.getVersion()==null?"":escapeHtml(d.getVersion())).append("</strong></td>\n")
+                // Latest version from repository health
+                String latestVersion = "";
+                if (d.getRepositoryHealth() != null && d.getRepositoryHealth().getLatestVersion() != null) {
+                    latestVersion = "<span style='font-size:0.9em;font-weight:bold;color:#764ba2;'>📦 " +
+                        escapeHtml(d.getRepositoryHealth().getLatestVersion()) + "</span>";
+                } else {
+                    latestVersion = "<span style='font-size:0.85em;color:#999;'>-</span>";
+                }
+
+                sb.append("<tr>\n<td><strong>").append(ga).append("</strong></td>\n")
+                  .append("<td>").append(currentVersion).append("</td>\n")
                   .append("<td>").append(d.getScope()==null?"":escapeHtml(d.getScope())).append("</td>\n")
                   .append("<td>").append(size).append("</td>\n")
                   .append("<td>").append(status).append("</td>\n")
                   .append("<td>").append(healthBadge).append("</td>\n")
                   .append("<td>").append(availableVersions).append("</td>\n")
+                  .append("<td>").append(latestVersion).append("</td>\n")
                   .append("<td>").append(who==null?"":who).append("</td>\n</tr>\n");
             }
             sb.append("</tbody>\n</table>\n");
@@ -1006,9 +1023,10 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
         // Undeclared table
         if (out.getRawResults() != null && out.getRawResults().getUndeclared() != null && !out.getRawResults().getUndeclared().isEmpty()) {
             sb.append("<h2>📦 Undeclared Dependencies (").append(out.getRawResults().getUndeclared().size()).append(")</h2>\n");
-            sb.append("<table>\n<thead>\n<tr><th>Artifact</th><th>Scope</th><th>Size</th><th>Repo Health</th><th>Available Versions</th><th>Recommendation</th></tr>\n</thead>\n<tbody>\n");
+            sb.append("<table>\n<thead>\n<tr><th>Artifact</th><th>Current</th><th>Scope</th><th>Size</th><th>Repo Health</th><th>Available Versions</th><th>Latest</th><th>Recommendation</th></tr>\n</thead>\n<tbody>\n");
             for (AnalyzedDependency d : out.getRawResults().getUndeclared()) {
                 String ga = (d.getGroupId()==null?"":escapeHtml(d.getGroupId()))+":"+(d.getArtifactId()==null?"":escapeHtml(d.getArtifactId()));
+                String currentVersion = d.getVersion()==null?"":escapeHtml(d.getVersion());
                 String size = (d.getMetadata()!=null && d.getMetadata().getSizeKB()!=null)?(String.format("%.0f KB", d.getMetadata().getSizeKB())):"";
 
                 // Repository health badge
@@ -1037,21 +1055,37 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
                     }
                 }
 
-                // Available versions
+                // Available versions - display as list
                 String availableVersions = "";
                 if (d.getAvailableVersions() != null && !d.getAvailableVersions().isEmpty()) {
-                    availableVersions = "<span style='font-size:0.85em;color:#667eea;' title='" +
-                        escapeHtml(String.join(", ", d.getAvailableVersions())) + "'>📦 " +
-                        d.getAvailableVersions().size() + " newer</span>";
+                    StringBuilder versionList = new StringBuilder();
+                    for (int i = 0; i < d.getAvailableVersions().size(); i++) {
+                        if (i > 0) versionList.append("<br>");
+                        versionList.append("<span style='font-size:0.85em;color:#667eea;'>")
+                                  .append(escapeHtml(d.getAvailableVersions().get(i)))
+                                  .append("</span>");
+                    }
+                    availableVersions = versionList.toString();
                 } else {
                     availableVersions = "<span style='font-size:0.85em;color:#999;'>-</span>";
                 }
 
-                sb.append("<tr>\n<td><strong>").append(ga).append(":").append(d.getVersion()==null?"":escapeHtml(d.getVersion())).append("</strong></td>\n")
+                // Latest version from repository health
+                String latestVersion = "";
+                if (d.getRepositoryHealth() != null && d.getRepositoryHealth().getLatestVersion() != null) {
+                    latestVersion = "<span style='font-size:0.9em;font-weight:bold;color:#764ba2;'>📦 " +
+                        escapeHtml(d.getRepositoryHealth().getLatestVersion()) + "</span>";
+                } else {
+                    latestVersion = "<span style='font-size:0.85em;color:#999;'>-</span>";
+                }
+
+                sb.append("<tr>\n<td><strong>").append(ga).append("</strong></td>\n")
+                  .append("<td>").append(currentVersion).append("</td>\n")
                   .append("<td>").append(d.getScope()==null?"":escapeHtml(d.getScope())).append("</td>\n")
                   .append("<td>").append(size).append("</td>\n")
                   .append("<td>").append(healthBadge).append("</td>\n")
                   .append("<td>").append(availableVersions).append("</td>\n")
+                  .append("<td>").append(latestVersion).append("</td>\n")
                   .append("<td>Add to pom.xml</td>\n</tr>\n");
             }
             sb.append("</tbody>\n</table>\n");
