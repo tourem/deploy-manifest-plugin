@@ -47,6 +47,13 @@
       <version>3.3.0</version>
     </dependency>
 
+    <!-- Maven Shared: Dependency Analyzer (used/unused/undeclared) -->
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-dependency-analyzer</artifactId>
+      <version>1.16.0</version>
+    </dependency>
+
     <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -77,6 +84,13 @@
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
       <version>${jackson.version}</version>
+    </dependency>
+
+    <!-- JGit for git blame context -->
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+      <version>6.10.0.202406032230-r</version>
     </dependency>
 
     <!-- Apache HttpClient for webhook notifications -->
