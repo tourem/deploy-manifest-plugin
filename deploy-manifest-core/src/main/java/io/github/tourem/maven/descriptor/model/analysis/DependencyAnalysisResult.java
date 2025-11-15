@@ -39,6 +39,9 @@ public class DependencyAnalysisResult {
     // Plugin information
     private io.github.tourem.maven.descriptor.model.PluginInfo plugins;
 
+    // Dependency tree information
+    private io.github.tourem.maven.descriptor.model.DependencyTreeInfo dependencyTree;
+
     @Data
     @Builder
     @NoArgsConstructor

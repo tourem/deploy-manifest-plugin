@@ -105,6 +105,23 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
     @Parameter(property = "descriptor.includePlugins", defaultValue = "true")
     private boolean includePlugins;
 
+    // Dependency tree
+    @Parameter(property = "descriptor.includeDependencyTree", defaultValue = "false")
+    private boolean includeDependencyTree;
+
+    @Parameter(property = "descriptor.dependencyTreeFormat", defaultValue = "tree")
+    private String dependencyTreeFormat;
+
+    @Parameter(property = "descriptor.dependencyTreeDepth", defaultValue = "-1")
+    private int dependencyTreeDepth;
+
+    @Parameter(property = "descriptor.dependencyTreeScope")
+    private String dependencyTreeScope;
+
+    // Export format
+    @Parameter(property = "descriptor.exportFormat", defaultValue = "json")
+    private String exportFormat;
+
     @Override
     public void execute() throws MojoExecutionException {
         try {
@@ -171,13 +188,21 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
                 builder.plugins(pluginInfo);
             }
 
+            // Collect dependency tree
+            if (includeDependencyTree) {
+                io.github.tourem.maven.descriptor.model.DependencyTreeInfo treeInfo = collectDependencyTree();
+                builder.dependencyTree(treeInfo);
+            }
+
             // Phase 3: Health score
             io.github.tourem.maven.descriptor.model.analysis.HealthScore health = calculateHealthScore(unused, undeclared, conflicts);
             builder.healthScore(health);
 
             DependencyAnalysisResult out = builder.build();
 
-            writeJson(out);
+            // Write outputs based on exportFormat
+            writeOutputs(out);
+
             if (generateHtml) {
                 writeHtml(out);
                 getLog().info("Dependency analysis HTML generated: " + getHtmlOutputPath());
@@ -924,7 +949,7 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
         // Unused table
         if (out.getRawResults() != null && out.getRawResults().getUnused() != null && !out.getRawResults().getUnused().isEmpty()) {
             sb.append("<h2>🗑️ Unused Dependencies (").append(out.getRawResults().getUnused().size()).append(")</h2>\n");
-            sb.append("<table>\n<thead>\n<tr><th>Artifact</th><th>Scope</th><th>Size</th><th>Status</th><th>Repo Health</th><th>Added By</th></tr>\n</thead>\n<tbody>\n");
+            sb.append("<table>\n<thead>\n<tr><th>Artifact</th><th>Scope</th><th>Size</th><th>Status</th><th>Repo Health</th><th>Available Versions</th><th>Added By</th></tr>\n</thead>\n<tbody>\n");
             for (AnalyzedDependency d : out.getRawResults().getUnused()) {
                 String ga = (d.getGroupId()==null?"":escapeHtml(d.getGroupId()))+":"+(d.getArtifactId()==null?"":escapeHtml(d.getArtifactId()));
                 String size = (d.getMetadata()!=null && d.getMetadata().getSizeKB()!=null)?(String.format("%.0f KB", d.getMetadata().getSizeKB())):"";
@@ -957,11 +982,22 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
                     }
                 }
 
+                // Available versions
+                String availableVersions = "";
+                if (d.getAvailableVersions() != null && !d.getAvailableVersions().isEmpty()) {
+                    availableVersions = "<span style='font-size:0.85em;color:#667eea;' title='" +
+                        escapeHtml(String.join(", ", d.getAvailableVersions())) + "'>📦 " +
+                        d.getAvailableVersions().size() + " newer</span>";
+                } else {
+                    availableVersions = "<span style='font-size:0.85em;color:#999;'>-</span>";
+                }
+
                 sb.append("<tr>\n<td><strong>").append(ga).append(":").append(d.getVersion()==null?"":escapeHtml(d.getVersion())).append("</strong></td>\n")
                   .append("<td>").append(d.getScope()==null?"":escapeHtml(d.getScope())).append("</td>\n")
                   .append("<td>").append(size).append("</td>\n")
                   .append("<td>").append(status).append("</td>\n")
                   .append("<td>").append(healthBadge).append("</td>\n")
+                  .append("<td>").append(availableVersions).append("</td>\n")
                   .append("<td>").append(who==null?"":who).append("</td>\n</tr>\n");
             }
             sb.append("</tbody>\n</table>\n");
@@ -970,7 +1006,7 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
         // Undeclared table
         if (out.getRawResults() != null && out.getRawResults().getUndeclared() != null && !out.getRawResults().getUndeclared().isEmpty()) {
             sb.append("<h2>📦 Undeclared Dependencies (").append(out.getRawResults().getUndeclared().size()).append(")</h2>\n");
-            sb.append("<table>\n<thead>\n<tr><th>Artifact</th><th>Scope</th><th>Size</th><th>Repo Health</th><th>Recommendation</th></tr>\n</thead>\n<tbody>\n");
+            sb.append("<table>\n<thead>\n<tr><th>Artifact</th><th>Scope</th><th>Size</th><th>Repo Health</th><th>Available Versions</th><th>Recommendation</th></tr>\n</thead>\n<tbody>\n");
             for (AnalyzedDependency d : out.getRawResults().getUndeclared()) {
                 String ga = (d.getGroupId()==null?"":escapeHtml(d.getGroupId()))+":"+(d.getArtifactId()==null?"":escapeHtml(d.getArtifactId()));
                 String size = (d.getMetadata()!=null && d.getMetadata().getSizeKB()!=null)?(String.format("%.0f KB", d.getMetadata().getSizeKB())):"";
@@ -1001,10 +1037,21 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
                     }
                 }
 
+                // Available versions
+                String availableVersions = "";
+                if (d.getAvailableVersions() != null && !d.getAvailableVersions().isEmpty()) {
+                    availableVersions = "<span style='font-size:0.85em;color:#667eea;' title='" +
+                        escapeHtml(String.join(", ", d.getAvailableVersions())) + "'>📦 " +
+                        d.getAvailableVersions().size() + " newer</span>";
+                } else {
+                    availableVersions = "<span style='font-size:0.85em;color:#999;'>-</span>";
+                }
+
                 sb.append("<tr>\n<td><strong>").append(ga).append(":").append(d.getVersion()==null?"":escapeHtml(d.getVersion())).append("</strong></td>\n")
                   .append("<td>").append(d.getScope()==null?"":escapeHtml(d.getScope())).append("</td>\n")
                   .append("<td>").append(size).append("</td>\n")
                   .append("<td>").append(healthBadge).append("</td>\n")
+                  .append("<td>").append(availableVersions).append("</td>\n")
                   .append("<td>Add to pom.xml</td>\n</tr>\n");
             }
             sb.append("</tbody>\n</table>\n");
@@ -1159,6 +1206,118 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
             getLog().debug("Failed to collect plugin information: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Collect dependency tree information.
+     */
+    private io.github.tourem.maven.descriptor.model.DependencyTreeInfo collectDependencyTree() {
+        try {
+            File pomFile = project.getFile();
+            if (pomFile == null || !pomFile.exists()) {
+                return null;
+            }
+
+            org.apache.maven.model.io.xpp3.MavenXpp3Reader reader = new org.apache.maven.model.io.xpp3.MavenXpp3Reader();
+            org.apache.maven.model.Model model;
+            try (java.io.FileReader fileReader = new java.io.FileReader(pomFile)) {
+                model = reader.read(fileReader);
+            }
+
+            io.github.tourem.maven.descriptor.service.DependencyTreeCollector collector =
+                new io.github.tourem.maven.descriptor.service.DependencyTreeCollector();
+
+            // Parse format
+            io.github.tourem.maven.descriptor.model.DependencyTreeFormat format;
+            if ("both".equalsIgnoreCase(dependencyTreeFormat)) {
+                format = io.github.tourem.maven.descriptor.model.DependencyTreeFormat.BOTH;
+            } else if ("flat".equalsIgnoreCase(dependencyTreeFormat)) {
+                format = io.github.tourem.maven.descriptor.model.DependencyTreeFormat.FLAT;
+            } else {
+                format = io.github.tourem.maven.descriptor.model.DependencyTreeFormat.TREE;
+            }
+
+            io.github.tourem.maven.descriptor.model.DependencyTreeOptions.DependencyTreeOptionsBuilder optionsBuilder =
+                io.github.tourem.maven.descriptor.model.DependencyTreeOptions.builder()
+                    .include(true)
+                    .depth(dependencyTreeDepth)
+                    .format(format);
+
+            // Add scopes if specified
+            if (dependencyTreeScope != null && !dependencyTreeScope.isBlank()) {
+                java.util.Set<String> scopes = new java.util.HashSet<>();
+                for (String scope : dependencyTreeScope.split(",")) {
+                    scopes.add(scope.trim());
+                }
+                optionsBuilder.scopes(scopes);
+            }
+
+            io.github.tourem.maven.descriptor.model.DependencyTreeOptions options = optionsBuilder.build();
+
+            return collector.collect(model, pomFile.toPath().getParent(), options);
+        } catch (Exception e) {
+            getLog().debug("Failed to collect dependency tree: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Write outputs based on exportFormat parameter.
+     */
+    private void writeOutputs(DependencyAnalysisResult out) throws IOException {
+        String[] formats = exportFormat.split(",");
+        for (String format : formats) {
+            format = format.trim().toLowerCase();
+            switch (format) {
+                case "json":
+                    writeJson(out);
+                    break;
+                case "yaml":
+                case "yml":
+                    writeYaml(out);
+                    break;
+                case "both":
+                    writeJson(out);
+                    writeYaml(out);
+                    break;
+                default:
+                    getLog().warn("Unknown export format: " + format + ". Using JSON.");
+                    writeJson(out);
+            }
+        }
+    }
+
+    /**
+     * Write YAML output.
+     */
+    private void writeYaml(DependencyAnalysisResult out) throws IOException {
+        File dir = analysisOutputDir != null ? analysisOutputDir : new File(project.getBuild().getDirectory());
+        String yamlName = analysisOutputFile != null && analysisOutputFile.endsWith(".json")
+                ? analysisOutputFile.replace(".json", ".yaml")
+                : (analysisOutputFile == null || analysisOutputFile.isBlank() ? "dependency-analysis.yaml" : analysisOutputFile + ".yaml");
+        File yamlFile = new File(dir, yamlName);
+
+        org.yaml.snakeyaml.DumperOptions options = new org.yaml.snakeyaml.DumperOptions();
+        options.setDefaultFlowStyle(org.yaml.snakeyaml.DumperOptions.FlowStyle.BLOCK);
+        options.setPrettyFlow(true);
+        org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(options);
+
+        try (java.io.OutputStreamWriter writer = new java.io.OutputStreamWriter(
+                new java.io.FileOutputStream(yamlFile), java.nio.charset.StandardCharsets.UTF_8)) {
+            yaml.dump(convertToMap(out), writer);
+        }
+        getLog().info("Dependency analysis YAML generated: " + yamlFile.getAbsolutePath());
+    }
+
+    /**
+     * Convert DependencyAnalysisResult to Map for YAML serialization.
+     */
+    private java.util.Map<String, Object> convertToMap(DependencyAnalysisResult out) throws com.fasterxml.jackson.core.JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        String json = mapper.writeValueAsString(out);
+        return mapper.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
     }
 
     /**
