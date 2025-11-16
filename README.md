@@ -116,13 +116,13 @@ mvn io.github.tourem:deploy-manifest-plugin:2.6.0:generate -Ddescriptor.generate
 
 Watch the plugin in action with complete walkthroughs:
 
-**🇫🇷 French Version:**
+**🇫🇷 Version Française:**
 
-https://github.com/tourem/deploy-manifest-plugin/assets/videos/Maven_Deploy_Manifest_Plugin_fr.mp4
+![French Demo](videos/Maven_Deploy_Manifest_Plugin_fr.mp4)
 
 **🇬🇧 English Version:**
 
-https://github.com/tourem/deploy-manifest-plugin/assets/videos/Maven_Deploy_Manifest_Plugin_eng.mp4
+![English Demo](videos/Maven_Deploy_Manifest_Plugin_eng.mp4)
 
 ---
 
