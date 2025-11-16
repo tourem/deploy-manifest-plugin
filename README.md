@@ -19,6 +19,7 @@
 - [Perfect For](#perfect-for)
 - [Try It Now (No Installation Required)](#try-it-now-no-installation-required)
 - [See It In Action](#see-it-in-action)
+  - [🎥 Video Demonstrations](#-video-demonstrations)
 - [Real-World Example](#real-world-example)
 - [What Makes It Different?](#what-makes-it-different)
 - [Who's Using It?](#whos-using-it)
@@ -110,6 +111,18 @@ mvn io.github.tourem:deploy-manifest-plugin:2.6.0:generate -Ddescriptor.generate
 - Screenshots:
   - ![Dependency Analysis – Overview & Health Score](images/html3.png)
   - ![Dependency Analysis – Repository Health & Available Versions](images/html4.png)
+
+### 🎥 Video Demonstrations
+
+Watch the plugin in action with complete walkthroughs:
+
+**🇫🇷 French Version:**
+
+https://github.com/tourem/deploy-manifest-plugin/assets/videos/Maven_Deploy_Manifest_Plugin_fr.mp4
+
+**🇬🇧 English Version:**
+
+https://github.com/tourem/deploy-manifest-plugin/assets/videos/Maven_Deploy_Manifest_Plugin_eng.mp4
 
 ---
 
