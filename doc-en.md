@@ -64,6 +64,76 @@ Files are written at project root (or under `target/` if configured): `deploymen
 
 ---
 
+## Predefined Profiles (NEW in 2.8.0)
+
+Profiles simplify plugin usage by providing sensible defaults for common scenarios. Individual options can override profile settings.
+
+### Available Profiles
+
+| Profile | Description | Configuration |
+|---------|-------------|---------------|
+| **basic** (default) | JSON only with essential info | `exportFormat=json`, `generateHtml=false`, minimal metadata |
+| **standard** | JSON + HTML + dependency tree | `exportFormat=json`, `generateHtml=true`, `includeDependencyTree=true`, `dependencyTreeDepth=2` |
+| **full** | JSON + YAML + HTML + all metadata | `exportFormat=both`, `generateHtml=true`, `includeDependencyTree=true`, `dependencyTreeDepth=5`, `includeLicenses=true`, `includeProperties=true`, `includePlugins=true` |
+| **ci** | Optimized for CI/CD with archive | `exportFormat=json`, `generateHtml=true`, `format=zip`, `attach=true`, `includeAllReports=true` |
+
+### Using Profiles
+
+**Command line:**
+```bash
+# Use a profile
+mvn deploy-manifest:generate -Dmanifest.profile=standard
+
+# Override profile defaults
+mvn deploy-manifest:generate \
+  -Dmanifest.profile=standard \
+  -Dmanifest.includeLicenses=true \
+  -Dmanifest.dependencyTreeDepth=5
+```
+
+**POM configuration:**
+```xml
+<plugin>
+  <groupId>io.github.tourem</groupId>
+  <artifactId>deploy-manifest-plugin</artifactId>
+  <version>2.8.1</version>
+  <configuration>
+    <profile>full</profile>
+    <!-- Override specific options -->
+    <dependencyTreeDepth>3</dependencyTreeDepth>
+  </configuration>
+</plugin>
+```
+
+### Profile Details
+
+#### Basic Profile (Default)
+- **Use case:** Quick manifest generation for development
+- **Output:** JSON only
+- **Includes:** Project info, build info, Git context, deployable modules
+- **Excludes:** HTML report, dependency tree, licenses, properties, plugins
+
+#### Standard Profile
+- **Use case:** Team documentation and code reviews
+- **Output:** JSON + HTML
+- **Includes:** Everything in basic + dependency tree (depth=2)
+- **Best for:** Daily development, pull requests
+
+#### Full Profile
+- **Use case:** Complete analysis and audits
+- **Output:** JSON + YAML + HTML
+- **Includes:** Everything + licenses, properties, plugins, deep dependency tree (depth=5)
+- **Best for:** Security audits, compliance reviews, troubleshooting
+
+#### CI Profile
+- **Use case:** Automated builds and deployments
+- **Output:** JSON + HTML in ZIP archive
+- **Includes:** Everything needed for deployment + all reports
+- **Features:** Automatic archive attachment for Maven deployment
+- **Best for:** CI/CD pipelines, artifact repositories
+
+---
+
 ## How it works (architecture)
 
 ```mermaid
@@ -468,43 +538,43 @@ Dependency Tree:
 
 | Parameter | System Property | Default | Description |
 |---|---|---|---|
-| includeDependencyTree | descriptor.includeDependencyTree | false | Enable dependency tree |
-| dependencyTreeDepth | descriptor.dependencyTreeDepth | -1 | -1=unlimited, 0=direct |
-| dependencyScopes | descriptor.dependencyScopes | compile,runtime | Scopes to include |
-| dependencyTreeFormat | descriptor.dependencyTreeFormat | flat | flat, tree, both |
-| excludeTransitive | descriptor.excludeTransitive | false | Drop transitives entirely |
-| includeOptional | descriptor.includeOptional | false | Include optional dependencies |
+| includeDependencyTree | manifest.includeDependencyTree | false | Enable dependency tree |
+| dependencyTreeDepth | manifest.dependencyTreeDepth | -1 | -1=unlimited, 0=direct |
+| dependencyScopes | manifest.dependencyScopes | compile,runtime | Scopes to include |
+| dependencyTreeFormat | manifest.dependencyTreeFormat | flat | flat, tree, both |
+| excludeTransitive | manifest.excludeTransitive | false | Drop transitives entirely |
+| includeOptional | manifest.includeOptional | false | Include optional dependencies |
 
 Licenses:
 
 | Parameter | System Property | Default |
 |---|---|---|
-| includeLicenses | descriptor.includeLicenses | false |
-| licenseWarnings | descriptor.licenseWarnings | false |
-| incompatibleLicenses | descriptor.incompatibleLicenses | GPL-3.0,AGPL-3.0,SSPL |
-| includeTransitiveLicenses | descriptor.includeTransitiveLicenses | true |
+| includeLicenses | manifest.includeLicenses | false |
+| licenseWarnings | manifest.licenseWarnings | false |
+| incompatibleLicenses | manifest.incompatibleLicenses | GPL-3.0,AGPL-3.0,SSPL |
+| includeTransitiveLicenses | manifest.includeTransitiveLicenses | true |
 
 Build Properties:
 
 | Parameter | System Property | Default |
 |---|---|---|
-| includeProperties | descriptor.includeProperties | false |
-| includeSystemProperties | descriptor.includeSystemProperties | true |
-| includeEnvironmentVariables | descriptor.includeEnvironmentVariables | false |
-| filterSensitiveProperties | descriptor.filterSensitiveProperties | true |
-| maskSensitiveValues | descriptor.maskSensitiveValues | true |
-| propertyExclusions | descriptor.propertyExclusions | password,secret,token,apikey,api-key,api_key,credentials,auth,key |
+| includeProperties | manifest.includeProperties | false |
+| includeSystemProperties | manifest.includeSystemProperties | true |
+| includeEnvironmentVariables | manifest.includeEnvironmentVariables | false |
+| filterSensitiveProperties | manifest.filterSensitiveProperties | true |
+| maskSensitiveValues | manifest.maskSensitiveValues | true |
+| propertyExclusions | manifest.propertyExclusions | password,secret,token,apikey,api-key,api_key,credentials,auth,key |
 
 Plugins:
 
 | Parameter | System Property | Default |
 |---|---|---|
-| includePlugins | descriptor.includePlugins | false |
-| includePluginConfiguration | descriptor.includePluginConfiguration | true |
-| includePluginManagement | descriptor.includePluginManagement | true |
-| checkPluginUpdates | descriptor.checkPluginUpdates | false |
-| filterSensitivePluginConfig | descriptor.filterSensitivePluginConfig | true |
-| pluginUpdateTimeoutMillis | descriptor.pluginUpdateTimeoutMillis | 2000 |
+| includePlugins | manifest.includePlugins | false |
+| includePluginConfiguration | manifest.includePluginConfiguration | true |
+| includePluginManagement | manifest.includePluginManagement | true |
+| checkPluginUpdates | manifest.checkPluginUpdates | false |
+| filterSensitivePluginConfig | manifest.filterSensitivePluginConfig | true |
+| pluginUpdateTimeoutMillis | manifest.pluginUpdateTimeoutMillis | 2000 |
 
 ---
 
