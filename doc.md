@@ -47,7 +47,7 @@ Ajout dans le POM pour des builds reproductibles :
     <plugin>
       <groupId>io.github.tourem</groupId>
       <artifactId>deploy-manifest-plugin</artifactId>
-      <version>2.4.0</version>
+      <version>2.7.0</version>
       <executions>
         <execution>
           <id>generate-deploy-manifest</id>
@@ -345,7 +345,7 @@ Configuration POM (extrait courant) :
 <plugin>
   <groupId>io.github.tourem</groupId>
   <artifactId>deploy-manifest-plugin</artifactId>
-  <version>2.4.0</version>
+  <version>2.7.0</version>
   <configuration>
     <exportFormat>both</exportFormat>
     <generateHtml>true</generateHtml>
