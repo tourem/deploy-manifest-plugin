@@ -1283,6 +1283,40 @@ public class GenerateDescriptorMojo extends AbstractMojo {
         html.append("    body.dark-mode .alert-success { background: #064e3b; color: #d1fae5; }\n");
         html.append("    body.dark-mode .alert-error { background: #7f1d1d; color: #fee2e2; }\n");
 
+        // Phase 3 + Bonus: Skeleton Loading
+        html.append("    /* Skeleton Loading */\n");
+        html.append("    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px; }\n");
+        html.append("    @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }\n");
+        html.append("    body.dark-mode .skeleton { background: linear-gradient(90deg, #1a1a2e 25%, #2a2a3e 50%, #1a1a2e 75%); background-size: 200% 100%; }\n");
+
+        // Phase 3 + Bonus: Breadcrumbs
+        html.append("    /* Breadcrumbs */\n");
+        html.append("    .breadcrumb { display: flex; align-items: center; gap: 8px; padding: 15px 30px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; font-size: 0.9em; }\n");
+        html.append("    .breadcrumb a { color: #667eea; text-decoration: none; transition: color 0.2s; }\n");
+        html.append("    .breadcrumb a:hover { color: #764ba2; text-decoration: underline; }\n");
+        html.append("    .breadcrumb .separator { color: #999; }\n");
+        html.append("    .breadcrumb .current { color: #333; font-weight: 600; }\n");
+        html.append("    body.dark-mode .breadcrumb { background: #16213e; border-bottom-color: #2a2a3e; }\n");
+        html.append("    body.dark-mode .breadcrumb .current { color: #e0e0e0; }\n");
+
+        // Phase 3 + Bonus: Presentation Mode
+        html.append("    /* Presentation Mode */\n");
+        html.append("    body.presentation-mode { font-size: 1.2em; }\n");
+        html.append("    body.presentation-mode .header { padding: 60px; }\n");
+        html.append("    body.presentation-mode .stats { padding: 40px; }\n");
+        html.append("    body.presentation-mode .stat-card .number { font-size: 3em; }\n");
+        html.append("    body.presentation-mode .module-card { padding: 40px; margin: 30px 0; }\n");
+
+        // Phase 3 + Bonus: Print Styles
+        html.append("    /* Print Styles */\n");
+        html.append("    @media print {\n");
+        html.append("      body { background: white; padding: 0; }\n");
+        html.append("      .container { box-shadow: none; }\n");
+        html.append("      .theme-toggle, .action-buttons, .global-search-bar, .shortcuts-hint { display: none !important; }\n");
+        html.append("      .tab-content { display: block !important; page-break-inside: avoid; }\n");
+        html.append("      .module-card { page-break-inside: avoid; }\n");
+        html.append("    }\n");
+
         html.append("  </style>\n");
         html.append("</head>\n");
         html.append("<body>\n");
@@ -2845,6 +2879,75 @@ d af f CSV</button>\\n");
         html.append("      addTooltips();\n");
         html.append("      addAlerts();\n");
         html.append("      console.log('✨ Phase 2 UX improvements loaded: Search + Export + Tooltips + Alerts');\n");
+        html.append("    });\n");
+
+        // Phase 3 + Bonus: Presentation Mode
+        html.append("    /* Phase 3 + Bonus: Presentation Mode */\n");
+        html.append("    let presentationMode = false;\n");
+        html.append("    function togglePresentationMode() {\n");
+        html.append("      presentationMode = !presentationMode;\n");
+        html.append("      if (presentationMode) {\n");
+        html.append("        document.body.classList.add('presentation-mode');\n");
+        html.append("        document.documentElement.requestFullscreen?.();\n");
+        html.append("        showShortcutHint('🎬 Presentation mode ON');\n");
+        html.append("      } else {\n");
+        html.append("        document.body.classList.remove('presentation-mode');\n");
+        html.append("        document.exitFullscreen?.();\n");
+        html.append("        showShortcutHint('🎬 Presentation mode OFF');\n");
+        html.append("      }\n");
+        html.append("    }\n");
+        html.append("    \n");
+        html.append("    // Ctrl+P for presentation mode\n");
+        html.append("    document.addEventListener('keydown', (e) => {\n");
+        html.append("      if ((e.ctrlKey || e.metaKey) && e.key === 'p' && !e.shiftKey) {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        togglePresentationMode();\n");
+        html.append("      }\n");
+        html.append("    });\n");
+
+        // Phase 3 + Bonus: Breadcrumbs
+        html.append("    /* Phase 3 + Bonus: Breadcrumbs */\n");
+        html.append("    function createBreadcrumbs() {\n");
+        html.append("      const breadcrumb = document.createElement('div');\n");
+        html.append("      breadcrumb.className = 'breadcrumb';\n");
+        html.append("      breadcrumb.innerHTML = `\n");
+        html.append("        <a href=\"#\" onclick=\"showTab(document.querySelector('.tab'), 'overview'); return false;\">🏠 Home</a>\n");
+        html.append("        <span class=\"separator\">›</span>\n");
+        html.append("        <span class=\"current\" id=\"breadcrumb-current\">Overview</span>\n");
+        html.append("      `;\n");
+        html.append("      document.querySelector('.container').insertBefore(breadcrumb, document.querySelector('.global-search-bar'));\n");
+        html.append("      \n");
+        html.append("      // Update breadcrumb on tab change\n");
+        html.append("      document.querySelectorAll('.tab').forEach(tab => {\n");
+        html.append("        tab.addEventListener('click', () => {\n");
+        html.append("          const tabName = tab.textContent.trim();\n");
+        html.append("          document.getElementById('breadcrumb-current').textContent = tabName;\n");
+        html.append("        });\n");
+        html.append("      });\n");
+        html.append("    }\n");
+
+        // Phase 3 + Bonus: Smooth Scroll
+        html.append("    /* Phase 3 + Bonus: Smooth Scroll */\n");
+        html.append("    document.querySelectorAll('a[href^=\"#\"]').forEach(anchor => {\n");
+        html.append("      anchor.addEventListener('click', function (e) {\n");
+        html.append("        const href = this.getAttribute('href');\n");
+        html.append("        if (href !== '#') {\n");
+        html.append("          e.preventDefault();\n");
+        html.append("          const target = document.querySelector(href);\n");
+        html.append("          if (target) {\n");
+        html.append("            target.scrollIntoView({ behavior: 'smooth', block: 'start' });\n");
+        html.append("          }\n");
+        html.append("        }\n");
+        html.append("      });\n");
+        html.append("    });\n");
+
+        // Phase 3 + Bonus: Initialize
+        html.append("    /* Phase 3 + Bonus: Initialize */\n");
+        html.append("    document.addEventListener('DOMContentLoaded', () => {\n");
+        html.append("      createBreadcrumbs();\n");
+        html.append("      console.log('✨ Phase 3 + Bonus loaded: Presentation + Breadcrumbs + Animations');\n");
+        html.append("      console.log('📚 All UX improvements loaded successfully!');\n");
+        html.append("      console.log('⌨️  Shortcuts: Ctrl+D (theme) | Ctrl+K (search) | Ctrl+P (presentation) | ← → (tabs) | ? (help)');\n");
         html.append("    });\n");
 
         html.append("  </script>\n");
