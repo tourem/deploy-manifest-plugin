@@ -36,7 +36,7 @@ Ce guide explique comment installer, exécuter et tirer le meilleur parti de `io
 Exécution sans modifier le POM :
 
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.generateHtml=true
 ```
 
 Ajout dans le POM pour des builds reproductibles :
@@ -47,7 +47,7 @@ Ajout dans le POM pour des builds reproductibles :
     <plugin>
       <groupId>io.github.tourem</groupId>
       <artifactId>deploy-manifest-plugin</artifactId>
-      <version>2.7.0</version>
+      <version>2.8.1</version>
       <executions>
         <execution>
           <id>generate-deploy-manifest</id>
@@ -162,14 +162,14 @@ Une couche d'intelligence au-dessus de Maven Dependency Plugin qui transforme le
 **Exemple d'utilisation** :
 ```bash
 # Analyse simple
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:analyze-dependencies
 
 # Résultats générés
 # - target/dependency-analysis.json (rapport complet)
 # - target/dependency-analysis.html (dashboard interactif)
 
 # Rapport complet avec dépendances et plugins
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:dependency-report
 
 # Résultats générés
 # - target/dependency-report.json (rapport consolidé)
@@ -270,7 +270,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report
 ```yaml
 # GitHub Actions
 - name: Analyze Dependencies
-  run: mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies
+  run: mvn io.github.tourem:deploy-manifest-plugin:2.8.1:analyze-dependencies
 
 - name: Check Health Score
   run: |
@@ -302,37 +302,37 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report
 
 JSON minimal :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate
 ```
 
 JSON + YAML + HTML :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.exportFormat=both -Dmanifest.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.exportFormat=both -Dmanifest.generateHtml=true
 ```
 
 Arbre des dependances (Tree+Flat) avec scopes compile+runtime :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeFormat=both -Dmanifest.dependencyScopes=compile,runtime
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeFormat=both -Dmanifest.dependencyScopes=compile,runtime
 ```
 
 Licences avec avertissements et liste incompatible personnalisee :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.licenseWarnings=true -Dmanifest.incompatibleLicenses=GPL-3.0,AGPL-3.0,SSPL
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.licenseWarnings=true -Dmanifest.incompatibleLicenses=GPL-3.0,AGPL-3.0,SSPL
 ```
 
 Proprietes incluant les variables d’environnement :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeProperties=true -Dmanifest.includeEnvironmentVariables=true
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.includeProperties=true -Dmanifest.includeEnvironmentVariables=true
 ```
 
 Plugins avec configuration et verification des mises a jour :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includePlugins=true -Dmanifest.includePluginConfiguration=true -Dmanifest.checkPluginUpdates=true -Dmanifest.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.includePlugins=true -Dmanifest.includePluginConfiguration=true -Dmanifest.checkPluginUpdates=true -Dmanifest.generateHtml=true
 ```
 
 Tout combiner :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate \
+mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate \
   -Dmanifest.exportFormat=both -Dmanifest.generateHtml=true \
   -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeFormat=both \
   -Dmanifest.includeLicenses=true -Dmanifest.licenseWarnings=true \
@@ -345,7 +345,7 @@ Configuration POM (extrait courant) :
 <plugin>
   <groupId>io.github.tourem</groupId>
   <artifactId>deploy-manifest-plugin</artifactId>
-  <version>2.7.0</version>
+  <version>2.8.1</version>
   <configuration>
     <exportFormat>both</exportFormat>
     <generateHtml>true</generateHtml>
@@ -513,7 +513,7 @@ Plugins :
 GitHub Actions (extrait) :
 ```yaml
 - name: Generate Deploy Manifest
-  run: mvn -B io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.exportFormat=both -Dmanifest.generateHtml=true
+  run: mvn -B io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.exportFormat=both -Dmanifest.generateHtml=true
 - name: Upload artifacts
   uses: actions/upload-artifact@v4
   with:
