@@ -36,7 +36,7 @@ Ce guide explique comment installer, exécuter et tirer le meilleur parti de `io
 Exécution sans modifier le POM :
 
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.generateHtml=true
 ```
 
 Ajout dans le POM pour des builds reproductibles :
@@ -307,37 +307,37 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 
 JSON + YAML + HTML :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.exportFormat=both -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.exportFormat=both -Dmanifest.generateHtml=true
 ```
 
 Arbre des dependances (Tree+Flat) avec scopes compile+runtime :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyTreeFormat=both -Ddescriptor.dependencyScopes=compile,runtime
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeFormat=both -Dmanifest.dependencyScopes=compile,runtime
 ```
 
 Licences avec avertissements et liste incompatible personnalisee :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.licenseWarnings=true -Ddescriptor.incompatibleLicenses=GPL-3.0,AGPL-3.0,SSPL
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.licenseWarnings=true -Dmanifest.incompatibleLicenses=GPL-3.0,AGPL-3.0,SSPL
 ```
 
 Proprietes incluant les variables d’environnement :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeProperties=true -Ddescriptor.includeEnvironmentVariables=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeProperties=true -Dmanifest.includeEnvironmentVariables=true
 ```
 
 Plugins avec configuration et verification des mises a jour :
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includePlugins=true -Ddescriptor.includePluginConfiguration=true -Ddescriptor.checkPluginUpdates=true -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includePlugins=true -Dmanifest.includePluginConfiguration=true -Dmanifest.checkPluginUpdates=true -Dmanifest.generateHtml=true
 ```
 
 Tout combiner :
 ```bash
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate \
-  -Ddescriptor.exportFormat=both -Ddescriptor.generateHtml=true \
-  -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyTreeFormat=both \
-  -Ddescriptor.includeLicenses=true -Ddescriptor.licenseWarnings=true \
-  -Ddescriptor.includeProperties=true -Ddescriptor.includeEnvironmentVariables=true \
-  -Ddescriptor.includePlugins=true -Ddescriptor.checkPluginUpdates=true
+  -Dmanifest.exportFormat=both -Dmanifest.generateHtml=true \
+  -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeFormat=both \
+  -Dmanifest.includeLicenses=true -Dmanifest.licenseWarnings=true \
+  -Dmanifest.includeProperties=true -Dmanifest.includeEnvironmentVariables=true \
+  -Dmanifest.includePlugins=true -Dmanifest.checkPluginUpdates=true
 ```
 
 Configuration POM (extrait courant) :
@@ -407,9 +407,9 @@ Par défaut, les archives contiennent uniquement les fichiers du descriptor :
 
 ```bash
 mvn deploy-manifest:generate \
-  -Ddescriptor.exportFormat=both \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.format=zip
+  -Dmanifest.exportFormat=both \
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.format=zip
 ```
 
 **Contenu de l'archive** (3 fichiers) :
@@ -428,10 +428,10 @@ mvn deploy-manifest:dependency-report -Ddependency.report.formats=json,html
 
 # 2. Créer l'archive complète
 mvn deploy-manifest:generate \
-  -Ddescriptor.exportFormat=both \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.includeAllReports=true
+  -Dmanifest.exportFormat=both \
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.format=zip \
+  -Dmanifest.includeAllReports=true
 ```
 
 **Contenu de l'archive** (7 fichiers) :
@@ -452,10 +452,10 @@ mvn deploy-manifest:generate \
 
 ```bash
 mvn deploy-manifest:generate \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.includeAllReports=true \
-  -Ddescriptor.attach=true \
-  -Ddescriptor.classifier=docs
+  -Dmanifest.format=zip \
+  -Dmanifest.includeAllReports=true \
+  -Dmanifest.attach=true \
+  -Dmanifest.classifier=docs
 
 mvn deploy
 ```
@@ -513,7 +513,7 @@ Plugins :
 GitHub Actions (extrait) :
 ```yaml
 - name: Generate Deploy Manifest
-  run: mvn -B io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.exportFormat=both -Ddescriptor.generateHtml=true
+  run: mvn -B io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.exportFormat=both -Dmanifest.generateHtml=true
 - name: Upload artifacts
   uses: actions/upload-artifact@v4
   with:
@@ -528,9 +528,9 @@ GitHub Actions (extrait) :
 
 ## Dépannage
 - Plugin introuvable : lancez `mvn clean install` en local ou vérifiez la publication sur Maven Central
-- Onglet Dependencies vide : activez `-Ddescriptor.includeDependencyTree=true`
-- Variables d'environnement manquantes : ajoutez `-Ddescriptor.includeEnvironmentVariables=true` et vérifiez le masquage
-- Vérifications de mises à jour lentes : ajustez `-Ddescriptor.pluginUpdateTimeoutMillis`
+- Onglet Dependencies vide : activez `-Dmanifest.includeDependencyTree=true`
+- Variables d'environnement manquantes : ajoutez `-Dmanifest.includeEnvironmentVariables=true` et vérifiez le masquage
+- Vérifications de mises à jour lentes : ajustez `-Dmanifest.pluginUpdateTimeoutMillis`
 
 ---
 

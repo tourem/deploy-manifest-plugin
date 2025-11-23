@@ -89,7 +89,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * Output file name for the generated descriptor.
      * Default: deployment-manifest-report.json
      */
-    @Parameter(property = "descriptor.outputFile", defaultValue = "deployment-manifest-report.json")
+    @Parameter(property = "manifest.outputFile", defaultValue = "deployment-manifest-report.json")
     private String outputFile;
 
     /**
@@ -97,21 +97,21 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * If not specified, defaults to ${project.build.directory} (target/).
      * Can be an absolute path or relative to the project root.
      */
-    @Parameter(property = "descriptor.outputDirectory", defaultValue = "${project.build.directory}")
+    @Parameter(property = "manifest.outputDirectory", defaultValue = "${project.build.directory}")
     private String outputDirectory;
 
     /**
      * Skip the plugin execution.
      * Default: false
      */
-    @Parameter(property = "descriptor.skip", defaultValue = "false")
+    @Parameter(property = "manifest.skip", defaultValue = "false")
     private boolean skip;
 
     /**
      * Pretty print the JSON output.
      * Default: true
      */
-    @Parameter(property = "descriptor.prettyPrint", defaultValue = "true")
+    @Parameter(property = "manifest.prettyPrint", defaultValue = "true")
     private boolean prettyPrint;
 
     /**
@@ -125,7 +125,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * - "tar.bz2" : Creates a bzip2 compressed TAR archive
      * - "jar" : Creates a JAR archive (same as ZIP)
      */
-    @Parameter(property = "descriptor.format")
+    @Parameter(property = "manifest.format")
     private String format;
 
     /**
@@ -137,7 +137,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      *
      * Example: myapp-1.0.0-descriptor.zip
      */
-    @Parameter(property = "descriptor.classifier", defaultValue = "descriptor")
+    @Parameter(property = "manifest.classifier", defaultValue = "descriptor")
     private String classifier;
 
     /**
@@ -147,7 +147,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      *
      * Set to true to deploy the descriptor to Maven repository (Nexus, JFrog, etc.)
      */
-    @Parameter(property = "descriptor.attach", defaultValue = "false")
+    @Parameter(property = "manifest.attach", defaultValue = "false")
     private boolean attach;
 
     /**
@@ -159,7 +159,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * - "yaml" : Export only YAML format
      * - "both" : Export both JSON and YAML formats
      */
-    @Parameter(property = "descriptor.exportFormat", defaultValue = "json")
+    @Parameter(property = "manifest.exportFormat", defaultValue = "json")
     private String exportFormat;
 
     /**
@@ -168,7 +168,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      *
      * When enabled, validates the descriptor against a JSON Schema before writing.
      */
-    @Parameter(property = "descriptor.validate", defaultValue = "false")
+    @Parameter(property = "manifest.validate", defaultValue = "false")
     private boolean validate;
 
     /**
@@ -177,7 +177,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      *
      * When enabled, creates a .sha256 file containing the hash of the descriptor.
      */
-    @Parameter(property = "descriptor.sign", defaultValue = "false")
+    @Parameter(property = "manifest.sign", defaultValue = "false")
     private boolean sign;
 
     /**
@@ -187,7 +187,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * When enabled, creates a .json.gz file in addition to the regular JSON file.
      * Note: This is different from the 'format' parameter which creates archives.
      */
-    @Parameter(property = "descriptor.compress", defaultValue = "false")
+    @Parameter(property = "manifest.compress", defaultValue = "false")
     private boolean compress;
 
     /**
@@ -202,9 +202,9 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * This is useful to create a complete documentation package with all reports in one archive.
      *
      * Example:
-     * mvn deploy-manifest:generate -Ddescriptor.format=zip -Ddescriptor.includeAllReports=true
+     * mvn deploy-manifest:generate -Dmanifest.format=zip -Dmanifest.includeAllReports=true
      */
-    @Parameter(property = "descriptor.includeAllReports", defaultValue = "false")
+    @Parameter(property = "manifest.includeAllReports", defaultValue = "false")
     private boolean includeAllReports;
 
     /**
@@ -214,21 +214,21 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * When specified, sends an HTTP POST request to this URL with the descriptor content.
      * Example: http://localhost:8080/api/descriptors/notify
      */
-    @Parameter(property = "descriptor.webhookUrl")
+    @Parameter(property = "manifest.webhookUrl")
     private String webhookUrl;
 
     /**
      * Webhook authentication token (optional).
      * Sent as "Authorization: Bearer {token}" header.
      */
-    @Parameter(property = "descriptor.webhookToken")
+    @Parameter(property = "manifest.webhookToken")
     private String webhookToken;
 
     /**
      * Webhook timeout in seconds.
      * Default: 10 seconds
      */
-    @Parameter(property = "descriptor.webhookTimeout", defaultValue = "10")
+    @Parameter(property = "manifest.webhookTimeout", defaultValue = "10")
     private int webhookTimeout;
 
     /**
@@ -238,7 +238,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * When enabled, analyzes the project and displays a dashboard in the console
      * but does not write any files to disk.
      */
-    @Parameter(property = "descriptor.summary", defaultValue = "false")
+    @Parameter(property = "manifest.summary", defaultValue = "false")
     private boolean summary;
 
     /**
@@ -248,7 +248,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * When enabled, creates an HTML page with a human-readable view of the descriptor.
      * Useful for non-technical teams to review deployment information.
      */
-    @Parameter(property = "descriptor.generateHtml", defaultValue = "false")
+    @Parameter(property = "manifest.generateHtml", defaultValue = "false")
     private boolean generateHtml;
 
     /**
@@ -263,7 +263,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * - "python /path/to/process.py"
      * - "echo 'Descriptor generated'"
      */
-    @Parameter(property = "descriptor.postGenerationHook")
+    @Parameter(property = "manifest.postGenerationHook")
     private String postGenerationHook;
 
     // ================================
@@ -271,27 +271,27 @@ public class GenerateDescriptorMojo extends AbstractMojo {
     // ================================
 
     /** Enable dependency tree collection (disabled by default). */
-    @Parameter(property = "descriptor.includeDependencyTree", defaultValue = "false")
+    @Parameter(property = "manifest.includeDependencyTree", defaultValue = "false")
     private boolean includeDependencyTree;
 
     /** Depth: -1=unlimited, 0=direct only. */
-    @Parameter(property = "descriptor.dependencyTreeDepth", defaultValue = "-1")
+    @Parameter(property = "manifest.dependencyTreeDepth", defaultValue = "-1")
     private int dependencyTreeDepth;
 
     /** Scopes to include, comma-separated. Default: compile,runtime */
-    @Parameter(property = "descriptor.dependencyScopes", defaultValue = "compile,runtime")
+    @Parameter(property = "manifest.dependencyScopes", defaultValue = "compile,runtime")
     private String dependencyScopes;
 
     /** Output format: flat, tree, both. */
-    @Parameter(property = "descriptor.dependencyTreeFormat", defaultValue = "flat")
+    @Parameter(property = "manifest.dependencyTreeFormat", defaultValue = "flat")
     private String dependencyTreeFormat;
 
     /** Exclude transitive dependencies entirely. */
-    @Parameter(property = "descriptor.excludeTransitive", defaultValue = "false")
+    @Parameter(property = "manifest.excludeTransitive", defaultValue = "false")
     private boolean excludeTransitive;
 
     /** Include optional dependencies (default: false). */
-    @Parameter(property = "descriptor.includeOptional", defaultValue = "false")
+    @Parameter(property = "manifest.includeOptional", defaultValue = "false")
     private boolean includeOptional;
 
     // =============================
@@ -299,19 +299,19 @@ public class GenerateDescriptorMojo extends AbstractMojo {
     // =============================
 
     /** Enable licenses collection (disabled by default). */
-    @Parameter(property = "descriptor.includeLicenses", defaultValue = "false")
+    @Parameter(property = "manifest.includeLicenses", defaultValue = "false")
     private boolean includeLicenses;
 
     /** Generate warnings for incompatible/unknown licenses. */
-    @Parameter(property = "descriptor.licenseWarnings", defaultValue = "false")
+    @Parameter(property = "manifest.licenseWarnings", defaultValue = "false")
     private boolean licenseWarnings;
 
     /** Comma-separated list of incompatible licenses (e.g., GPL-3.0,AGPL-3.0,SSPL). */
-    @Parameter(property = "descriptor.incompatibleLicenses", defaultValue = "GPL-3.0,AGPL-3.0,SSPL")
+    @Parameter(property = "manifest.incompatibleLicenses", defaultValue = "GPL-3.0,AGPL-3.0,SSPL")
     private String incompatibleLicenses;
 
     /** Include transitive licenses (future use). */
-    @Parameter(property = "descriptor.includeTransitiveLicenses", defaultValue = "true")
+    @Parameter(property = "manifest.includeTransitiveLicenses", defaultValue = "true")
     private boolean includeTransitiveLicenses;
 
     // =============================
@@ -319,27 +319,27 @@ public class GenerateDescriptorMojo extends AbstractMojo {
     // =============================
 
     /** Enable properties collection (disabled by default). */
-    @Parameter(property = "descriptor.includeProperties", defaultValue = "false")
+    @Parameter(property = "manifest.includeProperties", defaultValue = "false")
     private boolean includeProperties;
 
     /** Include Java/system properties. */
-    @Parameter(property = "descriptor.includeSystemProperties", defaultValue = "true")
+    @Parameter(property = "manifest.includeSystemProperties", defaultValue = "true")
     private boolean includeSystemProperties;
 
     /** Include environment variables (use with care). */
-    @Parameter(property = "descriptor.includeEnvironmentVariables", defaultValue = "false")
+    @Parameter(property = "manifest.includeEnvironmentVariables", defaultValue = "false")
     private boolean includeEnvironmentVariables;
 
     /** Filter sensitive properties by key name (password, secret, token, ...). */
-    @Parameter(property = "descriptor.filterSensitiveProperties", defaultValue = "true")
+    @Parameter(property = "manifest.filterSensitiveProperties", defaultValue = "true")
     private boolean filterSensitiveProperties;
 
     /** Mask sensitive values instead of dropping them. */
-    @Parameter(property = "descriptor.maskSensitiveValues", defaultValue = "true")
+    @Parameter(property = "manifest.maskSensitiveValues", defaultValue = "true")
     private boolean maskSensitiveValues;
 
     /** Comma-separated list of extra sensitive key patterns (case-insensitive). */
-    @Parameter(property = "descriptor.propertyExclusions", defaultValue = "password,secret,token,apikey,api-key,api_key,credentials,auth,key")
+    @Parameter(property = "manifest.propertyExclusions", defaultValue = "password,secret,token,apikey,api-key,api_key,credentials,auth,key")
     private String propertyExclusions;
 
     // =============================
@@ -347,27 +347,27 @@ public class GenerateDescriptorMojo extends AbstractMojo {
     // =============================
 
     /** Enable plugins collection (disabled by default). */
-    @Parameter(property = "descriptor.includePlugins", defaultValue = "false")
+    @Parameter(property = "manifest.includePlugins", defaultValue = "false")
     private boolean includePlugins;
 
     /** Include plugin configuration blocks (sanitized). */
-    @Parameter(property = "descriptor.includePluginConfiguration", defaultValue = "true")
+    @Parameter(property = "manifest.includePluginConfiguration", defaultValue = "true")
     private boolean includePluginConfiguration;
 
     /** Include pluginManagement definitions. */
-    @Parameter(property = "descriptor.includePluginManagement", defaultValue = "true")
+    @Parameter(property = "manifest.includePluginManagement", defaultValue = "true")
     private boolean includePluginManagement;
 
     /** Check newer plugin versions (network). */
-    @Parameter(property = "descriptor.checkPluginUpdates", defaultValue = "false")
+    @Parameter(property = "manifest.checkPluginUpdates", defaultValue = "false")
     private boolean checkPluginUpdates;
 
     /** Mask sensitive config values for plugins. */
-    @Parameter(property = "descriptor.filterSensitivePluginConfig", defaultValue = "true")
+    @Parameter(property = "manifest.filterSensitivePluginConfig", defaultValue = "true")
     private boolean filterSensitivePluginConfig;
 
     /** Timeout in ms for update checks. */
-    @Parameter(property = "descriptor.pluginUpdateTimeoutMillis", defaultValue = "2000")
+    @Parameter(property = "manifest.pluginUpdateTimeoutMillis", defaultValue = "2000")
     private int pluginUpdateTimeoutMillis;
 
 

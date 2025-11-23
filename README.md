@@ -89,7 +89,7 @@ See "Example JSON output" below for a concise sample.
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 
 # With HTML report
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.generateHtml=true
 ```
 
 ---
@@ -340,33 +340,33 @@ The most common commands at a glance:
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 
 # YAML or both JSON+YAML
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.exportFormat=yaml
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.exportFormat=both
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.exportFormat=yaml
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.exportFormat=both
 
 # Generate an HTML page for non-technical stakeholders
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.generateHtml=true
 
 # Attach a ZIP artifact for repository deployment
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.format=zip -Ddescriptor.attach=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.format=zip -Dmanifest.attach=true
 
 # Create complete documentation package with all reports (descriptor + dependency-report + dependency-analysis)
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.includeAllReports=true
+  -Dmanifest.format=zip \
+  -Dmanifest.includeAllReports=true
 
 # Dry-run (print summary, no files)
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.summary=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.summary=true
 ```
 
 ### Options cheat sheet
 
-- `-Ddescriptor.summary=true` — Dry-run (prints dashboard, no files)
-- `-Ddescriptor.generateHtml=true` — Generate the HTML report
-- `-Ddescriptor.exportFormat=yaml|both` — Export YAML or both JSON+YAML
-- `-Ddescriptor.outputFile=deployment-info.json` — Override output filename
-- `-Ddescriptor.attach=true [-Ddescriptor.format=zip]` — Attach artifact for repository deployment
-- `-Ddescriptor.includeAllReports=true` — Include all reports in archive (dependency-report, dependency-analysis)
-- `-Ddescriptor.includeDependencyTree=true [-Ddescriptor.dependencyTreeFormat=both]` — Include dependencies (Flat+Tree)
+- `-Dmanifest.summary=true` — Dry-run (prints dashboard, no files)
+- `-Dmanifest.generateHtml=true` — Generate the HTML report
+- `-Dmanifest.exportFormat=yaml|both` — Export YAML or both JSON+YAML
+- `-Dmanifest.outputFile=deployment-info.json` — Override output filename
+- `-Dmanifest.attach=true [-Dmanifest.format=zip]` — Attach artifact for repository deployment
+- `-Dmanifest.includeAllReports=true` — Include all reports in archive (dependency-report, dependency-analysis)
+- `-Dmanifest.includeDependencyTree=true [-Dmanifest.dependencyTreeFormat=both]` — Include dependencies (Flat+Tree)
 
 ---
 
@@ -432,15 +432,15 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies
 
 # Minimal analysis (Phase 1 only)
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies \
-  -Ddescriptor.addGitContext=false \
-  -Ddescriptor.handleFalsePositives=false \
-  -Ddescriptor.generateRecommendations=false \
-  -Ddescriptor.detectConflicts=false \
-  -Ddescriptor.generateHtml=false
+  -Dmanifest.addGitContext=false \
+  -Dmanifest.handleFalsePositives=false \
+  -Dmanifest.generateRecommendations=false \
+  -Dmanifest.detectConflicts=false \
+  -Dmanifest.generateHtml=false
 
 # Multi-module aggregation
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies \
-  -Ddescriptor.aggregateModules=true
+  -Dmanifest.aggregateModules=true
 
 # Custom output location
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies \
@@ -723,11 +723,11 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report
 
 # Disable version lookup (faster)
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report \
-  -Ddescriptor.lookupAvailableVersions=false
+  -Dmanifest.lookupAvailableVersions=false
 
 # Show more versions
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report \
-  -Ddescriptor.maxVersionsToShow=5
+  -Dmanifest.maxVersionsToShow=5
 
 # Custom output location
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report \
@@ -941,9 +941,9 @@ By default, archives contain only the descriptor files:
 
 ```bash
 mvn deploy-manifest:generate \
-  -Ddescriptor.exportFormat=both \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.format=zip
+  -Dmanifest.exportFormat=both \
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.format=zip
 ```
 
 **Archive contents** (3 files):
@@ -962,10 +962,10 @@ mvn deploy-manifest:dependency-report -Ddependency.report.formats=json,html
 
 # 2. Create complete archive
 mvn deploy-manifest:generate \
-  -Ddescriptor.exportFormat=both \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.includeAllReports=true
+  -Dmanifest.exportFormat=both \
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.format=zip \
+  -Dmanifest.includeAllReports=true
 ```
 
 **Archive contents** (7 files):
@@ -986,10 +986,10 @@ mvn deploy-manifest:generate \
 
 ```bash
 mvn deploy-manifest:generate \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.includeAllReports=true \
-  -Ddescriptor.attach=true \
-  -Ddescriptor.classifier=docs
+  -Dmanifest.format=zip \
+  -Dmanifest.includeAllReports=true \
+  -Dmanifest.attach=true \
+  -Dmanifest.classifier=docs
 
 mvn deploy
 ```
@@ -1021,7 +1021,7 @@ mvn deploy
 
 Example (CLI):
 ```
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeLicenses=true -Ddescriptor.licenseWarnings=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeLicenses=true -Dmanifest.licenseWarnings=true
 ```
 
 ### Build Properties Parameters
@@ -1037,7 +1037,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeL
 
 Example (CLI):
 ```
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeProperties=true -Ddescriptor.includeEnvironmentVariables=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeProperties=true -Dmanifest.includeEnvironmentVariables=true
 ```
 
 ### Plugins Parameters
@@ -1053,7 +1053,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeP
 
 Example (CLI):
 ```
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includePlugins=true -Ddescriptor.checkPluginUpdates=true -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includePlugins=true -Dmanifest.checkPluginUpdates=true -Dmanifest.generateHtml=true
 ```
 
 
@@ -1078,7 +1078,7 @@ Disabled by default for backward compatibility. When enabled, dependencies are c
 
 - Quick enable (CLI):
 ```
-mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeDependencyTree=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeDependencyTree=true
 ```
 - Common options: `dependencyTreeDepth` (-1=unlimited, 0=direct), `dependencyScopes` (default: compile,runtime), `dependencyTreeFormat` (flat|tree|both), `includeOptional` (default: false)
 
@@ -1086,10 +1086,10 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeD
 <summary>More examples (CLI + POM)</summary>
 
 ```
-mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyTreeDepth=1
-mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyScopes=compile,runtime
-mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyTreeFormat=both
-mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.excludeTransitive=false -Ddescriptor.includeOptional=false
+mvn ... -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeDepth=1
+mvn ... -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyScopes=compile,runtime
+mvn ... -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeFormat=both
+mvn ... -Dmanifest.includeDependencyTree=true -Dmanifest.excludeTransitive=false -Dmanifest.includeOptional=false
 ```
 
 POM configuration:
@@ -1111,7 +1111,7 @@ POM configuration:
 
 Notes:
 - Full transitive dependency resolution is supported; hierarchical filtering keeps ancestors of matches visible.
-- With `-Ddescriptor.generateHtml=true`, the HTML adds an interactive Dependencies tab per module (Flat/Tree views, collapsible tree with highlight + Prev/Next, quick filters, scope badges).
+- With `-Dmanifest.generateHtml=true`, the HTML adds an interactive Dependencies tab per module (Flat/Tree views, collapsible tree with highlight + Prev/Next, quick filters, scope badges).
 </details>
 
 

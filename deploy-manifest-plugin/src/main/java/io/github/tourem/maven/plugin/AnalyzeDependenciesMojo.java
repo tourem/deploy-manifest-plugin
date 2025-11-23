@@ -63,63 +63,63 @@ public class AnalyzeDependenciesMojo extends AbstractMojo {
     private String analysisOutputFile;
 
     // Phase 2 controls
-    @Parameter(property = "descriptor.addGitContext", defaultValue = "true")
+    @Parameter(property = "manifest.addGitContext", defaultValue = "true")
     private boolean addGitContext;
 
-    @Parameter(property = "descriptor.handleFalsePositives", defaultValue = "true")
+    @Parameter(property = "manifest.handleFalsePositives", defaultValue = "true")
     private boolean handleFalsePositives;
 
-    @Parameter(property = "descriptor.generateRecommendations", defaultValue = "true")
+    @Parameter(property = "manifest.generateRecommendations", defaultValue = "true")
     private boolean generateRecommendations;
 
-    @Parameter(property = "descriptor.detectConflicts", defaultValue = "true")
+    @Parameter(property = "manifest.detectConflicts", defaultValue = "true")
     private boolean detectConflicts;
 
-    @Parameter(property = "descriptor.aggregateModules", defaultValue = "false")
+    @Parameter(property = "manifest.aggregateModules", defaultValue = "false")
     private boolean aggregateModules;
 
-    @Parameter(property = "descriptor.generateHtml", defaultValue = "true")
+    @Parameter(property = "manifest.generateHtml", defaultValue = "true")
     private boolean generateHtml;
 
     // Phase 1.5: Version lookup
-    @Parameter(property = "descriptor.lookupAvailableVersions", defaultValue = "true")
+    @Parameter(property = "manifest.lookupAvailableVersions", defaultValue = "true")
     private boolean lookupAvailableVersions;
 
-    @Parameter(property = "descriptor.maxAvailableVersions", defaultValue = "3")
+    @Parameter(property = "manifest.maxAvailableVersions", defaultValue = "3")
     private int maxAvailableVersions;
 
-    @Parameter(property = "descriptor.versionLookupTimeoutMs", defaultValue = "5000")
+    @Parameter(property = "manifest.versionLookupTimeoutMs", defaultValue = "5000")
     private int versionLookupTimeoutMs;
 
     // Repository health check
-    @Parameter(property = "descriptor.checkRepositoryHealth", defaultValue = "true")
+    @Parameter(property = "manifest.checkRepositoryHealth", defaultValue = "true")
     private boolean checkRepositoryHealth;
 
-    @Parameter(property = "descriptor.repositoryHealthTimeoutMs", defaultValue = "5000")
+    @Parameter(property = "manifest.repositoryHealthTimeoutMs", defaultValue = "5000")
     private int repositoryHealthTimeoutMs;
 
-    @Parameter(property = "descriptor.githubToken")
+    @Parameter(property = "manifest.githubToken")
     private String githubToken;
 
     // Plugin analysis
-    @Parameter(property = "descriptor.includePlugins", defaultValue = "true")
+    @Parameter(property = "manifest.includePlugins", defaultValue = "true")
     private boolean includePlugins;
 
     // Dependency tree
-    @Parameter(property = "descriptor.includeDependencyTree", defaultValue = "false")
+    @Parameter(property = "manifest.includeDependencyTree", defaultValue = "false")
     private boolean includeDependencyTree;
 
-    @Parameter(property = "descriptor.dependencyTreeFormat", defaultValue = "tree")
+    @Parameter(property = "manifest.dependencyTreeFormat", defaultValue = "tree")
     private String dependencyTreeFormat;
 
-    @Parameter(property = "descriptor.dependencyTreeDepth", defaultValue = "-1")
+    @Parameter(property = "manifest.dependencyTreeDepth", defaultValue = "-1")
     private int dependencyTreeDepth;
 
-    @Parameter(property = "descriptor.dependencyTreeScope")
+    @Parameter(property = "manifest.dependencyTreeScope")
     private String dependencyTreeScope;
 
     // Export format
-    @Parameter(property = "descriptor.exportFormat", defaultValue = "json")
+    @Parameter(property = "manifest.exportFormat", defaultValue = "json")
     private String exportFormat;
 
     @Override
