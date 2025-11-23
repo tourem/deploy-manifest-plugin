@@ -182,16 +182,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enables extending plugin for Quarkus, Micronaut, Jakarta EE without core modifications
 
 - **UX/DX Improvements**: Enhanced developer experience
-  - **Dry-run/Summary Mode**: `-Ddescriptor.summary=true`
+  - **Dry-run/Summary Mode**: `-Dmanifest.summary=true`
     - Prints ASCII dashboard to console without generating files
     - Shows project info, modules summary, deployable modules, build info
     - Perfect for quick project overview
-  - **HTML Documentation Generation**: `-Ddescriptor.generateHtml=true`
+  - **HTML Documentation Generation**: `-Dmanifest.generateHtml=true`
     - Generates readable HTML page from descriptor
     - Modern design with CSS styling
     - Color-coded badges (JAR, WAR, Spring Boot)
     - Responsive layout for non-technical teams
-  - **Post-Generation Hooks**: `-Ddescriptor.postGenerationHook=<command>`
+  - **Post-Generation Hooks**: `-Dmanifest.postGenerationHook=<command>`
     - Executes local script/command after descriptor generation
     - Use cases: file copying, notifications, validation scripts
     - Non-blocking: logs output, doesn't fail build on error
@@ -362,8 +362,8 @@ mvn io.github.tourem:deploy-manifest-plugin:1.0.0:generate
 
 # With custom output
 mvn io.github.tourem:deploy-manifest-plugin:1.0.0:generate \
-  -Ddescriptor.outputFile=deployment.json \
-  -Ddescriptor.outputDirectory=target
+  -Dmanifest.outputFile=deployment.json \
+  -Dmanifest.outputDirectory=target
 ```
 
 ### Requirements

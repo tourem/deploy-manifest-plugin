@@ -52,7 +52,7 @@ This plugin generates a comprehensive deployment descriptor with commit SHA, con
 
 ```bash
 # One command, complete traceability
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 ```
 
 Generates `deployment-manifest-report.json` with project/build/git metadata and module insights.
@@ -86,10 +86,10 @@ See "Example JSON output" below for a concise sample.
 
 ```bash
 # Single module or multi-module (run at root)
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 
 # With HTML report
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.generateHtml=true
 ```
 
 ---
@@ -146,7 +146,7 @@ Watch complete walkthroughs showcasing all features in action:
 Before deployment:
 ```bash
 mvn clean package
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 cat target/deployment-manifest-report.json  # verify
 mvn deploy
 ```
@@ -207,7 +207,7 @@ Automatically identifies and flags:
 
 ```bash
 # Run analysis
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies
 
 # Results generated:
 # ✅ target/dependency-analysis.json (full report)
@@ -253,7 +253,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies
 ```yaml
 # GitHub Actions - Quality Gate
 - name: Analyze Dependencies
-  run: mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies
+  run: mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies
 
 - name: Check Health Score
   run: |
@@ -309,7 +309,7 @@ Add the plugin to your project's `pom.xml`:
         <plugin>
             <groupId>io.github.tourem</groupId>
             <artifactId>deploy-manifest-plugin</artifactId>
-            <version>2.8.0</version>
+            <version>2.7.0</version>
         </plugin>
     </plugins>
 </build>
@@ -318,7 +318,7 @@ Add the plugin to your project's `pom.xml`:
 Or use it directly without adding to POM:
 
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 ```
 
 ### Basic Usage
@@ -326,47 +326,79 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
 Generate a deployment descriptor at your project root:
 
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 ```
 
 This creates a `deployment-manifest-report.json` file containing all deployment information.
 
 ## Usage (quick)
 
-The most common commands at a glance:
+### 🎯 Using Profiles (Recommended - NEW in 2.8.0)
+
+**Profiles** simplify plugin usage by providing sensible defaults for common scenarios:
+
+```bash
+# Basic (default): JSON only with essential info
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
+
+# Standard: JSON + HTML + dependency tree
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.profile=standard
+
+# Full: JSON + YAML + HTML + all metadata
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.profile=full
+
+# CI: Optimized for CI/CD with archive
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.profile=ci
+```
+
+**Override profile defaults:**
+```bash
+# Standard profile + add licenses
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate \
+  -Dmanifest.profile=standard \
+  -Dmanifest.includeLicenses=true
+```
+
+📖 **[Complete Profiles Guide](./PROFILES_GUIDE.md)** - Detailed documentation with examples
+
+---
+
+### Advanced Usage (Manual Options)
+
+For fine-grained control, you can specify individual options:
 
 ```bash
 # Default (deployment-manifest-report.json at project root)
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 
 # YAML or both JSON+YAML
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.exportFormat=yaml
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.exportFormat=both
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.exportFormat=yaml
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.exportFormat=both
 
 # Generate an HTML page for non-technical stakeholders
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.generateHtml=true
 
 # Attach a ZIP artifact for repository deployment
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.format=zip -Ddescriptor.attach=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.format=zip -Dmanifest.attach=true
 
 # Create complete documentation package with all reports (descriptor + dependency-report + dependency-analysis)
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.includeAllReports=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate \
+  -Dmanifest.format=zip \
+  -Dmanifest.includeAllReports=true
 
 # Dry-run (print summary, no files)
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.summary=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.summary=true
 ```
 
 ### Options cheat sheet
 
-- `-Ddescriptor.summary=true` — Dry-run (prints dashboard, no files)
-- `-Ddescriptor.generateHtml=true` — Generate the HTML report
-- `-Ddescriptor.exportFormat=yaml|both` — Export YAML or both JSON+YAML
-- `-Ddescriptor.outputFile=deployment-info.json` — Override output filename
-- `-Ddescriptor.attach=true [-Ddescriptor.format=zip]` — Attach artifact for repository deployment
-- `-Ddescriptor.includeAllReports=true` — Include all reports in archive (dependency-report, dependency-analysis)
-- `-Ddescriptor.includeDependencyTree=true [-Ddescriptor.dependencyTreeFormat=both]` — Include dependencies (Flat+Tree)
+- `-Dmanifest.summary=true` — Dry-run (prints dashboard, no files)
+- `-Dmanifest.generateHtml=true` — Generate the HTML report
+- `-Dmanifest.exportFormat=yaml|both` — Export YAML or both JSON+YAML
+- `-Dmanifest.outputFile=deployment-info.json` — Override output filename
+- `-Dmanifest.attach=true [-Dmanifest.format=zip]` — Attach artifact for repository deployment
+- `-Dmanifest.includeAllReports=true` — Include all reports in archive (dependency-report, dependency-analysis)
+- `-Dmanifest.includeDependencyTree=true [-Dmanifest.dependencyTreeFormat=both]` — Include dependencies (Flat+Tree)
 
 ---
 
@@ -378,7 +410,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.summary=
 
 ```bash
 # Analyze dependencies with all intelligence features enabled
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies
 ```
 
 This generates:
@@ -428,22 +460,22 @@ All options are enabled by default except `aggregateModules`:
 
 ```bash
 # Full analysis (all features enabled)
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies
 
 # Minimal analysis (Phase 1 only)
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies \
-  -Ddescriptor.addGitContext=false \
-  -Ddescriptor.handleFalsePositives=false \
-  -Ddescriptor.generateRecommendations=false \
-  -Ddescriptor.detectConflicts=false \
-  -Ddescriptor.generateHtml=false
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies \
+  -Dmanifest.addGitContext=false \
+  -Dmanifest.handleFalsePositives=false \
+  -Dmanifest.generateRecommendations=false \
+  -Dmanifest.detectConflicts=false \
+  -Dmanifest.generateHtml=false
 
 # Multi-module aggregation
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies \
-  -Ddescriptor.aggregateModules=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies \
+  -Dmanifest.aggregateModules=true
 
 # Custom output location
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies \
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies \
   -Ddeployment.analysisOutputDir=reports \
   -Ddeployment.analysisOutputFile=dep-analysis.json
 ```
@@ -590,7 +622,7 @@ The generated HTML dashboard includes:
 ```yaml
 # GitHub Actions example
 - name: Analyze Dependencies
-  run: mvn io.github.tourem:deploy-manifest-plugin:2.8.0:analyze-dependencies
+  run: mvn io.github.tourem:deploy-manifest-plugin:2.7.0:analyze-dependencies
 
 - name: Upload Analysis Report
   uses: actions/upload-artifact@v3
@@ -673,7 +705,7 @@ The `dependency-report` goal generates a comprehensive HTML report with **5 inte
 
 ```bash
 # Generate comprehensive dependency & plugin report
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:dependency-report
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report
 ```
 
 This generates:
@@ -719,18 +751,18 @@ This generates:
 
 ```bash
 # Full report with all features
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:dependency-report
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report
 
 # Disable version lookup (faster)
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:dependency-report \
-  -Ddescriptor.lookupAvailableVersions=false
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report \
+  -Dmanifest.lookupAvailableVersions=false
 
 # Show more versions
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:dependency-report \
-  -Ddescriptor.maxVersionsToShow=5
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report \
+  -Dmanifest.maxVersionsToShow=5
 
 # Custom output location
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:dependency-report \
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report \
   -Ddeployment.reportOutputDir=reports \
   -Ddeployment.reportOutputFile=full-dependency-report.json
 ```
@@ -740,7 +772,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:dependency-report \
 ```yaml
 # GitHub Actions
 - name: Generate Dependency Report
-  run: mvn io.github.tourem:deploy-manifest-plugin:2.8.0:dependency-report
+  run: mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report
 
 - name: Upload Report
   uses: actions/upload-artifact@v4
@@ -789,7 +821,7 @@ Configure the plugin to run automatically during the build:
         <plugin>
             <groupId>io.github.tourem</groupId>
             <artifactId>deploy-manifest-plugin</artifactId>
-            <version>2.8.0</version>
+            <version>2.7.0</version>
             <configuration>
                 <!-- Output file name (default: deployment-manifest-report.json) -->
                 <outputFile>deployment-info.json</outputFile>
@@ -941,9 +973,9 @@ By default, archives contain only the descriptor files:
 
 ```bash
 mvn deploy-manifest:generate \
-  -Ddescriptor.exportFormat=both \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.format=zip
+  -Dmanifest.exportFormat=both \
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.format=zip
 ```
 
 **Archive contents** (3 files):
@@ -962,10 +994,10 @@ mvn deploy-manifest:dependency-report -Ddependency.report.formats=json,html
 
 # 2. Create complete archive
 mvn deploy-manifest:generate \
-  -Ddescriptor.exportFormat=both \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.includeAllReports=true
+  -Dmanifest.exportFormat=both \
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.format=zip \
+  -Dmanifest.includeAllReports=true
 ```
 
 **Archive contents** (7 files):
@@ -986,10 +1018,10 @@ mvn deploy-manifest:generate \
 
 ```bash
 mvn deploy-manifest:generate \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.includeAllReports=true \
-  -Ddescriptor.attach=true \
-  -Ddescriptor.classifier=docs
+  -Dmanifest.format=zip \
+  -Dmanifest.includeAllReports=true \
+  -Dmanifest.attach=true \
+  -Dmanifest.classifier=docs
 
 mvn deploy
 ```
@@ -1021,7 +1053,7 @@ mvn deploy
 
 Example (CLI):
 ```
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.includeLicenses=true -Ddescriptor.licenseWarnings=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeLicenses=true -Dmanifest.licenseWarnings=true
 ```
 
 ### Build Properties Parameters
@@ -1037,7 +1069,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.includeL
 
 Example (CLI):
 ```
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.includeProperties=true -Ddescriptor.includeEnvironmentVariables=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeProperties=true -Dmanifest.includeEnvironmentVariables=true
 ```
 
 ### Plugins Parameters
@@ -1053,7 +1085,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.includeP
 
 Example (CLI):
 ```
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.includePlugins=true -Ddescriptor.checkPluginUpdates=true -Ddescriptor.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includePlugins=true -Dmanifest.checkPluginUpdates=true -Dmanifest.generateHtml=true
 ```
 
 
@@ -1078,7 +1110,7 @@ Disabled by default for backward compatibility. When enabled, dependencies are c
 
 - Quick enable (CLI):
 ```
-mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.includeDependencyTree=true
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.includeDependencyTree=true
 ```
 - Common options: `dependencyTreeDepth` (-1=unlimited, 0=direct), `dependencyScopes` (default: compile,runtime), `dependencyTreeFormat` (flat|tree|both), `includeOptional` (default: false)
 
@@ -1086,10 +1118,10 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate -Ddescriptor.includeD
 <summary>More examples (CLI + POM)</summary>
 
 ```
-mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyTreeDepth=1
-mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyScopes=compile,runtime
-mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.dependencyTreeFormat=both
-mvn ... -Ddescriptor.includeDependencyTree=true -Ddescriptor.excludeTransitive=false -Ddescriptor.includeOptional=false
+mvn ... -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeDepth=1
+mvn ... -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyScopes=compile,runtime
+mvn ... -Dmanifest.includeDependencyTree=true -Dmanifest.dependencyTreeFormat=both
+mvn ... -Dmanifest.includeDependencyTree=true -Dmanifest.excludeTransitive=false -Dmanifest.includeOptional=false
 ```
 
 POM configuration:
@@ -1097,7 +1129,7 @@ POM configuration:
 <plugin>
   <groupId>io.github.tourem</groupId>
   <artifactId>deploy-manifest-plugin</artifactId>
-  <version>2.8.0</version>
+  <version>2.7.0</version>
   <configuration>
     <includeDependencyTree>true</includeDependencyTree>
     <dependencyTreeDepth>-1</dependencyTreeDepth>
@@ -1111,7 +1143,7 @@ POM configuration:
 
 Notes:
 - Full transitive dependency resolution is supported; hierarchical filtering keeps ancestors of matches visible.
-- With `-Ddescriptor.generateHtml=true`, the HTML adds an interactive Dependencies tab per module (Flat/Tree views, collapsible tree with highlight + Prev/Next, quick filters, scope badges).
+- With `-Dmanifest.generateHtml=true`, the HTML adds an interactive Dependencies tab per module (Flat/Tree views, collapsible tree with highlight + Prev/Next, quick filters, scope badges).
 </details>
 
 
