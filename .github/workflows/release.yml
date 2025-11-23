@@ -105,9 +105,15 @@ jobs:
           mvn deploy -DskipTests -B \
             -DaltDeploymentRepository=jfrog-releases::default::${{ github.event.inputs.jfrog_url }}/libs-release-local
       
+      - name: Update documentation with release version
+        run: |
+          chmod +x .github/scripts/update-version-in-docs.sh
+          .github/scripts/update-version-in-docs.sh "${{ steps.calc_version.outputs.release_version }}"
+      
       - name: Commit release version
         run: |
           git add pom.xml deploy-manifest-core/pom.xml deploy-manifest-plugin/pom.xml
+          git add README.md doc.md doc-en.md
           git commit -m "Release version ${{ steps.calc_version.outputs.release_version }}"
           git tag -a "v${{ steps.calc_version.outputs.release_version }}" \
             -m "Release version ${{ steps.calc_version.outputs.release_version }}"
