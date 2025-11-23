@@ -376,24 +376,24 @@ Paramètres de base :
 
 | Paramètre | Propriété système | Défaut | Description |
 |---|---|---|---|
-| outputFile | descriptor.outputFile | deployment-manifest-report.json | Nom du fichier JSON de sortie |
-| outputDirectory | descriptor.outputDirectory | ${project.build.directory} | Répertoire de sortie |
-| prettyPrint | descriptor.prettyPrint | true | Indentation du JSON |
-| skip | descriptor.skip | false | Ne pas exécuter le plugin |
-| format | descriptor.format | none | Archive : zip, tar.gz, tar.bz2, jar |
-| classifier | descriptor.classifier | descriptor | Classifier attaché |
-| attach | descriptor.attach | false | Attacher l'archive au projet |
-| includeAllReports | descriptor.includeAllReports | false | Inclure tous les rapports dans l'archive |
-| exportFormat | descriptor.exportFormat | json | Formats à écrire : json, yaml, both |
-| validate | descriptor.validate | false | Valider le descripteur |
-| sign | descriptor.sign | false | Générer une signature SHA-256 |
-| compress | descriptor.compress | false | Écrire aussi .json.gz |
-| webhookUrl | descriptor.webhookUrl | — | Envoyer le descripteur en POST en cas de succès |
-| webhookToken | descriptor.webhookToken | — | En-tête Bearer token |
-| webhookTimeout | descriptor.webhookTimeout | 10 | Délai (secondes) |
-| summary | descriptor.summary | false | Tableau de bord console (simulation) |
-| generateHtml | descriptor.generateHtml | false | Générer le rapport HTML |
-| postGenerationHook | descriptor.postGenerationHook | — | Exécuter une commande/script local |
+| outputFile | manifest.outputFile | deployment-manifest-report.json | Nom du fichier JSON de sortie |
+| outputDirectory | manifest.outputDirectory | ${project.build.directory} | Répertoire de sortie |
+| prettyPrint | manifest.prettyPrint | true | Indentation du JSON |
+| skip | manifest.skip | false | Ne pas exécuter le plugin |
+| format | manifest.format | none | Archive : zip, tar.gz, tar.bz2, jar |
+| classifier | manifest.classifier | descriptor | Classifier attaché |
+| attach | manifest.attach | false | Attacher l'archive au projet |
+| includeAllReports | manifest.includeAllReports | false | Inclure tous les rapports dans l'archive |
+| exportFormat | manifest.exportFormat | json | Formats à écrire : json, yaml, both |
+| validate | manifest.validate | false | Valider le descripteur |
+| sign | manifest.sign | false | Générer une signature SHA-256 |
+| compress | manifest.compress | false | Écrire aussi .json.gz |
+| webhookUrl | manifest.webhookUrl | — | Envoyer le descripteur en POST en cas de succès |
+| webhookToken | manifest.webhookToken | — | En-tête Bearer token |
+| webhookTimeout | manifest.webhookTimeout | 10 | Délai (secondes) |
+| summary | manifest.summary | false | Tableau de bord console (simulation) |
+| generateHtml | manifest.generateHtml | false | Générer le rapport HTML |
+| postGenerationHook | manifest.postGenerationHook | — | Exécuter une commande/script local |
 
 ---
 
@@ -468,43 +468,43 @@ Arbre des dépendances :
 
 | Paramètre | Propriété système | Défaut | Description |
 |---|---|---|---|
-| includeDependencyTree | descriptor.includeDependencyTree | false | Activer l'arbre de dépendances |
-| dependencyTreeDepth | descriptor.dependencyTreeDepth | -1 | -1=illimité, 0=direct |
-| dependencyScopes | descriptor.dependencyScopes | compile,runtime | Scopes à inclure |
-| dependencyTreeFormat | descriptor.dependencyTreeFormat | flat | flat, tree, both |
-| excludeTransitive | descriptor.excludeTransitive | false | Retirer complètement les transitives |
-| includeOptional | descriptor.includeOptional | false | Inclure les dépendances optionnelles |
+| includeDependencyTree | manifest.includeDependencyTree | false | Activer l'arbre de dépendances |
+| dependencyTreeDepth | manifest.dependencyTreeDepth | -1 | -1=illimité, 0=direct |
+| dependencyScopes | manifest.dependencyScopes | compile,runtime | Scopes à inclure |
+| dependencyTreeFormat | manifest.dependencyTreeFormat | flat | flat, tree, both |
+| excludeTransitive | manifest.excludeTransitive | false | Retirer complètement les transitives |
+| includeOptional | manifest.includeOptional | false | Inclure les dépendances optionnelles |
 
 Licences :
 
 | Paramètre | Propriété système | Défaut |
 |---|---|---|
-| includeLicenses | descriptor.includeLicenses | false |
-| licenseWarnings | descriptor.licenseWarnings | false |
-| incompatibleLicenses | descriptor.incompatibleLicenses | GPL-3.0,AGPL-3.0,SSPL |
-| includeTransitiveLicenses | descriptor.includeTransitiveLicenses | true |
+| includeLicenses | manifest.includeLicenses | false |
+| licenseWarnings | manifest.licenseWarnings | false |
+| incompatibleLicenses | manifest.incompatibleLicenses | GPL-3.0,AGPL-3.0,SSPL |
+| includeTransitiveLicenses | manifest.includeTransitiveLicenses | true |
 
 Propriétés de build :
 
 | Paramètre | Propriété système | Défaut |
 |---|---|---|
-| includeProperties | descriptor.includeProperties | false |
-| includeSystemProperties | descriptor.includeSystemProperties | true |
-| includeEnvironmentVariables | descriptor.includeEnvironmentVariables | false |
-| filterSensitiveProperties | descriptor.filterSensitiveProperties | true |
-| maskSensitiveValues | descriptor.maskSensitiveValues | true |
-| propertyExclusions | descriptor.propertyExclusions | password,secret,token,apikey,api-key,api_key,credentials,auth,key |
+| includeProperties | manifest.includeProperties | false |
+| includeSystemProperties | manifest.includeSystemProperties | true |
+| includeEnvironmentVariables | manifest.includeEnvironmentVariables | false |
+| filterSensitiveProperties | manifest.filterSensitiveProperties | true |
+| maskSensitiveValues | manifest.maskSensitiveValues | true |
+| propertyExclusions | manifest.propertyExclusions | password,secret,token,apikey,api-key,api_key,credentials,auth,key |
 
 Plugins :
 
 | Paramètre | Propriété système | Défaut |
 |---|---|---|
-| includePlugins | descriptor.includePlugins | false |
-| includePluginConfiguration | descriptor.includePluginConfiguration | true |
-| includePluginManagement | descriptor.includePluginManagement | true |
-| checkPluginUpdates | descriptor.checkPluginUpdates | false |
-| filterSensitivePluginConfig | descriptor.filterSensitivePluginConfig | true |
-| pluginUpdateTimeoutMillis | descriptor.pluginUpdateTimeoutMillis | 2000 |
+| includePlugins | manifest.includePlugins | false |
+| includePluginConfiguration | manifest.includePluginConfiguration | true |
+| includePluginManagement | manifest.includePluginManagement | true |
+| checkPluginUpdates | manifest.checkPluginUpdates | false |
+| filterSensitivePluginConfig | manifest.filterSensitivePluginConfig | true |
+| pluginUpdateTimeoutMillis | manifest.pluginUpdateTimeoutMillis | 2000 |
 
 ---
 

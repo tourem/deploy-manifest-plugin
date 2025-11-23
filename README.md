@@ -413,8 +413,8 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
 ```bash
 # JSON + HTML report for team documentation
 mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.includeDependencyTree=true
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.includeDependencyTree=true
 ```
 **Output:** JSON + HTML with dependency tree
 
@@ -422,12 +422,12 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
 ```bash
 # JSON + YAML + HTML + all metadata
 mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
-  -Ddescriptor.exportFormat=both \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.includeDependencyTree=true \
-  -Ddescriptor.includeLicenses=true \
-  -Ddescriptor.includeProperties=true \
-  -Ddescriptor.includePlugins=true
+  -Dmanifest.exportFormat=both \
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.includeDependencyTree=true \
+  -Dmanifest.includeLicenses=true \
+  -Dmanifest.includeProperties=true \
+  -Dmanifest.includePlugins=true
 ```
 **Output:** Comprehensive documentation with all features
 
@@ -435,10 +435,10 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
 ```bash
 # Creates a ZIP archive with all reports for artifact repository
 mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
-  -Ddescriptor.format=zip \
-  -Ddescriptor.attach=true \
-  -Ddescriptor.generateHtml=true \
-  -Ddescriptor.includeAllReports=true
+  -Dmanifest.format=zip \
+  -Dmanifest.attach=true \
+  -Dmanifest.generateHtml=true \
+  -Dmanifest.includeAllReports=true
 ```
 **Output:** ZIP archive attached as Maven artifact
 
@@ -446,8 +446,8 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
 ```bash
 # Export in both JSON and YAML formats
 mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
-  -Ddescriptor.exportFormat=both \
-  -Ddescriptor.compress=true
+  -Dmanifest.exportFormat=both \
+  -Dmanifest.compress=true
 ```
 **Output:** JSON, YAML, and compressed versions
 
@@ -500,12 +500,12 @@ All options are enabled by default except `aggregateModules`:
 |-----------|----------------|---------|-------------|
 | `analysisOutputDir` | `deployment.analysisOutputDir` | `${project.build.directory}` | Output directory for analysis files |
 | `analysisOutputFile` | `deployment.analysisOutputFile` | `dependency-analysis.json` | JSON output filename |
-| `addGitContext` | `descriptor.addGitContext` | `true` | Add git blame context (commit, author, date) |
-| `handleFalsePositives` | `descriptor.handleFalsePositives` | `true` | Detect false positives (annotation processors, dev tools, etc.) |
-| `generateRecommendations` | `descriptor.generateRecommendations` | `true` | Generate actionable recommendations with POM patches |
-| `detectConflicts` | `descriptor.detectConflicts` | `true` | Detect version conflicts with risk assessment |
-| `aggregateModules` | `descriptor.aggregateModules` | `false` | Aggregate analysis across reactor modules |
-| `generateHtml` | `descriptor.generateHtml` | `true` | Generate HTML dashboard |
+| `addGitContext` | `manifest.addGitContext` | `true` | Add git blame context (commit, author, date) |
+| `handleFalsePositives` | `manifest.handleFalsePositives` | `true` | Detect false positives (annotation processors, dev tools, etc.) |
+| `generateRecommendations` | `manifest.generateRecommendations` | `true` | Generate actionable recommendations with POM patches |
+| `detectConflicts` | `manifest.detectConflicts` | `true` | Detect version conflicts with risk assessment |
+| `aggregateModules` | `manifest.aggregateModules` | `false` | Aggregate analysis across reactor modules |
+| `generateHtml` | `manifest.generateHtml` | `true` | Generate HTML dashboard |
 
 ### Usage Examples
 
@@ -794,9 +794,9 @@ This generates:
 |-----------|----------------|---------|-------------|
 | `reportOutputDir` | `deployment.reportOutputDir` | `${project.build.directory}` | Output directory |
 | `reportOutputFile` | `deployment.reportOutputFile` | `dependency-report.json` | JSON filename |
-| `lookupAvailableVersions` | `descriptor.lookupAvailableVersions` | `true` | Lookup available versions |
-| `maxVersionsToShow` | `descriptor.maxVersionsToShow` | `3` | Max versions to display |
-| `generateHtml` | `descriptor.generateHtml` | `true` | Generate HTML report |
+| `lookupAvailableVersions` | `dependency.report.lookupAvailableVersions` | `true` | Lookup available versions |
+| `maxVersionsToShow` | `dependency.report.maxAvailableVersions` | `3` | Max versions to display |
+| `generateHtml` | `dependency.report.formats` | `json,html` | Output formats (json, html, or both) |
 
 ### Usage Examples
 
@@ -983,34 +983,34 @@ All plugin options are listed below.
 
 | Parameter | System Property | Default | Description |
 |-----------|----------------|---------|-------------|
-| `outputFile` | `descriptor.outputFile` | `deployment-manifest-report.json` | Name of the output JSON file |
-| `outputDirectory` | `descriptor.outputDirectory` | `${project.build.directory}` (target/) | Output directory (absolute or relative path) |
-| `prettyPrint` | `descriptor.prettyPrint` | `true` | Format JSON with indentation |
-| `skip` | `descriptor.skip` | `false` | Skip plugin execution |
-| `format` | `descriptor.format` | none | Archive format: `zip`, `tar.gz`, `tar.bz2`, `jar` |
-| `classifier` | `descriptor.classifier` | `descriptor` | Classifier for the attached artifact |
-| `attach` | `descriptor.attach` | `false` | Attach artifact to project for deployment |
-| `includeAllReports` | `descriptor.includeAllReports` | `false` | Include all reports (dependency-report, dependency-analysis) in archive |
+| `outputFile` | `manifest.outputFile` | `deployment-manifest-report.json` | Name of the output JSON file |
+| `outputDirectory` | `manifest.outputDirectory` | `${project.build.directory}` (target/) | Output directory (absolute or relative path) |
+| `prettyPrint` | `manifest.prettyPrint` | `true` | Format JSON with indentation |
+| `skip` | `manifest.skip` | `false` | Skip plugin execution |
+| `format` | `manifest.format` | none | Archive format: `zip`, `tar.gz`, `tar.bz2`, `jar` |
+| `classifier` | `manifest.classifier` | `descriptor` | Classifier for the attached artifact |
+| `attach` | `manifest.attach` | `false` | Attach artifact to project for deployment |
+| `includeAllReports` | `manifest.includeAllReports` | `false` | Include all reports (dependency-report, dependency-analysis) in archive |
 
 ### Advanced Features Parameters
 
 | Parameter | System Property | Default | Description |
 |-----------|----------------|---------|-------------|
-| `summary` | `descriptor.summary` | `false` | **Dry-run mode**: Print dashboard to console without generating files |
-| `generateHtml` | `descriptor.generateHtml` | `false` | **HTML generation**: Generate readable HTML documentation |
-| `postGenerationHook` | `descriptor.postGenerationHook` | none | **Post-hook**: Execute local script/command after generation |
+| `summary` | `manifest.summary` | `false` | **Dry-run mode**: Print dashboard to console without generating files |
+| `generateHtml` | `manifest.generateHtml` | `false` | **HTML generation**: Generate readable HTML documentation |
+| `postGenerationHook` | `manifest.postGenerationHook` | none | **Post-hook**: Execute local script/command after generation |
 
 ### Bonus Features Parameters
 
 | Parameter | System Property | Default | Description |
 |-----------|----------------|---------|-------------|
-| `exportFormat` | `descriptor.exportFormat` | `json` | Export format: `json`, `yaml`, `both` |
-| `validate` | `descriptor.validate` | `false` | Validate descriptor structure |
-| `sign` | `descriptor.sign` | `false` | Generate SHA-256 digital signature |
-| `compress` | `descriptor.compress` | `false` | Compress JSON with GZIP |
-| `webhookUrl` | `descriptor.webhookUrl` | none | HTTP endpoint to notify after generation |
-| `webhookToken` | `descriptor.webhookToken` | none | Bearer token for webhook authentication |
-| `webhookTimeout` | `descriptor.webhookTimeout` | `10` | Webhook timeout in seconds |
+| `exportFormat` | `manifest.exportFormat` | `json` | Export format: `json`, `yaml`, `both` |
+| `validate` | `manifest.validate` | `false` | Validate descriptor structure |
+| `sign` | `manifest.sign` | `false` | Generate SHA-256 digital signature |
+| `compress` | `manifest.compress` | `false` | Compress JSON with GZIP |
+| `webhookUrl` | `manifest.webhookUrl` | none | HTTP endpoint to notify after generation |
+| `webhookToken` | `manifest.webhookToken` | none | Bearer token for webhook authentication |
+| `webhookTimeout` | `manifest.webhookTimeout` | `10` | Webhook timeout in seconds |
 
 ---
 
@@ -1085,22 +1085,22 @@ mvn deploy
 
 | Parameter | System Property | Default | Description |
 |-----------|-----------------|---------|-------------|
-| `includeDependencyTree` | `descriptor.includeDependencyTree` | `false` | Enable dependency tree collection |
-| `dependencyTreeDepth` | `descriptor.dependencyTreeDepth` | `-1` | Depth: `-1`=unlimited, `0`=direct-only |
-| `dependencyScopes` | `descriptor.dependencyScopes` | `compile,runtime` | Comma-separated scopes to include |
-| `dependencyTreeFormat` | `descriptor.dependencyTreeFormat` | `flat` | Output format: `flat`, `tree`, `both` |
-| `excludeTransitive` | `descriptor.excludeTransitive` | `false` | Exclude transitive dependencies entirely |
-| `includeOptional` | `descriptor.includeOptional` | `false` | Include optional dependencies |
+| `includeDependencyTree` | `manifest.includeDependencyTree` | `false` | Enable dependency tree collection |
+| `dependencyTreeDepth` | `manifest.dependencyTreeDepth` | `-1` | Depth: `-1`=unlimited, `0`=direct-only |
+| `dependencyScopes` | `manifest.dependencyScopes` | `compile,runtime` | Comma-separated scopes to include |
+| `dependencyTreeFormat` | `manifest.dependencyTreeFormat` | `flat` | Output format: `flat`, `tree`, `both` |
+| `excludeTransitive` | `manifest.excludeTransitive` | `false` | Exclude transitive dependencies entirely |
+| `includeOptional` | `manifest.includeOptional` | `false` | Include optional dependencies |
 
 
 ### Licenses Parameters
 
 | Parameter | System Property | Default | Description |
 |-----------|-----------------|---------|-------------|
-| `includeLicenses` | `descriptor.includeLicenses` | `false` | Enable license collection for all dependencies (via POM parsing) |
-| `licenseWarnings` | `descriptor.licenseWarnings` | `false` | Show warnings/badges for incompatible/unknown licenses in HTML |
-| `incompatibleLicenses` | `descriptor.incompatibleLicenses` | `GPL-3.0,AGPL-3.0,SSPL` | Comma-separated list considered incompatible (case-insensitive) |
-| `includeTransitiveLicenses` | `descriptor.includeTransitiveLicenses` | `true` | Include licenses for transitive dependencies |
+| `includeLicenses` | `manifest.includeLicenses` | `false` | Enable license collection for all dependencies (via POM parsing) |
+| `licenseWarnings` | `manifest.licenseWarnings` | `false` | Show warnings/badges for incompatible/unknown licenses in HTML |
+| `incompatibleLicenses` | `manifest.incompatibleLicenses` | `GPL-3.0,AGPL-3.0,SSPL` | Comma-separated list considered incompatible (case-insensitive) |
+| `includeTransitiveLicenses` | `manifest.includeTransitiveLicenses` | `true` | Include licenses for transitive dependencies |
 
 Example (CLI):
 ```
@@ -1111,12 +1111,12 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.includeLic
 
 | Parameter | System Property | Default | Description |
 |-----------|-----------------|---------|-------------|
-| `includeProperties` | `descriptor.includeProperties` | `false` | Include Maven/project/custom/system/env properties (grouped) |
-| `includeSystemProperties` | `descriptor.includeSystemProperties` | `true` | Include Java system properties |
-| `includeEnvironmentVariables` | `descriptor.includeEnvironmentVariables` | `false` | Include environment variables (use with care) |
-| `filterSensitiveProperties` | `descriptor.filterSensitiveProperties` | `true` | Filter by sensitive key patterns (password, token, apikey, auth, etc.) |
-| `maskSensitiveValues` | `descriptor.maskSensitiveValues` | `true` | Mask sensitive values instead of dropping them |
-| `propertyExclusions` | `descriptor.propertyExclusions` | `password,secret,token,apikey,api-key,api_key,credentials,auth,key` | Extra sensitive key patterns (comma-separated) |
+| `includeProperties` | `manifest.includeProperties` | `false` | Include Maven/project/custom/system/env properties (grouped) |
+| `includeSystemProperties` | `manifest.includeSystemProperties` | `true` | Include Java system properties |
+| `includeEnvironmentVariables` | `manifest.includeEnvironmentVariables` | `false` | Include environment variables (use with care) |
+| `filterSensitiveProperties` | `manifest.filterSensitiveProperties` | `true` | Filter by sensitive key patterns (password, token, apikey, auth, etc.) |
+| `maskSensitiveValues` | `manifest.maskSensitiveValues` | `true` | Mask sensitive values instead of dropping them |
+| `propertyExclusions` | `manifest.propertyExclusions` | `password,secret,token,apikey,api-key,api_key,credentials,auth,key` | Extra sensitive key patterns (comma-separated) |
 
 Example (CLI):
 ```
@@ -1127,12 +1127,12 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.includePro
 
 | Parameter | System Property | Default | Description |
 |-----------|-----------------|---------|-------------|
-| `includePlugins` | `descriptor.includePlugins` | `false` | Include effective build plugins summary and table |
-| `includePluginConfiguration` | `descriptor.includePluginConfiguration` | `true` | Include sanitized plugin configuration blocks |
-| `includePluginManagement` | `descriptor.includePluginManagement` | `true` | Include pluginManagement entries (+ Used-in-build indicator) |
-| `checkPluginUpdates` | `descriptor.checkPluginUpdates` | `false` | Check Maven Central for newer plugin versions (best-effort) |
-| `filterSensitivePluginConfig` | `descriptor.filterSensitivePluginConfig` | `true` | Mask sensitive values in plugin configs |
-| `pluginUpdateTimeoutMillis` | `descriptor.pluginUpdateTimeoutMillis` | `2000` | Timeout for update checks (ms) |
+| `includePlugins` | `manifest.includePlugins` | `false` | Include effective build plugins summary and table |
+| `includePluginConfiguration` | `manifest.includePluginConfiguration` | `true` | Include sanitized plugin configuration blocks |
+| `includePluginManagement` | `manifest.includePluginManagement` | `true` | Include pluginManagement entries (+ Used-in-build indicator) |
+| `checkPluginUpdates` | `manifest.checkPluginUpdates` | `false` | Check Maven Central for newer plugin versions (best-effort) |
+| `filterSensitivePluginConfig` | `manifest.filterSensitivePluginConfig` | `true` | Mask sensitive values in plugin configs |
+| `pluginUpdateTimeoutMillis` | `manifest.pluginUpdateTimeoutMillis` | `2000` | Timeout for update checks (ms) |
 
 Example (CLI):
 ```
