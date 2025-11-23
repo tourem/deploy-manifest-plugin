@@ -359,8 +359,6 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate \
   -Dmanifest.includeLicenses=true
 ```
 
-📖 **[Complete Profiles Guide](./PROFILES_GUIDE.md)** - Detailed documentation with examples
-
 ---
 
 ### Advanced Usage (Manual Options)
@@ -399,8 +397,39 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.summary=tr
 - `-Dmanifest.attach=true [-Dmanifest.format=zip]` — Attach artifact for repository deployment
 - `-Dmanifest.includeAllReports=true` — Include all reports in archive (dependency-report, dependency-analysis)
 - `-Dmanifest.includeDependencyTree=true [-Dmanifest.dependencyTreeFormat=both]` — Include dependencies (Flat+Tree)
+- `-Dmanifest.profile=standard|full|ci` — Use predefined profile (NEW in 2.8.0)
 
-### 🎯 Common Usage Patterns (NEW in 2.8.0)
+### 🎯 Predefined Profiles (NEW in 2.8.0)
+
+Profiles simplify plugin usage by providing sensible defaults for common scenarios. Individual options can override profile settings.
+
+| Profile | Description | Use Case |
+|---------|-------------|----------|
+| **basic** (default) | JSON only with essential info | Quick manifest generation |
+| **standard** | JSON + HTML + dependency tree (depth=2) | Team documentation |
+| **full** | JSON + YAML + HTML + all metadata | Complete analysis |
+| **ci** | Optimized for CI/CD with ZIP archive | Automated builds |
+
+**Using Profiles:**
+```bash
+# Use a profile
+mvn deploy-manifest:generate -Dmanifest.profile=standard
+
+# Override profile defaults
+mvn deploy-manifest:generate \
+  -Dmanifest.profile=standard \
+  -Dmanifest.includeLicenses=true \
+  -Dmanifest.dependencyTreeDepth=5
+```
+
+**Profile Details:**
+
+- **basic**: `exportFormat=json`, `generateHtml=false`, minimal metadata
+- **standard**: `exportFormat=json`, `generateHtml=true`, `includeDependencyTree=true`, `dependencyTreeDepth=2`
+- **full**: `exportFormat=both`, `generateHtml=true`, `includeDependencyTree=true`, `dependencyTreeDepth=5`, `includeLicenses=true`, `includeProperties=true`, `includePlugins=true`
+- **ci**: `exportFormat=json`, `generateHtml=true`, `format=zip`, `attach=true`, `includeAllReports=true`
+
+### 🎯 Common Usage Patterns
 
 **Pattern 1: Basic Deployment Manifest (Default)**
 ```bash
