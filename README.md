@@ -55,7 +55,7 @@ This plugin generates a comprehensive deployment descriptor with commit SHA, con
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 ```
 
-Generates `descriptor.json` with project/build/git metadata and module insights.
+Generates `deployment-manifest-report.json` with project/build/git metadata and module insights.
 See "Example JSON output" below for a concise sample.
 
 ---
@@ -147,14 +147,14 @@ Before deployment:
 ```bash
 mvn clean package
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
-cat target/descriptor.json  # verify
+cat target/deployment-manifest-report.json  # verify
 mvn deploy
 ```
 
 In production (incident happens):
 ```bash
 # Download descriptor from your artifact repository
-curl https://repo.example.com/.../descriptor.json
+curl https://repo.example.com/.../deployment-manifest-report.json
 
 # Instantly see:
 # - Git commit SHA → check exact code
@@ -329,14 +329,14 @@ Generate a deployment descriptor at your project root:
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 ```
 
-This creates a `descriptor.json` file containing all deployment information.
+This creates a `deployment-manifest-report.json` file containing all deployment information.
 
 ## Usage (quick)
 
 The most common commands at a glance:
 
 ```bash
-# Default (descriptor.json at project root)
+# Default (deployment-manifest-report.json at project root)
 mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
 
 # YAML or both JSON+YAML
@@ -621,7 +621,7 @@ This goal combines **three reports in one**:
 
 | Report Type | What It Contains | Use Case |
 |-------------|------------------|----------|
-| **descriptor.html** | Deployment info (env, modules, build) | DevOps, deployment tracking |
+| **deployment-manifest-report.html** | Deployment info (env, modules, build) | DevOps, deployment tracking |
 | **dependency-analysis.html** | Quick health score & issue counts | Developer quick check |
 | **dependency-report.html** ⭐ | **Everything about dependencies & plugins** | **Complete analysis** |
 
@@ -762,7 +762,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:dependency-report \
 
 ### Comparison: Three Reports
 
-| Feature | descriptor.html | dependency-analysis.html | dependency-report.html ⭐ |
+| Feature | deployment-manifest-report.html | dependency-analysis.html | dependency-report.html ⭐ |
 |---------|----------------|-------------------------|--------------------------|
 | **Size** | ~40K | ~4K | ~20K |
 | **Tabs** | 7 | 3 | 5 |
@@ -791,7 +791,7 @@ Configure the plugin to run automatically during the build:
             <artifactId>deploy-manifest-plugin</artifactId>
             <version>2.7.0</version>
             <configuration>
-                <!-- Output file name (default: descriptor.json) -->
+                <!-- Output file name (default: deployment-manifest-report.json) -->
                 <outputFile>deployment-info.json</outputFile>
 
                 <!-- Output directory (default: project root) -->
@@ -900,7 +900,7 @@ All plugin options are listed below.
 
 | Parameter | System Property | Default | Description |
 |-----------|----------------|---------|-------------|
-| `outputFile` | `descriptor.outputFile` | `descriptor.json` | Name of the output JSON file |
+| `outputFile` | `descriptor.outputFile` | `deployment-manifest-report.json` | Name of the output JSON file |
 | `outputDirectory` | `descriptor.outputDirectory` | `${project.build.directory}` (target/) | Output directory (absolute or relative path) |
 | `prettyPrint` | `descriptor.prettyPrint` | `true` | Format JSON with indentation |
 | `skip` | `descriptor.skip` | `false` | Skip plugin execution |
@@ -947,9 +947,9 @@ mvn deploy-manifest:generate \
 ```
 
 **Archive contents** (3 files):
-- ✅ `descriptor.json`
-- ✅ `descriptor.yaml`
-- ✅ `descriptor.html`
+- ✅ `deployment-manifest-report.json`
+- ✅ `deployment-manifest-report.yaml`
+- ✅ `deployment-manifest-report.html`
 
 #### Complete Archive (All Reports)
 
@@ -969,7 +969,7 @@ mvn deploy-manifest:generate \
 ```
 
 **Archive contents** (7 files):
-- ✅ `descriptor.json`, `descriptor.yaml`, `descriptor.html`
+- ✅ `deployment-manifest-report.json`, `deployment-manifest-report.yaml`, `deployment-manifest-report.html`
 - ✅ `dependency-report.json`, `dependency-report.html`
 - ✅ `dependency-analysis.json`, `dependency-analysis.html`
 
@@ -1062,7 +1062,7 @@ mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Ddescriptor.includeP
 
 #### Build Metadata
 
-The descriptor includes minimal build metadata (commit SHA, branch, CI info) for traceability. Use `jq` to extract fields from `descriptor.json` if needed.
+The descriptor includes minimal build metadata (commit SHA, branch, CI info) for traceability. Use `jq` to extract fields from `deployment-manifest-report.json` if needed.
 
 
 ### Framework Extensibility (SPI)

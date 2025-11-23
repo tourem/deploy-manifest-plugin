@@ -137,7 +137,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Module renames: `descriptor-core` ➜ `deploy-manifest-core`, `descriptor-plugin` ➜ `deploy-manifest-plugin`
   - Updated repository URLs, badges, and CI/CD workflows
   - README rewritten to hero style and updated to new name and coordinates
-  - Note: Mojo class name and `descriptor.*` parameters are kept for backward compatibility (output files still default to `descriptor.json`)
+  - Note: Mojo class name and `descriptor.*` parameters are kept for backward compatibility (output files still default to `deployment-manifest-report.json`)
 - Documentation cleanup: removed internal working docs from the repo
 
 ### Added
@@ -350,7 +350,7 @@ deploy-manifest-parent/
 - **version**: `1.0.0`
 
 #### System Properties
-- `descriptor.outputFile` - Output file name (default: `descriptor.json`)
+- `descriptor.outputFile` - Output file name (default: `deployment-manifest-report.json`)
 - `descriptor.outputDirectory` - Output directory (default: project root)
 - `descriptor.prettyPrint` - Pretty print JSON (default: `true`)
 - `descriptor.skip` - Skip execution (default: `false`)
