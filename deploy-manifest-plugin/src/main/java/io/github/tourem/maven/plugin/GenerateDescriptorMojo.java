@@ -3405,67 +3405,67 @@ d af f CSV</button>\\n");
     // Setter methods that only set if value was not explicitly provided by user
 
     void setExportFormatIfNotSet(String value) {
-        if (!isUserSet("exportFormat")) {
+        if (!isUserSet("exportFormat") && "json".equals(this.exportFormat)) {
             this.exportFormat = value;
         }
     }
 
     void setGenerateHtmlIfNotSet(boolean value) {
-        if (!isUserSet("generateHtml")) {
+        if (!isUserSet("generateHtml") && !this.generateHtml) {
             this.generateHtml = value;
         }
     }
 
     void setIncludeDependencyTreeIfNotSet(boolean value) {
-        if (!isUserSet("includeDependencyTree")) {
+        if (!isUserSet("includeDependencyTree") && !this.includeDependencyTree) {
             this.includeDependencyTree = value;
         }
     }
 
     void setDependencyTreeMaxDepthIfNotSet(int value) {
-        if (!isUserSet("dependencyTreeDepth")) {
+        if (!isUserSet("dependencyTreeDepth") && this.dependencyTreeDepth == Integer.MAX_VALUE) {
             this.dependencyTreeDepth = value;
         }
     }
 
     void setIncludeLicensesIfNotSet(boolean value) {
-        if (!isUserSet("includeLicenses")) {
+        if (!isUserSet("includeLicenses") && !this.includeLicenses) {
             this.includeLicenses = value;
         }
     }
 
     void setIncludePropertiesIfNotSet(boolean value) {
-        if (!isUserSet("includeProperties")) {
+        if (!isUserSet("includeProperties") && !this.includeProperties) {
             this.includeProperties = value;
         }
     }
 
     void setIncludePluginsIfNotSet(boolean value) {
-        if (!isUserSet("includePlugins")) {
+        if (!isUserSet("includePlugins") && !this.includePlugins) {
             this.includePlugins = value;
         }
     }
 
     void setFormatIfNotSet(String value) {
-        if (!isUserSet("format")) {
+        if (!isUserSet("format") && this.format == null) {
             this.format = value;
         }
     }
 
     void setAttachIfNotSet(boolean value) {
-        if (!isUserSet("attach")) {
+        if (!isUserSet("attach") && !this.attach) {
             this.attach = value;
         }
     }
 
     void setCompressIfNotSet(boolean value) {
-        if (!isUserSet("compress")) {
+        if (!isUserSet("compress") && !this.compress) {
             this.compress = value;
         }
     }
 
     void setIncludeAllReportsIfNotSet(boolean value) {
-        if (!isUserSet("includeAllReports")) {
+        if (!isUserSet("includeAllReports") && !this.includeAllReports) {
             this.includeAllReports = value;
         }
     }
