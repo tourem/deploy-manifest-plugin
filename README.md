@@ -400,6 +400,57 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.summary=tr
 - `-Dmanifest.includeAllReports=true` — Include all reports in archive (dependency-report, dependency-analysis)
 - `-Dmanifest.includeDependencyTree=true [-Dmanifest.dependencyTreeFormat=both]` — Include dependencies (Flat+Tree)
 
+### 🎯 Common Usage Patterns (NEW in 2.8.0)
+
+**Pattern 1: Basic Deployment Manifest (Default)**
+```bash
+# Generates JSON only with essential information
+mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate
+```
+**Output:** `deployment-manifest-report.json`
+
+**Pattern 2: Documentation Package with HTML**
+```bash
+# JSON + HTML report for team documentation
+mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
+  -Ddescriptor.generateHtml=true \
+  -Ddescriptor.includeDependencyTree=true
+```
+**Output:** JSON + HTML with dependency tree
+
+**Pattern 3: Complete Analysis Package**
+```bash
+# JSON + YAML + HTML + all metadata
+mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
+  -Ddescriptor.exportFormat=both \
+  -Ddescriptor.generateHtml=true \
+  -Ddescriptor.includeDependencyTree=true \
+  -Ddescriptor.includeLicenses=true \
+  -Ddescriptor.includeProperties=true \
+  -Ddescriptor.includePlugins=true
+```
+**Output:** Comprehensive documentation with all features
+
+**Pattern 4: CI/CD Optimized Archive**
+```bash
+# Creates a ZIP archive with all reports for artifact repository
+mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
+  -Ddescriptor.format=zip \
+  -Ddescriptor.attach=true \
+  -Ddescriptor.generateHtml=true \
+  -Ddescriptor.includeAllReports=true
+```
+**Output:** ZIP archive attached as Maven artifact
+
+**Pattern 5: Multi-format Export**
+```bash
+# Export in both JSON and YAML formats
+mvn io.github.tourem:deploy-manifest-plugin:2.8.0:generate \
+  -Ddescriptor.exportFormat=both \
+  -Ddescriptor.compress=true
+```
+**Output:** JSON, YAML, and compressed versions
+
 ---
 
 ## Dependency Analysis (NEW in 2.4.0)
