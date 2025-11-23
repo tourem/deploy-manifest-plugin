@@ -138,5 +138,20 @@ public class DeployableModule {
      * Maven plugins information for this module (optional, feature-gated).
      */
     private PluginInfo plugins;
+    
+    /**
+     * External service dependencies (databases, caches, message queues, etc.).
+     */
+    private ExternalDependencies externalDependencies;
+    
+    /**
+     * Testing and code coverage information.
+     */
+    private TestingInfo testing;
+    
+    /**
+     * Build metrics and artifact information.
+     */
+    private BuildMetrics buildMetrics;
 }
 

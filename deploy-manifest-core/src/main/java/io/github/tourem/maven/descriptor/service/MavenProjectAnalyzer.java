@@ -47,6 +47,9 @@ public class MavenProjectAnalyzer {
     private final PropertyCollector propertyCollector;
     private final io.github.tourem.maven.descriptor.model.PropertyOptions propertyOptions;
     private final io.github.tourem.maven.descriptor.model.PluginOptions pluginOptions;
+    private final ExternalDependenciesDetector externalDependenciesDetector;
+    private final TestingInfoCollector testingInfoCollector;
+    private final BuildMetricsCollector buildMetricsCollector;
 
     /**
      * Default constructor that initializes all dependencies.
@@ -105,6 +108,9 @@ public class MavenProjectAnalyzer {
         this.licenseOptions = licenseOptions != null ? licenseOptions : io.github.tourem.maven.descriptor.model.LicenseOptions.builder().include(false).build();
         this.propertyOptions = propertyOptions != null ? propertyOptions : io.github.tourem.maven.descriptor.model.PropertyOptions.builder().include(false).build();
         this.pluginOptions = io.github.tourem.maven.descriptor.model.PluginOptions.builder().include(false).build();
+        this.externalDependenciesDetector = new ExternalDependenciesDetector();
+        this.testingInfoCollector = new TestingInfoCollector();
+        this.buildMetricsCollector = new BuildMetricsCollector();
     }
 
     /**
@@ -136,6 +142,9 @@ public class MavenProjectAnalyzer {
         this.licenseOptions = licenseOptions != null ? licenseOptions : io.github.tourem.maven.descriptor.model.LicenseOptions.builder().include(false).build();
         this.propertyOptions = propertyOptions != null ? propertyOptions : io.github.tourem.maven.descriptor.model.PropertyOptions.builder().include(false).build();
         this.pluginOptions = pluginOptions != null ? pluginOptions : io.github.tourem.maven.descriptor.model.PluginOptions.builder().include(false).build();
+        this.externalDependenciesDetector = new ExternalDependenciesDetector();
+        this.testingInfoCollector = new TestingInfoCollector();
+        this.buildMetricsCollector = new BuildMetricsCollector();
     }
 
     /**
@@ -385,6 +394,14 @@ public class MavenProjectAnalyzer {
         io.github.tourem.maven.descriptor.model.PluginInfo pluginInfo = 
             metadataCollector.collectPlugins(model, modulePath, pluginOptions, groupId, artifactId);
 
+        // Collect new metadata: external dependencies, testing info, and build metrics
+        io.github.tourem.maven.descriptor.model.ExternalDependencies externalDeps = 
+            externalDependenciesDetector.detect(model, modulePath);
+        io.github.tourem.maven.descriptor.model.TestingInfo testingInfo = 
+            testingInfoCollector.collect(model, modulePath);
+        io.github.tourem.maven.descriptor.model.BuildMetrics buildMetrics = 
+            buildMetricsCollector.collect(model, modulePath, java.time.LocalDateTime.now());
+
         DeployableModule.DeployableModuleBuilder builder = DeployableModule.builder()
                 .groupId(groupId)
                 .artifactId(artifactId)
@@ -406,7 +423,10 @@ public class MavenProjectAnalyzer {
                 .dependencies(dependencyTreeInfo)
                 .licenses(licenseInfo)
                 .properties(propertyInfo)
-                .plugins(pluginInfo);
+                .plugins(pluginInfo)
+                .externalDependencies(externalDeps)
+                .testing(testingInfo)
+                .buildMetrics(buildMetrics);
 
         // Apply framework detectors via SPI
         for (FrameworkDetector detector : frameworkDetectors) {
