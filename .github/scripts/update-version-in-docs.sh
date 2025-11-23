@@ -19,14 +19,26 @@ FILES=(
     "README.md"
     "doc.md"
     "doc-en.md"
+    "CHANGELOG.md"
 )
 
 # Update version in all documentation files
 for file in "${FILES[@]}"; do
     if [ -f "$file" ]; then
         echo "Updating $file..."
+        
         # Replace version in <version>X.Y.Z</version> tags
         sed -i.bak "s|<version>[0-9]\+\.[0-9]\+\.[0-9]\+</version>|<version>${NEW_VERSION}</version>|g" "$file"
+        
+        # Replace version in Maven coordinates (deploy-manifest-plugin:X.Y.Z)
+        sed -i.bak "s|deploy-manifest-plugin:[0-9]\+\.[0-9]\+\.[0-9]\+|deploy-manifest-plugin:${NEW_VERSION}|g" "$file"
+        
+        # Replace version in artifact names (deploy-manifest-plugin-X.Y.Z)
+        sed -i.bak "s|deploy-manifest-plugin-[0-9]\+\.[0-9]\+\.[0-9]\+|deploy-manifest-plugin-${NEW_VERSION}|g" "$file"
+        
+        # Replace version in URLs and paths
+        sed -i.bak "s|/[0-9]\+\.[0-9]\+\.[0-9]\+/|/${NEW_VERSION}/|g" "$file"
+        
         # Remove backup file
         rm -f "${file}.bak"
         echo "✅ Updated $file"

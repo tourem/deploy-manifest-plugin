@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [2.6.0] - 2025-11-16
+## [2.7.0] - 2025-11-16
 
 ### Added
 - **Repository Health Checking**: Comprehensive dependency health assessment
