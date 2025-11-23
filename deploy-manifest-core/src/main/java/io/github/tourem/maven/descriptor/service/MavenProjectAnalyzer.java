@@ -7,6 +7,7 @@ import io.github.tourem.maven.descriptor.model.ExecutableInfo;
 import io.github.tourem.maven.descriptor.model.PackagingType;
 import io.github.tourem.maven.descriptor.model.ProjectDescriptor;
 import io.github.tourem.maven.descriptor.spi.FrameworkDetector;
+import io.github.tourem.maven.descriptor.util.MavenModelResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -40,13 +41,11 @@ public class MavenProjectAnalyzer {
     private final GitInfoCollector gitInfoCollector;
     private final List<FrameworkDetector> frameworkDetectors;
     private final DockerImageDetector dockerImageDetector;
-    private final DependencyTreeCollector dependencyTreeCollector;
+    private final ModuleMetadataCollector metadataCollector;
     private final io.github.tourem.maven.descriptor.model.DependencyTreeOptions dependencyTreeOptions;
-    private final LicenseCollector licenseCollector;
     private final io.github.tourem.maven.descriptor.model.LicenseOptions licenseOptions;
     private final PropertyCollector propertyCollector;
     private final io.github.tourem.maven.descriptor.model.PropertyOptions propertyOptions;
-    private final PluginCollector pluginCollector;
     private final io.github.tourem.maven.descriptor.model.PluginOptions pluginOptions;
 
     /**
@@ -95,13 +94,16 @@ public class MavenProjectAnalyzer {
         this.gitInfoCollector = new GitInfoCollector();
         this.frameworkDetectors = loadFrameworkDetectors();
         this.dockerImageDetector = new DockerImageDetector();
-        this.dependencyTreeCollector = new DependencyTreeCollector();
-        this.dependencyTreeOptions = depOptions != null ? depOptions : io.github.tourem.maven.descriptor.model.DependencyTreeOptions.builder().include(false).build();
-        this.licenseCollector = new LicenseCollector();
-        this.licenseOptions = licenseOptions != null ? licenseOptions : io.github.tourem.maven.descriptor.model.LicenseOptions.builder().include(false).build();
         this.propertyCollector = new PropertyCollector();
+        this.metadataCollector = new ModuleMetadataCollector(
+            new DependencyTreeCollector(),
+            new LicenseCollector(),
+            propertyCollector,
+            new PluginCollector()
+        );
+        this.dependencyTreeOptions = depOptions != null ? depOptions : io.github.tourem.maven.descriptor.model.DependencyTreeOptions.builder().include(false).build();
+        this.licenseOptions = licenseOptions != null ? licenseOptions : io.github.tourem.maven.descriptor.model.LicenseOptions.builder().include(false).build();
         this.propertyOptions = propertyOptions != null ? propertyOptions : io.github.tourem.maven.descriptor.model.PropertyOptions.builder().include(false).build();
-        this.pluginCollector = new PluginCollector();
         this.pluginOptions = io.github.tourem.maven.descriptor.model.PluginOptions.builder().include(false).build();
     }
 
@@ -123,13 +125,16 @@ public class MavenProjectAnalyzer {
         this.gitInfoCollector = new GitInfoCollector();
         this.frameworkDetectors = loadFrameworkDetectors();
         this.dockerImageDetector = new DockerImageDetector();
-        this.dependencyTreeCollector = new DependencyTreeCollector();
-        this.dependencyTreeOptions = depOptions != null ? depOptions : io.github.tourem.maven.descriptor.model.DependencyTreeOptions.builder().include(false).build();
-        this.licenseCollector = new LicenseCollector();
-        this.licenseOptions = licenseOptions != null ? licenseOptions : io.github.tourem.maven.descriptor.model.LicenseOptions.builder().include(false).build();
         this.propertyCollector = new PropertyCollector();
+        this.metadataCollector = new ModuleMetadataCollector(
+            new DependencyTreeCollector(),
+            new LicenseCollector(),
+            propertyCollector,
+            new PluginCollector()
+        );
+        this.dependencyTreeOptions = depOptions != null ? depOptions : io.github.tourem.maven.descriptor.model.DependencyTreeOptions.builder().include(false).build();
+        this.licenseOptions = licenseOptions != null ? licenseOptions : io.github.tourem.maven.descriptor.model.LicenseOptions.builder().include(false).build();
         this.propertyOptions = propertyOptions != null ? propertyOptions : io.github.tourem.maven.descriptor.model.PropertyOptions.builder().include(false).build();
-        this.pluginCollector = new PluginCollector();
         this.pluginOptions = pluginOptions != null ? pluginOptions : io.github.tourem.maven.descriptor.model.PluginOptions.builder().include(false).build();
     }
 
@@ -204,58 +209,8 @@ public class MavenProjectAnalyzer {
             }
 
             // Collect build info
-            var gitBuildInfo = gitInfoCollector.collectBuildInfo(projectRootPath);
-
-            // Optionally collect properties and profiles
-            io.github.tourem.maven.descriptor.model.BuildProperties props = null;
-            io.github.tourem.maven.descriptor.model.ProfilesInfo profilesInfo = null;
-            try {
-                if (propertyOptions != null && propertyOptions.isInclude()) {
-                    var result = propertyCollector.collect(rootModel, projectRootPath, propertyOptions);
-                    props = result.properties();
-                    profilesInfo = result.profiles();
-                } else {
-                    profilesInfo = propertyCollector.collectProfiles(rootModel);
-                }
-            } catch (Exception e) {
-                log.debug("Property collection failed: {}", e.getMessage());
-            }
-
-            // Optionally collect plugins
-            io.github.tourem.maven.descriptor.model.PluginInfo plugins = null;
-            try {
-                if (pluginOptions != null && pluginOptions.isInclude()) {
-                    plugins = pluginCollector.collect(rootModel, projectRootPath, pluginOptions);
-                }
-            } catch (Exception e) {
-                log.debug("Plugin collection failed: {}", e.getMessage());
-            }
-
-            // Merge into BuildInfo
-            io.github.tourem.maven.descriptor.model.BuildInfo buildInfo = io.github.tourem.maven.descriptor.model.BuildInfo.builder()
-                    .gitCommitSha(gitBuildInfo.gitCommitSha())
-                    .gitCommitShortSha(gitBuildInfo.gitCommitShortSha())
-                    .gitBranch(gitBuildInfo.gitBranch())
-                    .gitTag(gitBuildInfo.gitTag())
-                    .gitDirty(gitBuildInfo.gitDirty())
-                    .gitRemoteUrl(gitBuildInfo.gitRemoteUrl())
-                    .gitCommitMessage(gitBuildInfo.gitCommitMessage())
-                    .gitCommitAuthor(gitBuildInfo.gitCommitAuthor())
-                    .gitCommitTime(gitBuildInfo.gitCommitTime())
-                    .ciProvider(gitBuildInfo.ciProvider())
-                    .ciBuildId(gitBuildInfo.ciBuildId())
-                    .ciBuildNumber(gitBuildInfo.ciBuildNumber())
-                    .ciBuildUrl(gitBuildInfo.ciBuildUrl())
-                    .ciJobName(gitBuildInfo.ciJobName())
-                    .ciActor(gitBuildInfo.ciActor())
-                    .ciEventName(gitBuildInfo.ciEventName())
-                    .buildTimestamp(gitBuildInfo.buildTimestamp())
-                    .buildHost(gitBuildInfo.buildHost())
-                    .buildUser(gitBuildInfo.buildUser())
-                    .properties(props)
-                    .profiles(profilesInfo)
-                    .plugins(plugins)
-                    .build();
+            io.github.tourem.maven.descriptor.model.BuildInfo buildInfo = 
+                collectBuildInfo(rootModel, projectRootPath);
 
             // Extract Maven repository URL from distributionManagement
             String mavenRepositoryUrl = extractMavenRepositoryUrl(rootModel);
@@ -281,9 +236,9 @@ public class MavenProjectAnalyzer {
             }
 
             return ProjectDescriptor.builder()
-                    .projectGroupId(resolveGroupId(rootModel))
+                    .projectGroupId(MavenModelResolver.resolveGroupId(rootModel))
                     .projectArtifactId(rootModel.getArtifactId())
-                    .projectVersion(resolveVersion(rootModel))
+                    .projectVersion(MavenModelResolver.resolveVersion(rootModel))
                     .projectName(rootModel.getName())
                     .projectDescription(rootModel.getDescription())
                     .generatedAt(LocalDateTime.now())
@@ -349,9 +304,9 @@ public class MavenProjectAnalyzer {
             return null;
         }
 
-        String groupId = resolveGroupId(model);
+        String groupId = MavenModelResolver.resolveGroupId(model);
         String artifactId = model.getArtifactId();
-        String version = resolveVersion(model);
+        String version = MavenModelResolver.resolveVersion(model);
 
         // Detect Spring Boot executable
         boolean isSpringBoot = springBootDetector.isSpringBootExecutable(model);
@@ -399,7 +354,7 @@ public class MavenProjectAnalyzer {
         }
 
         List<String> localDeps = metadataDetector.detectLocalDependencies(model,
-                resolveGroupId(model));
+                MavenModelResolver.resolveGroupId(model));
         if (localDeps != null && localDeps.isEmpty()) {
             localDeps = null;
         }
@@ -420,50 +375,15 @@ public class MavenProjectAnalyzer {
         // Container image detection (maintained plugins only)
         var containerInfo = dockerImageDetector.detect(model, modulePath);
 
-        // Dependency tree collection (optional, can apply to any deployable module)
-        io.github.tourem.maven.descriptor.model.DependencyTreeInfo dependencyTreeInfo = null;
-        try {
-            boolean shouldCollect = dependencyTreeOptions != null && dependencyTreeOptions.isInclude();
-            if (shouldCollect) {
-                dependencyTreeInfo = dependencyTreeCollector.collect(model, modulePath, dependencyTreeOptions);
-            }
-        } catch (Exception e) {
-            log.debug("Dependency tree collection failed for {}:{} - {}", groupId, artifactId, e.getMessage());
-        }
-
-        // License collection (optional, can apply to any deployable module)
-        io.github.tourem.maven.descriptor.model.LicenseInfo licenseInfo = null;
-        try {
-            boolean collectLicenses = licenseOptions != null && licenseOptions.isInclude();
-            if (collectLicenses) {
-                licenseInfo = licenseCollector.collect(model, modulePath, licenseOptions);
-            }
-        } catch (Exception e) {
-            log.debug("License collection failed for {}:{} - {}", groupId, artifactId, e.getMessage());
-        }
-
-        // Property collection (optional, can apply to any deployable module)
-        io.github.tourem.maven.descriptor.model.BuildProperties propertyInfo = null;
-        try {
-            boolean collectProperties = propertyOptions != null && propertyOptions.isInclude();
-            if (collectProperties) {
-                var result = propertyCollector.collect(model, modulePath, propertyOptions);
-                propertyInfo = result.properties();
-            }
-        } catch (Exception e) {
-            log.debug("Property collection failed for {}:{} - {}", groupId, artifactId, e.getMessage());
-        }
-
-        // Plugin collection (optional, can apply to any deployable module)
-        io.github.tourem.maven.descriptor.model.PluginInfo pluginInfo = null;
-        try {
-            boolean collectPlugins = pluginOptions != null && pluginOptions.isInclude();
-            if (collectPlugins) {
-                pluginInfo = pluginCollector.collect(model, modulePath, pluginOptions);
-            }
-        } catch (Exception e) {
-            log.debug("Plugin collection failed for {}:{} - {}", groupId, artifactId, e.getMessage());
-        }
+        // Collect optional metadata using centralized collector
+        io.github.tourem.maven.descriptor.model.DependencyTreeInfo dependencyTreeInfo = 
+            metadataCollector.collectDependencyTree(model, modulePath, dependencyTreeOptions, groupId, artifactId);
+        io.github.tourem.maven.descriptor.model.LicenseInfo licenseInfo = 
+            metadataCollector.collectLicenses(model, modulePath, licenseOptions, groupId, artifactId);
+        io.github.tourem.maven.descriptor.model.BuildProperties propertyInfo = 
+            metadataCollector.collectProperties(model, modulePath, propertyOptions, groupId, artifactId);
+        io.github.tourem.maven.descriptor.model.PluginInfo pluginInfo = 
+            metadataCollector.collectPlugins(model, modulePath, pluginOptions, groupId, artifactId);
 
         DeployableModule.DeployableModuleBuilder builder = DeployableModule.builder()
                 .groupId(groupId)
@@ -511,30 +431,65 @@ public class MavenProjectAnalyzer {
     }
 
     /**
-     * Resolve groupId (may be inherited from parent).
+     * Collect comprehensive build information including Git, CI, properties, and plugins.
+     *
+     * @param rootModel Maven model of the root project
+     * @param projectRootPath Path to the project root
+     * @return BuildInfo containing all collected information
      */
-    private String resolveGroupId(Model model) {
-        if (model.getGroupId() != null) {
-            return model.getGroupId();
+    private io.github.tourem.maven.descriptor.model.BuildInfo collectBuildInfo(
+            Model rootModel, Path projectRootPath) {
+        
+        // Collect Git and CI information
+        var gitBuildInfo = gitInfoCollector.collectBuildInfo(projectRootPath);
+
+        // Optionally collect properties and profiles
+        io.github.tourem.maven.descriptor.model.BuildProperties props = null;
+        io.github.tourem.maven.descriptor.model.ProfilesInfo profilesInfo = null;
+        try {
+            if (propertyOptions != null && propertyOptions.isInclude()) {
+                var result = propertyCollector.collect(rootModel, projectRootPath, propertyOptions);
+                props = result.properties();
+                profilesInfo = result.profiles();
+            } else {
+                profilesInfo = propertyCollector.collectProfiles(rootModel);
+            }
+        } catch (Exception e) {
+            log.debug("Property collection failed: {}", e.getMessage());
         }
-        if (model.getParent() != null && model.getParent().getGroupId() != null) {
-            return model.getParent().getGroupId();
-        }
-        throw new IllegalStateException("Cannot resolve groupId for module: " + model.getArtifactId());
+
+        // Optionally collect plugins
+        io.github.tourem.maven.descriptor.model.PluginInfo plugins = 
+            metadataCollector.collectPlugins(rootModel, projectRootPath, pluginOptions, 
+                MavenModelResolver.getGroupIdOrEmpty(rootModel), rootModel.getArtifactId());
+
+        // Merge all information into BuildInfo
+        return io.github.tourem.maven.descriptor.model.BuildInfo.builder()
+                .gitCommitSha(gitBuildInfo.gitCommitSha())
+                .gitCommitShortSha(gitBuildInfo.gitCommitShortSha())
+                .gitBranch(gitBuildInfo.gitBranch())
+                .gitTag(gitBuildInfo.gitTag())
+                .gitDirty(gitBuildInfo.gitDirty())
+                .gitRemoteUrl(gitBuildInfo.gitRemoteUrl())
+                .gitCommitMessage(gitBuildInfo.gitCommitMessage())
+                .gitCommitAuthor(gitBuildInfo.gitCommitAuthor())
+                .gitCommitTime(gitBuildInfo.gitCommitTime())
+                .ciProvider(gitBuildInfo.ciProvider())
+                .ciBuildId(gitBuildInfo.ciBuildId())
+                .ciBuildNumber(gitBuildInfo.ciBuildNumber())
+                .ciBuildUrl(gitBuildInfo.ciBuildUrl())
+                .ciJobName(gitBuildInfo.ciJobName())
+                .ciActor(gitBuildInfo.ciActor())
+                .ciEventName(gitBuildInfo.ciEventName())
+                .buildTimestamp(gitBuildInfo.buildTimestamp())
+                .buildHost(gitBuildInfo.buildHost())
+                .buildUser(gitBuildInfo.buildUser())
+                .properties(props)
+                .profiles(profilesInfo)
+                .plugins(plugins)
+                .build();
     }
 
-    /**
-     * Resolve version (may be inherited from parent).
-     */
-    private String resolveVersion(Model model) {
-        if (model.getVersion() != null) {
-            return model.getVersion();
-        }
-        if (model.getParent() != null && model.getParent().getVersion() != null) {
-            return model.getParent().getVersion();
-        }
-        throw new IllegalStateException("Cannot resolve version for module: " + model.getArtifactId());
-    }
 
     /**
      * Extract Maven repository URL from distributionManagement section.

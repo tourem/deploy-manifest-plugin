@@ -96,9 +96,15 @@ jobs:
               && break || { echo "deploy failed (attempt $i). Retrying..."; sleep 5; }
           done
       
+      - name: Update documentation with release version
+        run: |
+          chmod +x .github/scripts/update-version-in-docs.sh
+          .github/scripts/update-version-in-docs.sh "${{ steps.validate_version.outputs.release_version }}"
+      
       - name: Commit release version
         run: |
           git add pom.xml deploy-manifest-core/pom.xml deploy-manifest-plugin/pom.xml
+          git add README.md doc.md doc-en.md
           git commit -m "chore: Release version ${{ steps.validate_version.outputs.release_version }}"
           git tag -a "v${{ steps.validate_version.outputs.release_version }}" \
             -m "Release version ${{ steps.validate_version.outputs.release_version }}"

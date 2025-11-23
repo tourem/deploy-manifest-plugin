@@ -3,6 +3,7 @@ package io.github.tourem.maven.descriptor.service;
 import io.github.tourem.maven.descriptor.model.BuildProperties;
 import io.github.tourem.maven.descriptor.model.ProfilesInfo;
 import io.github.tourem.maven.descriptor.model.PropertyOptions;
+import io.github.tourem.maven.descriptor.util.MavenModelResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
@@ -27,9 +28,9 @@ public class PropertyCollector {
         AtomicInteger masked = new AtomicInteger();
 
         Map<String, String> project = new LinkedHashMap<>();
-        project.put("project.groupId", resolveGroupId(rootModel));
+        project.put("project.groupId", MavenModelResolver.getGroupIdOrEmpty(rootModel));
         project.put("project.artifactId", rootModel.getArtifactId());
-        project.put("project.version", resolveVersion(rootModel));
+        project.put("project.version", MavenModelResolver.getVersionOrEmpty(rootModel));
         project.put("project.packaging", rootModel.getPackaging() == null ? "jar" : rootModel.getPackaging());
         if (rootModel.getName() != null) project.put("project.name", rootModel.getName());
 
@@ -159,18 +160,6 @@ public class PropertyCollector {
 
     private static Map<String, String> emptyToNull(Map<String, String> in) {
         return in == null || in.isEmpty() ? null : in;
-    }
-
-    private static String resolveGroupId(Model model) {
-        if (model.getGroupId() != null) return model.getGroupId();
-        if (model.getParent() != null && model.getParent().getGroupId() != null) return model.getParent().getGroupId();
-        return null;
-    }
-
-    private static String resolveVersion(Model model) {
-        if (model.getVersion() != null) return model.getVersion();
-        if (model.getParent() != null && model.getParent().getVersion() != null) return model.getParent().getVersion();
-        return null;
     }
 }
 

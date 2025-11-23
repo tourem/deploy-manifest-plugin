@@ -1,5 +1,9 @@
 package io.github.tourem.maven.descriptor.service;
 
+import io.github.tourem.maven.descriptor.constants.MavenConstants;
+import io.github.tourem.maven.descriptor.constants.SpringBootConstants;
+import io.github.tourem.maven.descriptor.util.MavenModelResolver;
+import io.github.tourem.maven.descriptor.util.XmlConfigurationExtractor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -20,11 +24,6 @@ import java.util.*;
 @Slf4j
 public class DeploymentMetadataDetector {
 
-    private static final String ACTUATOR_ARTIFACT_ID = "spring-boot-starter-actuator";
-    private static final String DEFAULT_ACTUATOR_BASE_PATH = "/actuator";
-    private static final String HEALTH_ENDPOINT = "/health";
-    private static final String INFO_ENDPOINT = "/info";
-
     /**
      * Detect Java version from Maven compiler configuration.
      */
@@ -39,21 +38,21 @@ public class DeploymentMetadataDetector {
      */
     public String detectJavaVersion(Model model, Model parentModel) {
         // Check maven.compiler.release property (preferred in modern Maven)
-        String release = getPropertyWithInheritance(model, parentModel, "maven.compiler.release");
+        String release = MavenModelResolver.resolveProperty(model, parentModel, MavenConstants.PROPERTY_COMPILER_RELEASE);
         if (release != null) {
             log.debug("Found Java version from maven.compiler.release: {}", release);
             return release;
         }
 
         // Check maven.compiler.source property
-        String source = getPropertyWithInheritance(model, parentModel, "maven.compiler.source");
+        String source = MavenModelResolver.resolveProperty(model, parentModel, MavenConstants.PROPERTY_COMPILER_SOURCE);
         if (source != null) {
             log.debug("Found Java version from maven.compiler.source: {}", source);
             return source;
         }
 
         // Check maven.compiler.target property
-        String target = getPropertyWithInheritance(model, parentModel, "maven.compiler.target");
+        String target = MavenModelResolver.resolveProperty(model, parentModel, MavenConstants.PROPERTY_COMPILER_TARGET);
         if (target != null) {
             log.debug("Found Java version from maven.compiler.target: {}", target);
             return target;
@@ -62,7 +61,7 @@ public class DeploymentMetadataDetector {
         // Check compiler plugin configuration in module
         if (model.getBuild() != null && model.getBuild().getPlugins() != null) {
             for (Plugin plugin : model.getBuild().getPlugins()) {
-                if ("maven-compiler-plugin".equals(plugin.getArtifactId())) {
+                if (MavenConstants.COMPILER_PLUGIN_ARTIFACT_ID.equals(plugin.getArtifactId())) {
                     Object config = plugin.getConfiguration();
                     if (config != null) {
                         String version = extractJavaVersionFromPluginConfig(config);
@@ -78,7 +77,7 @@ public class DeploymentMetadataDetector {
         // Check compiler plugin configuration in parent
         if (parentModel != null && parentModel.getBuild() != null && parentModel.getBuild().getPlugins() != null) {
             for (Plugin plugin : parentModel.getBuild().getPlugins()) {
-                if ("maven-compiler-plugin".equals(plugin.getArtifactId())) {
+                if (MavenConstants.COMPILER_PLUGIN_ARTIFACT_ID.equals(plugin.getArtifactId())) {
                     Object config = plugin.getConfiguration();
                     if (config != null) {
                         String version = extractJavaVersionFromPluginConfig(config);
@@ -158,7 +157,7 @@ public class DeploymentMetadataDetector {
         }
 
         boolean hasActuator = model.getDependencies().stream()
-                .anyMatch(dep -> ACTUATOR_ARTIFACT_ID.equals(dep.getArtifactId()));
+                .anyMatch(dep -> SpringBootConstants.ACTUATOR_ARTIFACT_ID.equals(dep.getArtifactId()));
 
         if (hasActuator) {
             log.debug("Spring Boot Actuator detected");
@@ -201,8 +200,8 @@ public class DeploymentMetadataDetector {
 
         Path resourcesDir = modulePath.resolve("src/main/resources");
         if (!Files.exists(resourcesDir)) {
-            log.debug("Using default Actuator base path: {}", DEFAULT_ACTUATOR_BASE_PATH);
-            return DEFAULT_ACTUATOR_BASE_PATH;
+            log.debug("Using default Actuator base path: {}", SpringBootConstants.DEFAULT_ACTUATOR_BASE_PATH);
+            return SpringBootConstants.DEFAULT_ACTUATOR_BASE_PATH;
         }
 
         // Try application.properties
@@ -224,8 +223,8 @@ public class DeploymentMetadataDetector {
         }
 
         // Return default if not configured
-        log.debug("Using default Actuator base path: {}", DEFAULT_ACTUATOR_BASE_PATH);
-        return DEFAULT_ACTUATOR_BASE_PATH;
+        log.debug("Using default Actuator base path: {}", SpringBootConstants.DEFAULT_ACTUATOR_BASE_PATH);
+        return SpringBootConstants.DEFAULT_ACTUATOR_BASE_PATH;
     }
 
     /**
@@ -235,7 +234,7 @@ public class DeploymentMetadataDetector {
         if (basePath == null) {
             return null;
         }
-        String path = basePath + HEALTH_ENDPOINT;
+        String path = basePath + SpringBootConstants.HEALTH_ENDPOINT;
         log.debug("Built Actuator health path: {}", path);
         return path;
     }
@@ -247,7 +246,7 @@ public class DeploymentMetadataDetector {
         if (basePath == null) {
             return null;
         }
-        String path = basePath + INFO_ENDPOINT;
+        String path = basePath + SpringBootConstants.INFO_ENDPOINT;
         log.debug("Built Actuator info path: {}", path);
         return path;
     }

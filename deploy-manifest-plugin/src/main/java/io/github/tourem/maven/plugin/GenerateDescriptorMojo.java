@@ -1190,6 +1190,133 @@ public class GenerateDescriptorMojo extends AbstractMojo {
         html.append("    body.dark-mode code { background: #16213e; color: #a0e9ff; }\n");
         html.append("    body.dark-mode .empty-state { color: #666; }\n");
 
+        // Phase 1: Responsive Design
+        html.append("    /* Responsive Design for Mobile */\n");
+        html.append("    @media (max-width: 768px) {\n");
+        html.append("      body { padding: 10px; }\n");
+        html.append("      .container { border-radius: 10px; }\n");
+        html.append("      .header { padding: 20px; flex-direction: column; gap: 15px; }\n");
+        html.append("      .header h1 { font-size: 1.8em; }\n");
+        html.append("      .stats { grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }\n");
+        html.append("      .info-grid { grid-template-columns: 1fr; }\n");
+        html.append("      .tabs { padding: 0 15px; }\n");
+        html.append("      .tab { padding: 15px 20px; font-size: 0.9em; }\n");
+        html.append("      .tab-content { padding: 20px; }\n");
+        html.append("      .module-header { flex-direction: column; align-items: flex-start; }\n");
+        html.append("      .module-card { padding: 20px; }\n");
+        html.append("    }\n");
+        html.append("    @media (max-width: 480px) {\n");
+        html.append("      .stats { grid-template-columns: 1fr; }\n");
+        html.append("      .header h1 { font-size: 1.5em; }\n");
+        html.append("      .stat-card .number { font-size: 2em; }\n");
+        html.append("    }\n");
+
+        // Phase 1: Copy Button Styles
+        html.append("    /* Copy Button Styles */\n");
+        html.append("    .copy-btn { display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75em; transition: all 0.2s; vertical-align: middle; }\n");
+        html.append("    .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }\n");
+        html.append("    .copy-btn:active { transform: translateY(0); }\n");
+        html.append("    .copy-btn.copied { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }\n");
+        html.append("    body.dark-mode .copy-btn { background: linear-gradient(135deg, #4953c8 0%, #5a67d8 100%); }\n");
+        html.append("    code { position: relative; }\n");
+
+        // Phase 1: Filter Bar Styles
+        html.append("    /* Filter Bar Styles */\n");
+        html.append("    .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 20px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }\n");
+        html.append("    .filter-bar select, .filter-bar input[type=\"text\"] { padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 0.9em; background: white; }\n");
+        html.append("    .filter-bar select:focus, .filter-bar input[type=\"text\"]:focus { outline: 2px solid #667eea; outline-offset: 2px; }\n");
+        html.append("    .filter-bar label { display: flex; align-items: center; gap: 6px; font-size: 0.9em; cursor: pointer; }\n");
+        html.append("    .filter-bar input[type=\"checkbox\"] { width: 18px; height: 18px; cursor: pointer; }\n");
+        html.append("    body.dark-mode .filter-bar { background: #16213e; border-bottom-color: #2a2a3e; }\n");
+        html.append("    body.dark-mode .filter-bar select, body.dark-mode .filter-bar input[type=\"text\"] { background: #1a1a2e; border-color: #2a2a3e; color: #e0e0e0; }\n");
+        html.append("    body.dark-mode .filter-bar label { color: #e0e0e0; }\n");
+
+        // Phase 1: Keyboard Shortcuts Indicator
+        html.append("    /* Keyboard Shortcuts Indicator */\n");
+        html.append("    .kbd { display: inline-block; padding: 3px 6px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 3px; font-family: monospace; font-size: 0.85em; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }\n");
+        html.append("    body.dark-mode .kbd { background: #2a2a3e; border-color: #3a3a4e; color: #e0e0e0; }\n");
+        html.append("    .shortcuts-hint { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 12px 16px; border-radius: 8px; font-size: 0.85em; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000; }\n");
+        html.append("    .shortcuts-hint.show { opacity: 1; }\n");
+
+        // Phase 1: Focus Visible for Accessibility
+        html.append("    /* Accessibility - Focus Visible */\n");
+        html.append("    *:focus-visible { outline: 2px solid #667eea; outline-offset: 2px; }\n");
+        html.append("    button:focus-visible { outline-offset: 4px; }\n");
+
+        // Phase 2: Global Search Bar
+        html.append("    /* Phase 2: Global Search Bar */\n");
+        html.append("    .global-search-bar { position: sticky; top: 0; z-index: 100; background: white; padding: 15px 30px; border-bottom: 2px solid #e0e0e0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }\n");
+        html.append("    .global-search-bar input { width: 100%; max-width: 600px; padding: 12px 40px 12px 16px; border: 2px solid #e0e0e0; border-radius: 25px; font-size: 1em; transition: all 0.3s; }\n");
+        html.append("    .global-search-bar input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }\n");
+        html.append("    .search-results-count { margin-left: 15px; color: #666; font-size: 0.9em; }\n");
+        html.append("    .highlight { background: #ffe08a; padding: 2px 4px; border-radius: 2px; font-weight: 600; }\n");
+        html.append("    body.dark-mode .global-search-bar { background: #0f3460; border-bottom-color: #2a2a3e; }\n");
+        html.append("    body.dark-mode .global-search-bar input { background: #1a1a2e; border-color: #2a2a3e; color: #e0e0e0; }\n");
+        html.append("    body.dark-mode .highlight { background: #665200; color: #fff; }\n");
+
+        // Phase 2: Export Buttons
+        html.append("    /* Phase 2: Export Buttons */\n");
+        html.append("    .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0; }\n");
+        html.append("    .btn-export, .btn-download, .btn-print { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }\n");
+        html.append("    .btn-export { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }\n");
+        html.append("    .btn-download { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }\n");
+        html.append("    .btn-print { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }\n");
+        html.append("    .btn-export:hover, .btn-download:hover, .btn-print:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }\n");
+        html.append("    body.dark-mode .btn-export { background: linear-gradient(135deg, #4953c8 0%, #5a67d8 100%); }\n");
+
+        // Phase 2: Tooltips
+        html.append("    /* Phase 2: Tooltips */\n");
+        html.append("    [data-tooltip] { position: relative; cursor: help; border-bottom: 1px dotted #999; }\n");
+        html.append("    [data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 8px 12px; border-radius: 6px; font-size: 0.85em; white-space: nowrap; z-index: 1000; margin-bottom: 5px; }\n");
+        html.append("    [data-tooltip]:hover::before { content: ''; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: rgba(0,0,0,0.9); margin-bottom: 0; }\n");
+
+        // Phase 2: Alerts
+        html.append("    /* Phase 2: Alerts */\n");
+        html.append("    .alerts-section { margin: 20px 0; }\n");
+        html.append("    .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; font-size: 0.95em; }\n");
+        html.append("    .alert-warning { background: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; }\n");
+        html.append("    .alert-info { background: #dbeafe; border-left: 4px solid #3b82f6; color: #1e40af; }\n");
+        html.append("    .alert-success { background: #d1fae5; border-left: 4px solid #10b981; color: #065f46; }\n");
+        html.append("    .alert-error { background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }\n");
+        html.append("    body.dark-mode .alert-warning { background: #78350f; color: #fef3c7; }\n");
+        html.append("    body.dark-mode .alert-info { background: #1e3a8a; color: #dbeafe; }\n");
+        html.append("    body.dark-mode .alert-success { background: #064e3b; color: #d1fae5; }\n");
+        html.append("    body.dark-mode .alert-error { background: #7f1d1d; color: #fee2e2; }\n");
+
+        // Phase 3 + Bonus: Skeleton Loading
+        html.append("    /* Skeleton Loading */\n");
+        html.append("    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px; }\n");
+        html.append("    @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }\n");
+        html.append("    body.dark-mode .skeleton { background: linear-gradient(90deg, #1a1a2e 25%, #2a2a3e 50%, #1a1a2e 75%); background-size: 200% 100%; }\n");
+
+        // Phase 3 + Bonus: Breadcrumbs
+        html.append("    /* Breadcrumbs */\n");
+        html.append("    .breadcrumb { display: flex; align-items: center; gap: 8px; padding: 15px 30px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; font-size: 0.9em; }\n");
+        html.append("    .breadcrumb a { color: #667eea; text-decoration: none; transition: color 0.2s; }\n");
+        html.append("    .breadcrumb a:hover { color: #764ba2; text-decoration: underline; }\n");
+        html.append("    .breadcrumb .separator { color: #999; }\n");
+        html.append("    .breadcrumb .current { color: #333; font-weight: 600; }\n");
+        html.append("    body.dark-mode .breadcrumb { background: #16213e; border-bottom-color: #2a2a3e; }\n");
+        html.append("    body.dark-mode .breadcrumb .current { color: #e0e0e0; }\n");
+
+        // Phase 3 + Bonus: Presentation Mode
+        html.append("    /* Presentation Mode */\n");
+        html.append("    body.presentation-mode { font-size: 1.2em; }\n");
+        html.append("    body.presentation-mode .header { padding: 60px; }\n");
+        html.append("    body.presentation-mode .stats { padding: 40px; }\n");
+        html.append("    body.presentation-mode .stat-card .number { font-size: 3em; }\n");
+        html.append("    body.presentation-mode .module-card { padding: 40px; margin: 30px 0; }\n");
+
+        // Phase 3 + Bonus: Print Styles
+        html.append("    /* Print Styles */\n");
+        html.append("    @media print {\n");
+        html.append("      body { background: white; padding: 0; }\n");
+        html.append("      .container { box-shadow: none; }\n");
+        html.append("      .theme-toggle, .action-buttons, .global-search-bar, .shortcuts-hint { display: none !important; }\n");
+        html.append("      .tab-content { display: block !important; page-break-inside: avoid; }\n");
+        html.append("      .module-card { page-break-inside: avoid; }\n");
+        html.append("    }\n");
+
         html.append("  </style>\n");
         html.append("</head>\n");
         html.append("<body>\n");
@@ -2532,6 +2659,295 @@ d af f CSV</button>\\n");
         html.append("    });\n");
         html.append("    document.addEventListener('DOMContentLoaded', function() {\n");
         html.append("      if (window.DEP_SECTIONS) { window.DEP_SECTIONS.forEach(function(id){ try { initDependenciesSection(id); } catch(e) {} }); }\n");
+        html.append("    });\n");
+
+        // Phase 1: Copy to Clipboard functionality
+        html.append("    /* Phase 1: Copy to Clipboard */\n");
+        html.append("    function addCopyButtons() {\n");
+        html.append("      document.querySelectorAll('code').forEach(code => {\n");
+        html.append("        if (code.querySelector('.copy-btn')) return;\n");
+        html.append("        const btn = document.createElement('button');\n");
+        html.append("        btn.className = 'copy-btn';\n");
+        html.append("        btn.innerHTML = '📋';\n");
+        html.append("        btn.title = 'Copy to clipboard';\n");
+        html.append("        btn.onclick = () => {\n");
+        html.append("          navigator.clipboard.writeText(code.textContent).then(() => {\n");
+        html.append("            btn.innerHTML = '✅';\n");
+        html.append("            btn.classList.add('copied');\n");
+        html.append("            setTimeout(() => {\n");
+        html.append("              btn.innerHTML = '📋';\n");
+        html.append("              btn.classList.remove('copied');\n");
+        html.append("            }, 2000);\n");
+        html.append("          });\n");
+        html.append("        };\n");
+        html.append("        code.parentElement.insertBefore(btn, code.nextSibling);\n");
+        html.append("      });\n");
+        html.append("    }\n");
+
+        // Phase 1: Keyboard Shortcuts
+        html.append("    /* Phase 1: Keyboard Shortcuts */\n");
+        html.append("    let currentTabIndex = 0;\n");
+        html.append("    const tabs = Array.from(document.querySelectorAll('.tab'));\n");
+        html.append("    const shortcutsHint = document.createElement('div');\n");
+        html.append("    shortcutsHint.className = 'shortcuts-hint';\n");
+        html.append("    document.body.appendChild(shortcutsHint);\n");
+        html.append("    \n");
+        html.append("    function showShortcutHint(text) {\n");
+        html.append("      shortcutsHint.textContent = text;\n");
+        html.append("      shortcutsHint.classList.add('show');\n");
+        html.append("      setTimeout(() => shortcutsHint.classList.remove('show'), 2000);\n");
+        html.append("    }\n");
+        html.append("    \n");
+        html.append("    document.addEventListener('keydown', (e) => {\n");
+        html.append("      // Ctrl/Cmd + D: Toggle Dark Mode\n");
+        html.append("      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        toggleTheme();\n");
+        html.append("        showShortcutHint('Theme toggled');\n");
+        html.append("      }\n");
+        html.append("      // Arrow Left/Right: Navigate tabs\n");
+        html.append("      if (e.key === 'ArrowLeft' && currentTabIndex > 0) {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        currentTabIndex--;\n");
+        html.append("        tabs[currentTabIndex].click();\n");
+        html.append("        showShortcutHint('← Previous tab');\n");
+        html.append("      }\n");
+        html.append("      if (e.key === 'ArrowRight' && currentTabIndex < tabs.length - 1) {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        currentTabIndex++;\n");
+        html.append("        tabs[currentTabIndex].click();\n");
+        html.append("        showShortcutHint('Next tab →');\n");
+        html.append("      }\n");
+        html.append("      // ? key: Show shortcuts help\n");
+        html.append("      if (e.key === '?') {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        showShortcutHint('⌨️ Shortcuts: Ctrl+D (theme) | ← → (tabs) | ? (help)');\n");
+        html.append("      }\n");
+        html.append("    });\n");
+        html.append("    \n");
+        html.append("    tabs.forEach((tab, index) => {\n");
+        html.append("      tab.addEventListener('click', () => currentTabIndex = index);\n");
+        html.append("    });\n");
+
+        // Phase 1: Initialize on load
+        html.append("    /* Phase 1: Initialize */\n");
+        html.append("    document.addEventListener('DOMContentLoaded', () => {\n");
+        html.append("      addCopyButtons();\n");
+        html.append("      console.log('✨ Phase 1 UX improvements loaded: Responsive + Copy + Shortcuts');\n");
+        html.append("    });\n");
+
+        // Phase 2: Global Search
+        html.append("    /* Phase 2: Global Search */\n");
+        html.append("    function createGlobalSearch() {\n");
+        html.append("      const searchBar = document.createElement('div');\n");
+        html.append("      searchBar.className = 'global-search-bar';\n");
+        html.append("      searchBar.innerHTML = `\n");
+        html.append("        <input type=\"text\" id=\"global-search\" placeholder=\"🔍 Search in descriptor... (Ctrl+K)\" />\n");
+        html.append("        <span class=\"search-results-count\" id=\"search-count\"></span>\n");
+        html.append("      `;\n");
+        html.append("      document.querySelector('.container').insertBefore(searchBar, document.querySelector('.tabs'));\n");
+        html.append("      \n");
+        html.append("      const input = document.getElementById('global-search');\n");
+        html.append("      input.addEventListener('input', (e) => globalSearch(e.target.value));\n");
+        html.append("      \n");
+        html.append("      // Ctrl+K to focus search\n");
+        html.append("      document.addEventListener('keydown', (e) => {\n");
+        html.append("        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {\n");
+        html.append("          e.preventDefault();\n");
+        html.append("          input.focus();\n");
+        html.append("        }\n");
+        html.append("      });\n");
+        html.append("    }\n");
+        html.append("    \n");
+        html.append("    function globalSearch(query) {\n");
+        html.append("      const lowerQuery = query.toLowerCase();\n");
+        html.append("      let matchCount = 0;\n");
+        html.append("      \n");
+        html.append("      // Remove previous highlights\n");
+        html.append("      document.querySelectorAll('.highlight').forEach(el => {\n");
+        html.append("        el.outerHTML = el.textContent;\n");
+        html.append("      });\n");
+        html.append("      \n");
+        html.append("      if (!query) {\n");
+        html.append("        document.getElementById('search-count').textContent = '';\n");
+        html.append("        return;\n");
+        html.append("      }\n");
+        html.append("      \n");
+        html.append("      // Search in all text content\n");
+        html.append("      document.querySelectorAll('.tab-content').forEach(content => {\n");
+        html.append("        const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);\n");
+        html.append("        const nodesToReplace = [];\n");
+        html.append("        \n");
+        html.append("        while (walker.nextNode()) {\n");
+        html.append("          const node = walker.currentNode;\n");
+        html.append("          if (node.nodeValue && node.nodeValue.toLowerCase().includes(lowerQuery)) {\n");
+        html.append("            nodesToReplace.push(node);\n");
+        html.append("          }\n");
+        html.append("        }\n");
+        html.append("        \n");
+        html.append("        nodesToReplace.forEach(node => {\n");
+        html.append("          const span = document.createElement('span');\n");
+        html.append("          const regex = new RegExp(`(${query})`, 'gi');\n");
+        html.append("          span.innerHTML = node.nodeValue.replace(regex, '<span class=\"highlight\">$1</span>');\n");
+        html.append("          node.parentNode.replaceChild(span, node);\n");
+        html.append("          matchCount++;\n");
+        html.append("        });\n");
+        html.append("      });\n");
+        html.append("      \n");
+        html.append("      document.getElementById('search-count').textContent = \n");
+        html.append("        matchCount > 0 ? `${matchCount} result${matchCount > 1 ? 's' : ''} found` : 'No results';\n");
+        html.append("    }\n");
+
+        // Phase 2: Export to PDF
+        html.append("    /* Phase 2: Export to PDF */\n");
+        html.append("    function exportToPDF() {\n");
+        html.append("      window.print();\n");
+        html.append("    }\n");
+        html.append("    \n");
+        html.append("    function downloadJSON() {\n");
+        html.append("      const jsonPath = window.location.pathname.replace('.html', '.json');\n");
+        html.append("      window.location.href = jsonPath;\n");
+        html.append("    }\n");
+        html.append("    \n");
+        html.append("    function createActionButtons() {\n");
+        html.append("      const buttonsDiv = document.createElement('div');\n");
+        html.append("      buttonsDiv.className = 'action-buttons';\n");
+        html.append("      buttonsDiv.innerHTML = `\n");
+        html.append("        <button class=\"btn-export\" onclick=\"exportToPDF()\">📄 Export PDF</button>\n");
+        html.append("        <button class=\"btn-download\" onclick=\"downloadJSON()\">💾 Download JSON</button>\n");
+        html.append("        <button class=\"btn-print\" onclick=\"window.print()\">🖨️ Print</button>\n");
+        html.append("      `;\n");
+        html.append("      const overview = document.getElementById('overview');\n");
+        html.append("      if (overview) {\n");
+        html.append("        overview.insertBefore(buttonsDiv, overview.firstChild);\n");
+        html.append("      }\n");
+        html.append("    }\n");
+
+        // Phase 2: Add Tooltips
+        html.append("    /* Phase 2: Add Tooltips */\n");
+        html.append("    function addTooltips() {\n");
+        html.append("      const tooltips = {\n");
+        html.append("        'Group ID': 'Maven Group ID - Unique identifier for the project group',\n");
+        html.append("        'Artifact ID': 'Maven Artifact ID - Unique identifier for the artifact',\n");
+        html.append("        'Version': 'Project version following semantic versioning',\n");
+        html.append("        'Packaging': 'Packaging type (jar, war, pom, etc.)',\n");
+        html.append("        'Java Version': 'Target Java version for compilation',\n");
+        html.append("        'Main Class': 'Entry point class for executable JAR'\n");
+        html.append("      };\n");
+        html.append("      \n");
+        html.append("      document.querySelectorAll('.info-label').forEach(label => {\n");
+        html.append("        const text = label.textContent.trim();\n");
+        html.append("        if (tooltips[text]) {\n");
+        html.append("          label.setAttribute('data-tooltip', tooltips[text]);\n");
+        html.append("        }\n");
+        html.append("      });\n");
+        html.append("    }\n");
+
+        // Phase 2: Add Alerts
+        html.append("    /* Phase 2: Add Alerts */\n");
+        html.append("    function addAlerts() {\n");
+        html.append("      const alerts = [];\n");
+        html.append("      \n");
+        html.append("      // Check for uncommitted changes\n");
+        html.append("      const gitDirty = document.body.textContent.includes('Uncommitted changes');\n");
+        html.append("      if (gitDirty) {\n");
+        html.append("        alerts.push({ type: 'warning', message: '⚠️ <strong>Uncommitted Changes</strong>: Build contains uncommitted changes' });\n");
+        html.append("      }\n");
+        html.append("      \n");
+        html.append("      if (alerts.length > 0) {\n");
+        html.append("        const alertsDiv = document.createElement('div');\n");
+        html.append("        alertsDiv.className = 'alerts-section';\n");
+        html.append("        alerts.forEach(alert => {\n");
+        html.append("          const alertEl = document.createElement('div');\n");
+        html.append("          alertEl.className = `alert alert-${alert.type}`;\n");
+        html.append("          alertEl.innerHTML = alert.message;\n");
+        html.append("          alertsDiv.appendChild(alertEl);\n");
+        html.append("        });\n");
+        html.append("        \n");
+        html.append("        const overview = document.getElementById('overview');\n");
+        html.append("        if (overview) {\n");
+        html.append("          overview.insertBefore(alertsDiv, overview.firstChild);\n");
+        html.append("        }\n");
+        html.append("      }\n");
+        html.append("    }\n");
+
+        // Phase 2: Initialize
+        html.append("    /* Phase 2: Initialize */\n");
+        html.append("    document.addEventListener('DOMContentLoaded', () => {\n");
+        html.append("      createGlobalSearch();\n");
+        html.append("      createActionButtons();\n");
+        html.append("      addTooltips();\n");
+        html.append("      addAlerts();\n");
+        html.append("      console.log('✨ Phase 2 UX improvements loaded: Search + Export + Tooltips + Alerts');\n");
+        html.append("    });\n");
+
+        // Phase 3 + Bonus: Presentation Mode
+        html.append("    /* Phase 3 + Bonus: Presentation Mode */\n");
+        html.append("    let presentationMode = false;\n");
+        html.append("    function togglePresentationMode() {\n");
+        html.append("      presentationMode = !presentationMode;\n");
+        html.append("      if (presentationMode) {\n");
+        html.append("        document.body.classList.add('presentation-mode');\n");
+        html.append("        document.documentElement.requestFullscreen?.();\n");
+        html.append("        showShortcutHint('🎬 Presentation mode ON');\n");
+        html.append("      } else {\n");
+        html.append("        document.body.classList.remove('presentation-mode');\n");
+        html.append("        document.exitFullscreen?.();\n");
+        html.append("        showShortcutHint('🎬 Presentation mode OFF');\n");
+        html.append("      }\n");
+        html.append("    }\n");
+        html.append("    \n");
+        html.append("    // Ctrl+P for presentation mode\n");
+        html.append("    document.addEventListener('keydown', (e) => {\n");
+        html.append("      if ((e.ctrlKey || e.metaKey) && e.key === 'p' && !e.shiftKey) {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        togglePresentationMode();\n");
+        html.append("      }\n");
+        html.append("    });\n");
+
+        // Phase 3 + Bonus: Breadcrumbs
+        html.append("    /* Phase 3 + Bonus: Breadcrumbs */\n");
+        html.append("    function createBreadcrumbs() {\n");
+        html.append("      const breadcrumb = document.createElement('div');\n");
+        html.append("      breadcrumb.className = 'breadcrumb';\n");
+        html.append("      breadcrumb.innerHTML = `\n");
+        html.append("        <a href=\"#\" onclick=\"showTab(document.querySelector('.tab'), 'overview'); return false;\">🏠 Home</a>\n");
+        html.append("        <span class=\"separator\">›</span>\n");
+        html.append("        <span class=\"current\" id=\"breadcrumb-current\">Overview</span>\n");
+        html.append("      `;\n");
+        html.append("      document.querySelector('.container').insertBefore(breadcrumb, document.querySelector('.global-search-bar'));\n");
+        html.append("      \n");
+        html.append("      // Update breadcrumb on tab change\n");
+        html.append("      document.querySelectorAll('.tab').forEach(tab => {\n");
+        html.append("        tab.addEventListener('click', () => {\n");
+        html.append("          const tabName = tab.textContent.trim();\n");
+        html.append("          document.getElementById('breadcrumb-current').textContent = tabName;\n");
+        html.append("        });\n");
+        html.append("      });\n");
+        html.append("    }\n");
+
+        // Phase 3 + Bonus: Smooth Scroll
+        html.append("    /* Phase 3 + Bonus: Smooth Scroll */\n");
+        html.append("    document.querySelectorAll('a[href^=\"#\"]').forEach(anchor => {\n");
+        html.append("      anchor.addEventListener('click', function (e) {\n");
+        html.append("        const href = this.getAttribute('href');\n");
+        html.append("        if (href !== '#') {\n");
+        html.append("          e.preventDefault();\n");
+        html.append("          const target = document.querySelector(href);\n");
+        html.append("          if (target) {\n");
+        html.append("            target.scrollIntoView({ behavior: 'smooth', block: 'start' });\n");
+        html.append("          }\n");
+        html.append("        }\n");
+        html.append("      });\n");
+        html.append("    });\n");
+
+        // Phase 3 + Bonus: Initialize
+        html.append("    /* Phase 3 + Bonus: Initialize */\n");
+        html.append("    document.addEventListener('DOMContentLoaded', () => {\n");
+        html.append("      createBreadcrumbs();\n");
+        html.append("      console.log('✨ Phase 3 + Bonus loaded: Presentation + Breadcrumbs + Animations');\n");
+        html.append("      console.log('📚 All UX improvements loaded successfully!');\n");
+        html.append("      console.log('⌨️  Shortcuts: Ctrl+D (theme) | Ctrl+K (search) | Ctrl+P (presentation) | ← → (tabs) | ? (help)');\n");
         html.append("    });\n");
 
         html.append("  </script>\n");
