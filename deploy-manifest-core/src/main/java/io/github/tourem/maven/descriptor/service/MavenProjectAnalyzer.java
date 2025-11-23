@@ -7,6 +7,7 @@ import io.github.tourem.maven.descriptor.model.ExecutableInfo;
 import io.github.tourem.maven.descriptor.model.PackagingType;
 import io.github.tourem.maven.descriptor.model.ProjectDescriptor;
 import io.github.tourem.maven.descriptor.spi.FrameworkDetector;
+import io.github.tourem.maven.descriptor.util.MavenModelResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -204,58 +205,8 @@ public class MavenProjectAnalyzer {
             }
 
             // Collect build info
-            var gitBuildInfo = gitInfoCollector.collectBuildInfo(projectRootPath);
-
-            // Optionally collect properties and profiles
-            io.github.tourem.maven.descriptor.model.BuildProperties props = null;
-            io.github.tourem.maven.descriptor.model.ProfilesInfo profilesInfo = null;
-            try {
-                if (propertyOptions != null && propertyOptions.isInclude()) {
-                    var result = propertyCollector.collect(rootModel, projectRootPath, propertyOptions);
-                    props = result.properties();
-                    profilesInfo = result.profiles();
-                } else {
-                    profilesInfo = propertyCollector.collectProfiles(rootModel);
-                }
-            } catch (Exception e) {
-                log.debug("Property collection failed: {}", e.getMessage());
-            }
-
-            // Optionally collect plugins
-            io.github.tourem.maven.descriptor.model.PluginInfo plugins = null;
-            try {
-                if (pluginOptions != null && pluginOptions.isInclude()) {
-                    plugins = pluginCollector.collect(rootModel, projectRootPath, pluginOptions);
-                }
-            } catch (Exception e) {
-                log.debug("Plugin collection failed: {}", e.getMessage());
-            }
-
-            // Merge into BuildInfo
-            io.github.tourem.maven.descriptor.model.BuildInfo buildInfo = io.github.tourem.maven.descriptor.model.BuildInfo.builder()
-                    .gitCommitSha(gitBuildInfo.gitCommitSha())
-                    .gitCommitShortSha(gitBuildInfo.gitCommitShortSha())
-                    .gitBranch(gitBuildInfo.gitBranch())
-                    .gitTag(gitBuildInfo.gitTag())
-                    .gitDirty(gitBuildInfo.gitDirty())
-                    .gitRemoteUrl(gitBuildInfo.gitRemoteUrl())
-                    .gitCommitMessage(gitBuildInfo.gitCommitMessage())
-                    .gitCommitAuthor(gitBuildInfo.gitCommitAuthor())
-                    .gitCommitTime(gitBuildInfo.gitCommitTime())
-                    .ciProvider(gitBuildInfo.ciProvider())
-                    .ciBuildId(gitBuildInfo.ciBuildId())
-                    .ciBuildNumber(gitBuildInfo.ciBuildNumber())
-                    .ciBuildUrl(gitBuildInfo.ciBuildUrl())
-                    .ciJobName(gitBuildInfo.ciJobName())
-                    .ciActor(gitBuildInfo.ciActor())
-                    .ciEventName(gitBuildInfo.ciEventName())
-                    .buildTimestamp(gitBuildInfo.buildTimestamp())
-                    .buildHost(gitBuildInfo.buildHost())
-                    .buildUser(gitBuildInfo.buildUser())
-                    .properties(props)
-                    .profiles(profilesInfo)
-                    .plugins(plugins)
-                    .build();
+            io.github.tourem.maven.descriptor.model.BuildInfo buildInfo = 
+                collectBuildInfo(rootModel, projectRootPath);
 
             // Extract Maven repository URL from distributionManagement
             String mavenRepositoryUrl = extractMavenRepositoryUrl(rootModel);
@@ -281,9 +232,9 @@ public class MavenProjectAnalyzer {
             }
 
             return ProjectDescriptor.builder()
-                    .projectGroupId(resolveGroupId(rootModel))
+                    .projectGroupId(MavenModelResolver.resolveGroupId(rootModel))
                     .projectArtifactId(rootModel.getArtifactId())
-                    .projectVersion(resolveVersion(rootModel))
+                    .projectVersion(MavenModelResolver.resolveVersion(rootModel))
                     .projectName(rootModel.getName())
                     .projectDescription(rootModel.getDescription())
                     .generatedAt(LocalDateTime.now())
@@ -349,9 +300,9 @@ public class MavenProjectAnalyzer {
             return null;
         }
 
-        String groupId = resolveGroupId(model);
+        String groupId = MavenModelResolver.resolveGroupId(model);
         String artifactId = model.getArtifactId();
-        String version = resolveVersion(model);
+        String version = MavenModelResolver.resolveVersion(model);
 
         // Detect Spring Boot executable
         boolean isSpringBoot = springBootDetector.isSpringBootExecutable(model);
@@ -399,7 +350,7 @@ public class MavenProjectAnalyzer {
         }
 
         List<String> localDeps = metadataDetector.detectLocalDependencies(model,
-                resolveGroupId(model));
+                MavenModelResolver.resolveGroupId(model));
         if (localDeps != null && localDeps.isEmpty()) {
             localDeps = null;
         }
@@ -511,30 +462,70 @@ public class MavenProjectAnalyzer {
     }
 
     /**
-     * Resolve groupId (may be inherited from parent).
+     * Collect comprehensive build information including Git, CI, properties, and plugins.
+     *
+     * @param rootModel Maven model of the root project
+     * @param projectRootPath Path to the project root
+     * @return BuildInfo containing all collected information
      */
-    private String resolveGroupId(Model model) {
-        if (model.getGroupId() != null) {
-            return model.getGroupId();
+    private io.github.tourem.maven.descriptor.model.BuildInfo collectBuildInfo(
+            Model rootModel, Path projectRootPath) {
+        
+        // Collect Git and CI information
+        var gitBuildInfo = gitInfoCollector.collectBuildInfo(projectRootPath);
+
+        // Optionally collect properties and profiles
+        io.github.tourem.maven.descriptor.model.BuildProperties props = null;
+        io.github.tourem.maven.descriptor.model.ProfilesInfo profilesInfo = null;
+        try {
+            if (propertyOptions != null && propertyOptions.isInclude()) {
+                var result = propertyCollector.collect(rootModel, projectRootPath, propertyOptions);
+                props = result.properties();
+                profilesInfo = result.profiles();
+            } else {
+                profilesInfo = propertyCollector.collectProfiles(rootModel);
+            }
+        } catch (Exception e) {
+            log.debug("Property collection failed: {}", e.getMessage());
         }
-        if (model.getParent() != null && model.getParent().getGroupId() != null) {
-            return model.getParent().getGroupId();
+
+        // Optionally collect plugins
+        io.github.tourem.maven.descriptor.model.PluginInfo plugins = null;
+        try {
+            if (pluginOptions != null && pluginOptions.isInclude()) {
+                plugins = pluginCollector.collect(rootModel, projectRootPath, pluginOptions);
+            }
+        } catch (Exception e) {
+            log.debug("Plugin collection failed: {}", e.getMessage());
         }
-        throw new IllegalStateException("Cannot resolve groupId for module: " + model.getArtifactId());
+
+        // Merge all information into BuildInfo
+        return io.github.tourem.maven.descriptor.model.BuildInfo.builder()
+                .gitCommitSha(gitBuildInfo.gitCommitSha())
+                .gitCommitShortSha(gitBuildInfo.gitCommitShortSha())
+                .gitBranch(gitBuildInfo.gitBranch())
+                .gitTag(gitBuildInfo.gitTag())
+                .gitDirty(gitBuildInfo.gitDirty())
+                .gitRemoteUrl(gitBuildInfo.gitRemoteUrl())
+                .gitCommitMessage(gitBuildInfo.gitCommitMessage())
+                .gitCommitAuthor(gitBuildInfo.gitCommitAuthor())
+                .gitCommitTime(gitBuildInfo.gitCommitTime())
+                .ciProvider(gitBuildInfo.ciProvider())
+                .ciBuildId(gitBuildInfo.ciBuildId())
+                .ciBuildNumber(gitBuildInfo.ciBuildNumber())
+                .ciBuildUrl(gitBuildInfo.ciBuildUrl())
+                .ciJobName(gitBuildInfo.ciJobName())
+                .ciActor(gitBuildInfo.ciActor())
+                .ciEventName(gitBuildInfo.ciEventName())
+                .buildTimestamp(gitBuildInfo.buildTimestamp())
+                .buildHost(gitBuildInfo.buildHost())
+                .buildUser(gitBuildInfo.buildUser())
+                .properties(props)
+                .profiles(profilesInfo)
+                .plugins(plugins)
+                .build();
     }
 
-    /**
-     * Resolve version (may be inherited from parent).
-     */
-    private String resolveVersion(Model model) {
-        if (model.getVersion() != null) {
-            return model.getVersion();
-        }
-        if (model.getParent() != null && model.getParent().getVersion() != null) {
-            return model.getParent().getVersion();
-        }
-        throw new IllegalStateException("Cannot resolve version for module: " + model.getArtifactId());
-    }
 
     /**
      * Extract Maven repository URL from distributionManagement section.
