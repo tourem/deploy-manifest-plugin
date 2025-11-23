@@ -87,9 +87,9 @@ public class GenerateDescriptorMojo extends AbstractMojo {
 
     /**
      * Output file name for the generated descriptor.
-     * Default: descriptor.json
+     * Default: deployment-manifest-report.json
      */
-    @Parameter(property = "descriptor.outputFile", defaultValue = "descriptor.json")
+    @Parameter(property = "descriptor.outputFile", defaultValue = "deployment-manifest-report.json")
     private String outputFile;
 
     /**
@@ -195,7 +195,7 @@ public class GenerateDescriptorMojo extends AbstractMojo {
      * Default: false
      *
      * When enabled and format is specified (zip, tar.gz, tar.bz2), the archive will include:
-     * - descriptor.json, descriptor.yaml, descriptor.html (always included)
+     * - deployment-manifest-report.json, deployment-manifest-report.yaml, deployment-manifest-report.html (always included)
      * - dependency-report.json, dependency-report.html (if present in target/)
      * - dependency-analysis.json, dependency-analysis.html (if present in target/)
      *

@@ -49,8 +49,8 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.json");
-        assertThat(names).doesNotContain("descriptor.yaml");
+        assertThat(names).contains("deployment-manifest-report.json");
+        assertThat(names).doesNotContain("deployment-manifest-report.yaml");
     }
 
     @Test
@@ -59,8 +59,8 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.yaml");
-        assertThat(names).doesNotContain("descriptor.json");
+        assertThat(names).contains("deployment-manifest-report.yaml");
+        assertThat(names).doesNotContain("deployment-manifest-report.json");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml");
     }
 
     @Test
@@ -78,7 +78,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.html");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.html");
     }
 
     @Test
@@ -87,7 +87,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.json.gz");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.json.gz");
     }
 
     @Test
@@ -96,7 +96,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = tarGzEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml");
     }
 
     // --- helpers ---
@@ -106,7 +106,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = tarEntriesBz2(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml");
     }
 
     @Test
@@ -115,7 +115,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml");
     }
 
     @Test
@@ -124,7 +124,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml", "descriptor.json.gz");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml", "deployment-manifest-report.json.gz");
     }
 
     @Test
@@ -133,8 +133,8 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.yaml", "descriptor.html");
-        assertThat(names).doesNotContain("descriptor.json");
+        assertThat(names).contains("deployment-manifest-report.yaml", "deployment-manifest-report.html");
+        assertThat(names).doesNotContain("deployment-manifest-report.json");
     }
 
     @Test
@@ -143,7 +143,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml", "descriptor.html");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml", "deployment-manifest-report.html");
     }
 
     @Test
@@ -152,7 +152,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = zipEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml", "descriptor.html");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml", "deployment-manifest-report.html");
     }
 
     @Test
@@ -161,7 +161,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = tarGzEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.html");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.html");
     }
 
     @Test
@@ -170,7 +170,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = tarGzEntries(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml", "descriptor.json.gz");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml", "deployment-manifest-report.json.gz");
     }
 
     @Test
@@ -179,7 +179,7 @@ public class GenerateDescriptorMojoArchiveTest {
         assertThat(archive).exists();
 
         Set<String> names = tarEntriesBz2(archive);
-        assertThat(names).contains("descriptor.json", "descriptor.yaml", "descriptor.json.gz");
+        assertThat(names).contains("deployment-manifest-report.json", "deployment-manifest-report.yaml", "deployment-manifest-report.json.gz");
     }
 
 
@@ -203,7 +203,7 @@ public class GenerateDescriptorMojoArchiveTest {
 
         setField(mojo, "project", project);
         setField(mojo, "outputDirectory", tempDir.toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", exportFormat);
         setField(mojo, "generateHtml", generateHtml);
         setField(mojo, "compress", compress);

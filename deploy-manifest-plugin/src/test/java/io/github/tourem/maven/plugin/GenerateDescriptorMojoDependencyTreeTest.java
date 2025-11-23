@@ -88,7 +88,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
         setBasedir(mvnProject, pomFile.getParentFile());
         setField(mojo, "project", mvnProject);
         setField(mojo, "outputDirectory", projectDir.resolve("target").toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "prettyPrint", true);
         setField(mojo, "format", "zip");
@@ -109,7 +109,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
         mojo.execute();
 
         // Assert: read JSON and validate dependencies.flat contains compile+runtime deps only
-        Path jsonPath = projectDir.resolve("target/descriptor.json");
+        Path jsonPath = projectDir.resolve("target/deployment-manifest-report.json");
         String json = Files.readString(jsonPath);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(json);
@@ -186,7 +186,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
         setBasedir(mvnProject, pomFile.getParentFile());
         setField(mojo, "project", mvnProject);
         setField(mojo, "outputDirectory", projectDir.resolve("target").toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "prettyPrint", true);
         setField(mojo, "format", "zip");
@@ -203,7 +203,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
 
         mojo.execute();
 
-        Path jsonPath = projectDir.resolve("target/descriptor.json");
+        Path jsonPath = projectDir.resolve("target/deployment-manifest-report.json");
         String json = Files.readString(jsonPath);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(json);
@@ -265,7 +265,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
         setBasedir(mvnProject, pomFile.getParentFile());
         setField(mojo, "project", mvnProject);
         setField(mojo, "outputDirectory", projectDir.resolve("target").toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "prettyPrint", true);
         setField(mojo, "format", "zip");
@@ -282,7 +282,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
 
         mojo.execute();
 
-        Path jsonPath = projectDir.resolve("target/descriptor.json");
+        Path jsonPath = projectDir.resolve("target/deployment-manifest-report.json");
         String json = Files.readString(jsonPath);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(json);
@@ -291,7 +291,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
         assertThat(deps.has("tree")).isTrue();
 
         // HTML should exist and contain Dependencies section
-        Path htmlPath = projectDir.resolve("target/descriptor.html");
+        Path htmlPath = projectDir.resolve("target/deployment-manifest-report.html");
         assertThat(Files.exists(htmlPath)).isTrue();
         String html = Files.readString(htmlPath);
         assertThat(html).contains("Dependencies");
@@ -344,7 +344,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
         setBasedir(mvnProject, pomFile.getParentFile());
         setField(mojo, "project", mvnProject);
         setField(mojo, "outputDirectory", projectDir.resolve("target").toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "prettyPrint", true);
         setField(mojo, "format", "zip");
@@ -361,7 +361,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
 
         mojo.execute();
 
-        Path jsonPath = projectDir.resolve("target/descriptor.json");
+        Path jsonPath = projectDir.resolve("target/deployment-manifest-report.json");
         JsonNode deps = new ObjectMapper().readTree(Files.readString(jsonPath))
                 .path("deployableModules").get(0).path("dependencies");
         assertThat(deps.path("flat").toString()).contains("\"artifactId\":\"opt\"", "\"optional\":true");
@@ -402,7 +402,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
         setBasedir(mvnProject, pomFile.getParentFile());
         setField(mojo, "project", mvnProject);
         setField(mojo, "outputDirectory", projectDir.resolve("target").toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "prettyPrint", true);
         setField(mojo, "format", "zip");
@@ -415,7 +415,7 @@ public class GenerateDescriptorMojoDependencyTreeTest {
 
         mojo.execute();
 
-        Path jsonPath = projectDir.resolve("target/descriptor.json");
+        Path jsonPath = projectDir.resolve("target/deployment-manifest-report.json");
         JsonNode deps = new ObjectMapper().readTree(Files.readString(jsonPath))
                 .path("deployableModules").get(0).path("dependencies");
         // v2.6.0: Dependencies are now collected for all deployable modules

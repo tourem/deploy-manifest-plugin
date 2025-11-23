@@ -32,7 +32,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         setField(mojo, "project", project);
         setField(mojo, "outputDirectory", tempDir.toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "generateHtml", true);
         setField(mojo, "attach", false);
@@ -40,8 +40,8 @@ public class GenerateDescriptorMojoContainerTest {
 
         mojo.execute();
 
-        Path json = Paths.get(tempDir.toString(), "descriptor.json");
-        Path html = Paths.get(tempDir.toString(), "descriptor.html");
+        Path json = Paths.get(tempDir.toString(), "deployment-manifest-report.json");
+        Path html = Paths.get(tempDir.toString(), "deployment-manifest-report.html");
         assertThat(json).exists();
         assertThat(html).exists();
 
@@ -72,7 +72,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         setField(mojo, "project", project);
         setField(mojo, "outputDirectory", tempDir.toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "generateHtml", true);
         setField(mojo, "attach", false);
@@ -80,8 +80,8 @@ public class GenerateDescriptorMojoContainerTest {
 
         mojo.execute();
 
-        Path json = Paths.get(tempDir.toString(), "descriptor.json");
-        Path html = Paths.get(tempDir.toString(), "descriptor.html");
+        Path json = Paths.get(tempDir.toString(), "deployment-manifest-report.json");
+        Path html = Paths.get(tempDir.toString(), "deployment-manifest-report.html");
         assertThat(json).exists();
         assertThat(html).exists();
 
@@ -201,7 +201,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         setField(mojo, "project", project);
         setField(mojo, "outputDirectory", tempDir.toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "generateHtml", true);
         setField(mojo, "attach", false);
@@ -209,8 +209,8 @@ public class GenerateDescriptorMojoContainerTest {
 
         mojo.execute();
 
-        Path json = Paths.get(tempDir.toString(), "descriptor.json");
-        Path html = Paths.get(tempDir.toString(), "descriptor.html");
+        Path json = Paths.get(tempDir.toString(), "deployment-manifest-report.json");
+        Path html = Paths.get(tempDir.toString(), "deployment-manifest-report.html");
         assertThat(json).exists();
         assertThat(html).exists();
 
@@ -250,7 +250,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         setField(mojo, "project", project);
         setField(mojo, "outputDirectory", tempDir.toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "generateHtml", true);
         setField(mojo, "attach", false);
@@ -258,8 +258,8 @@ public class GenerateDescriptorMojoContainerTest {
 
         mojo.execute();
 
-        Path json = Paths.get(tempDir.toString(), "descriptor.json");
-        Path html = Paths.get(tempDir.toString(), "descriptor.html");
+        Path json = Paths.get(tempDir.toString(), "deployment-manifest-report.json");
+        Path html = Paths.get(tempDir.toString(), "deployment-manifest-report.html");
         assertThat(json).exists();
         assertThat(html).exists();
 
@@ -289,7 +289,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         setField(mojo, "project", project);
         setField(mojo, "outputDirectory", tempDir.toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "generateHtml", true);
         setField(mojo, "attach", false);
@@ -297,7 +297,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         mojo.execute();
 
-        Path json = Paths.get(tempDir.toString(), "descriptor.json");
+        Path json = Paths.get(tempDir.toString(), "deployment-manifest-report.json");
         assertThat(json).exists();
         String jsonContent = Files.readString(json);
         assertThat(jsonContent).contains("\"tool\":\"fabric8\"");
@@ -320,7 +320,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         setField(mojo, "project", project);
         setField(mojo, "outputDirectory", tempDir.toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "generateHtml", true);
         setField(mojo, "attach", false);
@@ -328,7 +328,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         mojo.execute();
 
-        Path json = Paths.get(tempDir.toString(), "descriptor.json");
+        Path json = Paths.get(tempDir.toString(), "deployment-manifest-report.json");
         assertThat(json).exists();
         String jsonContent = Files.readString(json);
         assertThat(jsonContent).contains("\"tool\":\"micronaut\"");
@@ -351,7 +351,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         setField(mojo, "project", project);
         setField(mojo, "outputDirectory", tempDir.toString());
-        setField(mojo, "outputFile", "descriptor.json");
+        setField(mojo, "outputFile", "deployment-manifest-report.json");
         setField(mojo, "exportFormat", "json");
         setField(mojo, "generateHtml", true);
         setField(mojo, "attach", false);
@@ -359,7 +359,7 @@ public class GenerateDescriptorMojoContainerTest {
 
         mojo.execute();
 
-        Path json = Paths.get(tempDir.toString(), "descriptor.json");
+        Path json = Paths.get(tempDir.toString(), "deployment-manifest-report.json");
         assertThat(json).exists();
         String jsonContent = Files.readString(json);
         assertThat(jsonContent).contains("\"tool\":\"jkube\"");

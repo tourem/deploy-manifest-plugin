@@ -60,7 +60,7 @@ Ajout dans le POM pour des builds reproductibles :
 </build>
 ```
 
-Les fichiers sont écrits à la racine du projet (ou dans `target/` selon configuration) : `descriptor.json` et, en option, `descriptor.yaml` / `descriptor.html` / archive.
+Les fichiers sont écrits à la racine du projet (ou dans `target/` selon configuration) : `deployment-manifest-report.json` et, en option, `deployment-manifest-report.yaml` / `deployment-manifest-report.html` / archive.
 
 ---
 
@@ -69,9 +69,9 @@ Les fichiers sont écrits à la racine du projet (ou dans `target/` selon config
 ```mermaid
 flowchart LR
   Dev[Developpeur / CI] -->|mvn ...:generate| Plugin[deploy-manifest-plugin]
-  Plugin --> JSON[descriptor.json]
-  Plugin --> YAML[descriptor.yaml]
-  Plugin --> HTML[descriptor.html]
+  Plugin --> JSON[deployment-manifest-report.json]
+  Plugin --> YAML[deployment-manifest-report.yaml]
+  Plugin --> HTML[deployment-manifest-report.html]
   JSON --> Repo[(Depot d'artefacts)]
   YAML --> Repo
   HTML --> Repo
@@ -376,7 +376,7 @@ Paramètres de base :
 
 | Paramètre | Propriété système | Défaut | Description |
 |---|---|---|---|
-| outputFile | descriptor.outputFile | descriptor.json | Nom du fichier JSON de sortie |
+| outputFile | descriptor.outputFile | deployment-manifest-report.json | Nom du fichier JSON de sortie |
 | outputDirectory | descriptor.outputDirectory | ${project.build.directory} | Répertoire de sortie |
 | prettyPrint | descriptor.prettyPrint | true | Indentation du JSON |
 | skip | descriptor.skip | false | Ne pas exécuter le plugin |
@@ -413,9 +413,9 @@ mvn deploy-manifest:generate \
 ```
 
 **Contenu de l'archive** (3 fichiers) :
-- ✅ `descriptor.json`
-- ✅ `descriptor.yaml`
-- ✅ `descriptor.html`
+- ✅ `deployment-manifest-report.json`
+- ✅ `deployment-manifest-report.yaml`
+- ✅ `deployment-manifest-report.html`
 
 #### Archive Complète (Tous les Rapports)
 
@@ -435,7 +435,7 @@ mvn deploy-manifest:generate \
 ```
 
 **Contenu de l'archive** (7 fichiers) :
-- ✅ `descriptor.json`, `descriptor.yaml`, `descriptor.html`
+- ✅ `deployment-manifest-report.json`, `deployment-manifest-report.yaml`, `deployment-manifest-report.html`
 - ✅ `dependency-report.json`, `dependency-report.html`
 - ✅ `dependency-analysis.json`, `dependency-analysis.html`
 
@@ -519,9 +519,9 @@ GitHub Actions (extrait) :
   with:
     name: deploy-manifest
     path: |
-      descriptor.json
-      descriptor.yaml
-      descriptor.html
+      deployment-manifest-report.json
+      deployment-manifest-report.yaml
+      deployment-manifest-report.html
 ```
 
 ---
