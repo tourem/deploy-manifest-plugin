@@ -1190,6 +1190,59 @@ public class GenerateDescriptorMojo extends AbstractMojo {
         html.append("    body.dark-mode code { background: #16213e; color: #a0e9ff; }\n");
         html.append("    body.dark-mode .empty-state { color: #666; }\n");
 
+        // Phase 1: Responsive Design
+        html.append("    /* Responsive Design for Mobile */\n");
+        html.append("    @media (max-width: 768px) {\n");
+        html.append("      body { padding: 10px; }\n");
+        html.append("      .container { border-radius: 10px; }\n");
+        html.append("      .header { padding: 20px; flex-direction: column; gap: 15px; }\n");
+        html.append("      .header h1 { font-size: 1.8em; }\n");
+        html.append("      .stats { grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }\n");
+        html.append("      .info-grid { grid-template-columns: 1fr; }\n");
+        html.append("      .tabs { padding: 0 15px; }\n");
+        html.append("      .tab { padding: 15px 20px; font-size: 0.9em; }\n");
+        html.append("      .tab-content { padding: 20px; }\n");
+        html.append("      .module-header { flex-direction: column; align-items: flex-start; }\n");
+        html.append("      .module-card { padding: 20px; }\n");
+        html.append("    }\n");
+        html.append("    @media (max-width: 480px) {\n");
+        html.append("      .stats { grid-template-columns: 1fr; }\n");
+        html.append("      .header h1 { font-size: 1.5em; }\n");
+        html.append("      .stat-card .number { font-size: 2em; }\n");
+        html.append("    }\n");
+
+        // Phase 1: Copy Button Styles
+        html.append("    /* Copy Button Styles */\n");
+        html.append("    .copy-btn { display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75em; transition: all 0.2s; vertical-align: middle; }\n");
+        html.append("    .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }\n");
+        html.append("    .copy-btn:active { transform: translateY(0); }\n");
+        html.append("    .copy-btn.copied { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }\n");
+        html.append("    body.dark-mode .copy-btn { background: linear-gradient(135deg, #4953c8 0%, #5a67d8 100%); }\n");
+        html.append("    code { position: relative; }\n");
+
+        // Phase 1: Filter Bar Styles
+        html.append("    /* Filter Bar Styles */\n");
+        html.append("    .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 20px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }\n");
+        html.append("    .filter-bar select, .filter-bar input[type=\"text\"] { padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 0.9em; background: white; }\n");
+        html.append("    .filter-bar select:focus, .filter-bar input[type=\"text\"]:focus { outline: 2px solid #667eea; outline-offset: 2px; }\n");
+        html.append("    .filter-bar label { display: flex; align-items: center; gap: 6px; font-size: 0.9em; cursor: pointer; }\n");
+        html.append("    .filter-bar input[type=\"checkbox\"] { width: 18px; height: 18px; cursor: pointer; }\n");
+        html.append("    body.dark-mode .filter-bar { background: #16213e; border-bottom-color: #2a2a3e; }\n");
+        html.append("    body.dark-mode .filter-bar select, body.dark-mode .filter-bar input[type=\"text\"] { background: #1a1a2e; border-color: #2a2a3e; color: #e0e0e0; }\n");
+        html.append("    body.dark-mode .filter-bar label { color: #e0e0e0; }\n");
+
+        // Phase 1: Keyboard Shortcuts Indicator
+        html.append("    /* Keyboard Shortcuts Indicator */\n");
+        html.append("    .kbd { display: inline-block; padding: 3px 6px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 3px; font-family: monospace; font-size: 0.85em; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }\n");
+        html.append("    body.dark-mode .kbd { background: #2a2a3e; border-color: #3a3a4e; color: #e0e0e0; }\n");
+        html.append("    .shortcuts-hint { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 12px 16px; border-radius: 8px; font-size: 0.85em; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000; }\n");
+        html.append("    .shortcuts-hint.show { opacity: 1; }\n");
+
+        // Phase 1: Focus Visible for Accessibility
+        html.append("    /* Accessibility - Focus Visible */\n");
+        html.append("    *:focus-visible { outline: 2px solid #667eea; outline-offset: 2px; }\n");
+        html.append("    button:focus-visible { outline-offset: 4px; }\n");
+
         html.append("  </style>\n");
         html.append("</head>\n");
         html.append("<body>\n");
@@ -2532,6 +2585,81 @@ d af f CSV</button>\\n");
         html.append("    });\n");
         html.append("    document.addEventListener('DOMContentLoaded', function() {\n");
         html.append("      if (window.DEP_SECTIONS) { window.DEP_SECTIONS.forEach(function(id){ try { initDependenciesSection(id); } catch(e) {} }); }\n");
+        html.append("    });\n");
+
+        // Phase 1: Copy to Clipboard functionality
+        html.append("    /* Phase 1: Copy to Clipboard */\n");
+        html.append("    function addCopyButtons() {\n");
+        html.append("      document.querySelectorAll('code').forEach(code => {\n");
+        html.append("        if (code.querySelector('.copy-btn')) return;\n");
+        html.append("        const btn = document.createElement('button');\n");
+        html.append("        btn.className = 'copy-btn';\n");
+        html.append("        btn.innerHTML = '📋';\n");
+        html.append("        btn.title = 'Copy to clipboard';\n");
+        html.append("        btn.onclick = () => {\n");
+        html.append("          navigator.clipboard.writeText(code.textContent).then(() => {\n");
+        html.append("            btn.innerHTML = '✅';\n");
+        html.append("            btn.classList.add('copied');\n");
+        html.append("            setTimeout(() => {\n");
+        html.append("              btn.innerHTML = '📋';\n");
+        html.append("              btn.classList.remove('copied');\n");
+        html.append("            }, 2000);\n");
+        html.append("          });\n");
+        html.append("        };\n");
+        html.append("        code.parentElement.insertBefore(btn, code.nextSibling);\n");
+        html.append("      });\n");
+        html.append("    }\n");
+
+        // Phase 1: Keyboard Shortcuts
+        html.append("    /* Phase 1: Keyboard Shortcuts */\n");
+        html.append("    let currentTabIndex = 0;\n");
+        html.append("    const tabs = Array.from(document.querySelectorAll('.tab'));\n");
+        html.append("    const shortcutsHint = document.createElement('div');\n");
+        html.append("    shortcutsHint.className = 'shortcuts-hint';\n");
+        html.append("    document.body.appendChild(shortcutsHint);\n");
+        html.append("    \n");
+        html.append("    function showShortcutHint(text) {\n");
+        html.append("      shortcutsHint.textContent = text;\n");
+        html.append("      shortcutsHint.classList.add('show');\n");
+        html.append("      setTimeout(() => shortcutsHint.classList.remove('show'), 2000);\n");
+        html.append("    }\n");
+        html.append("    \n");
+        html.append("    document.addEventListener('keydown', (e) => {\n");
+        html.append("      // Ctrl/Cmd + D: Toggle Dark Mode\n");
+        html.append("      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        toggleTheme();\n");
+        html.append("        showShortcutHint('Theme toggled');\n");
+        html.append("      }\n");
+        html.append("      // Arrow Left/Right: Navigate tabs\n");
+        html.append("      if (e.key === 'ArrowLeft' && currentTabIndex > 0) {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        currentTabIndex--;\n");
+        html.append("        tabs[currentTabIndex].click();\n");
+        html.append("        showShortcutHint('← Previous tab');\n");
+        html.append("      }\n");
+        html.append("      if (e.key === 'ArrowRight' && currentTabIndex < tabs.length - 1) {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        currentTabIndex++;\n");
+        html.append("        tabs[currentTabIndex].click();\n");
+        html.append("        showShortcutHint('Next tab →');\n");
+        html.append("      }\n");
+        html.append("      // ? key: Show shortcuts help\n");
+        html.append("      if (e.key === '?') {\n");
+        html.append("        e.preventDefault();\n");
+        html.append("        showShortcutHint('⌨️ Shortcuts: Ctrl+D (theme) | ← → (tabs) | ? (help)');\n");
+        html.append("      }\n");
+        html.append("    });\n");
+        html.append("    \n");
+        html.append("    tabs.forEach((tab, index) => {\n");
+        html.append("      tab.addEventListener('click', () => currentTabIndex = index);\n");
+        html.append("    });\n");
+
+        // Phase 1: Initialize on load
+        html.append("    /* Phase 1: Initialize */\n");
+        html.append("    document.addEventListener('DOMContentLoaded', () => {\n");
+        html.append("      addCopyButtons();\n");
+        html.append("      console.log('✨ Phase 1 UX improvements loaded: Responsive + Copy + Shortcuts');\n");
         html.append("    });\n");
 
         html.append("  </script>\n");
