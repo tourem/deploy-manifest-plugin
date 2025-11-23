@@ -333,7 +333,39 @@ This creates a `deployment-manifest-report.json` file containing all deployment 
 
 ## Usage (quick)
 
-The most common commands at a glance:
+### 🎯 Using Profiles (Recommended - NEW in 2.8.0)
+
+**Profiles** simplify plugin usage by providing sensible defaults for common scenarios:
+
+```bash
+# Basic (default): JSON only with essential info
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate
+
+# Standard: JSON + HTML + dependency tree
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.profile=standard
+
+# Full: JSON + YAML + HTML + all metadata
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.profile=full
+
+# CI: Optimized for CI/CD with archive
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate -Dmanifest.profile=ci
+```
+
+**Override profile defaults:**
+```bash
+# Standard profile + add licenses
+mvn io.github.tourem:deploy-manifest-plugin:2.7.0:generate \
+  -Dmanifest.profile=standard \
+  -Dmanifest.includeLicenses=true
+```
+
+📖 **[Complete Profiles Guide](./PROFILES_GUIDE.md)** - Detailed documentation with examples
+
+---
+
+### Advanced Usage (Manual Options)
+
+For fine-grained control, you can specify individual options:
 
 ```bash
 # Default (deployment-manifest-report.json at project root)

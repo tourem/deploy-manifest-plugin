@@ -108,6 +108,31 @@ public class GenerateDescriptorMojo extends AbstractMojo {
     private boolean skip;
 
     /**
+     * Predefined profile for manifest generation.
+     * <p>Profiles provide sensible defaults for common use cases:</p>
+     * <ul>
+     *   <li><b>basic</b> (default): JSON only with essential info</li>
+     *   <li><b>standard</b>: JSON + HTML + dependency tree (depth=2)</li>
+     *   <li><b>full</b>: JSON + YAML + HTML + all metadata</li>
+     *   <li><b>ci</b>: Optimized for CI/CD with archive</li>
+     * </ul>
+     * <p>Individual options can override profile defaults.</p>
+     *
+     * <p>Examples:</p>
+     * <pre>
+     * # Use standard profile
+     * mvn deploy-manifest:generate -Dmanifest.profile=standard
+     *
+     * # Use standard profile + override to add licenses
+     * mvn deploy-manifest:generate -Dmanifest.profile=standard -Dmanifest.includeLicenses=true
+     * </pre>
+     *
+     * @since 2.8.0
+     */
+    @Parameter(property = "manifest.profile", defaultValue = "basic")
+    private String profile;
+
+    /**
      * Pretty print the JSON output.
      * Default: true
      */
@@ -378,6 +403,9 @@ public class GenerateDescriptorMojo extends AbstractMojo {
             getLog().info("Descriptor plugin execution skipped");
             return;
         }
+
+        // Apply profile defaults (can be overridden by explicit parameters)
+        applyProfile();
 
         try {
             getLog().info("Analyzing Maven project: " + project.getName());
@@ -3360,6 +3388,99 @@ d af f CSV</button>\\n");
             getLog().warn("Failed to execute post-generation hook: " + e.getMessage());
             getLog().debug("Hook execution error details", e);
         }
+    }
+
+    // ========== Profile Support Methods ==========
+
+    /**
+     * Apply the selected profile's defaults.
+     * Individual parameters take precedence over profile defaults.
+     */
+    private void applyProfile() {
+        ManifestProfile manifestProfile = ManifestProfile.fromString(profile);
+        getLog().info("Using profile: " + manifestProfile.name().toLowerCase());
+        manifestProfile.applyDefaults(this);
+    }
+
+    // Setter methods that only set if value was not explicitly provided by user
+
+    void setExportFormatIfNotSet(String value) {
+        if (!isUserSet("exportFormat")) {
+            this.exportFormat = value;
+        }
+    }
+
+    void setGenerateHtmlIfNotSet(boolean value) {
+        if (!isUserSet("generateHtml")) {
+            this.generateHtml = value;
+        }
+    }
+
+    void setIncludeDependencyTreeIfNotSet(boolean value) {
+        if (!isUserSet("includeDependencyTree")) {
+            this.includeDependencyTree = value;
+        }
+    }
+
+    void setDependencyTreeMaxDepthIfNotSet(int value) {
+        if (!isUserSet("dependencyTreeDepth")) {
+            this.dependencyTreeDepth = value;
+        }
+    }
+
+    void setIncludeLicensesIfNotSet(boolean value) {
+        if (!isUserSet("includeLicenses")) {
+            this.includeLicenses = value;
+        }
+    }
+
+    void setIncludePropertiesIfNotSet(boolean value) {
+        if (!isUserSet("includeProperties")) {
+            this.includeProperties = value;
+        }
+    }
+
+    void setIncludePluginsIfNotSet(boolean value) {
+        if (!isUserSet("includePlugins")) {
+            this.includePlugins = value;
+        }
+    }
+
+    void setFormatIfNotSet(String value) {
+        if (!isUserSet("format")) {
+            this.format = value;
+        }
+    }
+
+    void setAttachIfNotSet(boolean value) {
+        if (!isUserSet("attach")) {
+            this.attach = value;
+        }
+    }
+
+    void setCompressIfNotSet(boolean value) {
+        if (!isUserSet("compress")) {
+            this.compress = value;
+        }
+    }
+
+    void setIncludeAllReportsIfNotSet(boolean value) {
+        if (!isUserSet("includeAllReports")) {
+            this.includeAllReports = value;
+        }
+    }
+
+    /**
+     * Check if a parameter was explicitly set by the user (via CLI or POM).
+     * This allows profile defaults to be overridden.
+     *
+     * @param parameterName the parameter name
+     * @return true if user explicitly set the value
+     */
+    private boolean isUserSet(String parameterName) {
+        // Check if the system property was set (CLI parameter)
+        String propertyName = "manifest." + parameterName;
+        return System.getProperty(propertyName) != null;
     }
 }
 
