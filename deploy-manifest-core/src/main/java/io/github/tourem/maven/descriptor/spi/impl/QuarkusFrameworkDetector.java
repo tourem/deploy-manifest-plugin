@@ -69,7 +69,8 @@ public class QuarkusFrameworkDetector implements FrameworkDetector {
         List<String> profiles = detectQuarkusProfiles(modulePath);
 
         // Add Quarkus-specific build plugins
-        List<String> buildPlugins = new ArrayList<>(builder.build().getBuildPlugins());
+        List<String> existingPlugins = builder.build().getBuildPlugins();
+        List<String> buildPlugins = existingPlugins != null ? new ArrayList<>(existingPlugins) : new ArrayList<>();
         buildPlugins.add("quarkus-maven-plugin");
         builder.buildPlugins(buildPlugins);
 
