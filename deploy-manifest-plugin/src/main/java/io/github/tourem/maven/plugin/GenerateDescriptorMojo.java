@@ -1316,6 +1316,9 @@ public class GenerateDescriptorMojo extends AbstractMojo {
         html.append("      .tab-content { display: block !important; page-break-inside: avoid; }\n");
         html.append("      .module-card { page-break-inside: avoid; }\n");
         html.append("    }\n");
+        
+        // Add enhanced sections styles
+        html.append(HtmlEnhancedSectionsRenderer.generateStyles());
 
         html.append("  </style>\n");
         html.append("</head>\n");
@@ -2238,9 +2241,14 @@ d af f CSV</button>\\n");
                     // Register for JS init
                     html.append("        <script>window.DEP_SECTIONS = window.DEP_SECTIONS || []; window.DEP_SECTIONS.push('")
                         .append(moduleId).append("');</script>\n");
-
-                    html.append("      </div>\n"); // module-card end
                 }
+                
+                // Add new enhanced sections
+                html.append(HtmlEnhancedSectionsRenderer.generateExternalDependenciesHtml(module));
+                html.append(HtmlEnhancedSectionsRenderer.generateTestingInfoHtml(module));
+                html.append(HtmlEnhancedSectionsRenderer.generateBuildMetricsHtml(module));
+
+                html.append("      </div>\n"); // module-card end
             });
         } else {
             html.append("      <div class=\"empty-state\">\n");
