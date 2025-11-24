@@ -42,10 +42,10 @@
 - [ ] 5.4 Tests unitaires
 
 ### Phase 6: Fusion
-- [ ] 6.1 Créer `ConfigurationMerger`
-- [ ] 6.2 Implémenter logique de fusion (ordre de priorité)
-- [ ] 6.3 Tracker source de chaque valeur
-- [ ] 6.4 Appliquer profils
+- [x] 6.1 Créer `ConfigurationMerger`
+- [x] 6.2 Implémenter logique de fusion (ordre de priorité)
+- [x] 6.3 Tracker source de chaque valeur
+- [x] 6.4 Appliquer profils
 - [ ] 6.5 Tests de fusion
 
 ---
@@ -112,12 +112,12 @@
 
 ```
 Sprint 1: [▓▓▓▓▓▓▓▓▓▓░░] 11/12 tâches (92%)
-Sprint 2: [▓▓▓▓▓▓░░░░░░░] 6/13 tâches (46%)
+Sprint 2: [▓▓▓▓▓▓▓▓▓▓░░░] 10/13 tâches (77%)
 Sprint 3: [ ] 0/6 tâches
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓▓░░░░░░░] 17/65 tâches (26%)
+TOTAL: [▓▓▓░░░░░░░] 21/65 tâches (32%)
 ```
 
 ---
@@ -128,38 +128,40 @@ TOTAL: [▓▓▓░░░░░░░] 17/65 tâches (26%)
 - Sprint 1: 11/12 tâches (92%)
 - Phase 4: Variables d'environnement (3/4 tâches) - 75%
 - Phase 5: Ligne de commande (3/4 tâches) - 75%
+- Phase 6: Fusion (4/5 tâches) - 80%
 
-**Sprint 2: 46% complété** (6/13 tâches)
+**Sprint 2: 77% complété** (10/13 tâches)
 
-**Fichiers créés (Phases 4 & 5)**:
-- `TypeConverter.java` - Utilitaire de conversion
-  * toBoolean() - Supporte true/false, yes/no, 1/0
-  * toInteger() - Parse string vers integer
-  * toString() - Trim string
-  * toStringList() - Parse "a,b,c" → ["a", "b", "c"]
-  * envVarToPropertyPath() - MANIFEST_OUTPUT_DIRECTORY → output.directory
-  * cmdLineToPropertyPath() - manifest.output.directory → output.directory
+**Fichiers créés (Phase 6)**:
+- `ResolvedConfiguration.java`
+  * Wrapper autour de ManifestConfiguration
+  * Tracking de la source pour chaque propriété
+  * Map<String, ConfigurationSource> pour traçabilité
+  * Méthodes: getSource(), setSource(), isExplicitlySet()
 
-- `EnvironmentConfigurationLoader.java` (300+ lignes)
-  * Charge depuis variables MANIFEST_*
-  * Conversion UPPER_SNAKE_CASE → lower.dot.case
-  * Applique toutes les propriétés
-  * Gestion d'erreurs avec warnings
+- `ConfigurationMerger.java` (400+ lignes)
+  * Fusion de 4 sources: CLI, ENV, YAML, POM
+  * Ordre de priorité respecté (CLI > ENV > YAML > Profile > POM > Default)
+  * Application des profils avant YAML
+  * Merge intelligent (ne pas écraser avec null)
+  * Tracking complet des sources
 
-- `CommandLineConfigurationLoader.java`
-  * Charge depuis propriétés manifest.*
-  * Réutilise EnvironmentConfigurationLoader
-  * Conversion automatique vers format ENV
+**Logique de fusion**:
+1. ✅ Plugin defaults (constructeur)
+2. ✅ POM configuration (si fournie)
+3. ✅ Profile defaults (si profil != basic)
+4. ✅ YAML file overrides
+5. ✅ Environment variables
+6. ✅ Command line (priorité max)
 
-**Fonctionnalités**:
-- ✅ Lecture variables d'environnement MANIFEST_*
-- ✅ Lecture propriétés ligne de commande manifest.*
-- ✅ Conversion de noms (UPPER_SNAKE_CASE ↔ lower.dot.case)
-- ✅ Conversion de types (Boolean, Integer, String, List)
-- ✅ Support valeurs multiples (json,html,yaml)
-- ✅ Gestion erreurs avec logs
+**Règles de merge**:
+- ✅ Ne pas écraser avec null
+- ✅ Comparer valeurs avant d'écraser
+- ✅ Arrays: remplacement complet (pas de merge)
+- ✅ Objets: merge récursif
+- ✅ Tracker la source de chaque changement
 
-**Prochaine étape**: Tests unitaires pour Phase 4 et 5
+**Prochaine étape**: Tests de fusion (Phase 6.5)
 
 ---
 
