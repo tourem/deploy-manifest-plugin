@@ -23,7 +23,7 @@
 - [x] 3.1 Ajouter dépendance YAML au pom.xml
 - [x] 3.2 Créer `YamlConfigurationLoader`
 - [x] 3.3 Gérer erreurs de parsing
-- [ ] 3.4 Tests avec différents fichiers YAML
+- [x] 3.4 Tests avec différents fichiers YAML
 
 ---
 
@@ -111,13 +111,13 @@
 ## 📊 Progression Globale
 
 ```
-Sprint 1: [▓▓▓▓▓▓▓▓▓░░░] 10/12 tâches (83%)
+Sprint 1: [▓▓▓▓▓▓▓▓▓▓░░] 11/12 tâches (92%)
 Sprint 2: [ ] 0/13 tâches
 Sprint 3: [ ] 0/6 tâches
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓░░░░░░░░] 10/65 tâches (15%)
+TOTAL: [▓▓░░░░░░░░] 11/65 tâches (17%)
 ```
 
 ---
@@ -125,29 +125,40 @@ TOTAL: [▓▓░░░░░░░░] 10/65 tâches (15%)
 ## 🎯 Tâche Actuelle
 
 **✅ Complété**: 
-- Phase 1: JSON Schema (3/4 tâches)
+- Phase 1: JSON Schema (3/4 tâches) - 75%
 - Phase 2: Modèle Java (4/4 tâches) ✅ COMPLETE
-- Phase 3: Parsing YAML (3/4 tâches)
+- Phase 3: Parsing YAML (4/4 tâches) ✅ COMPLETE
 
-**À faire maintenant**: Phase 3.4 - Tests avec différents fichiers YAML
+**Sprint 1: 92% complété** (11/12 tâches)
 
-**Fichiers créés (Phase 3)**:
-- `YamlConfigurationLoader.java` (500+ lignes)
-  * Parsing complet de tous les champs
-  * Gestion des erreurs YAML
-  * Conversion type-safe (Map → Objects)
-  * Support des valeurs par défaut
-- `ConfigurationLoadException.java`
+**Fichiers créés (Phase 3.4 - Tests)**:
+- `YamlConfigurationLoaderTest.java` (15 tests)
+- 6 fichiers YAML de test:
+  * `minimal.yml` - Configuration minimale
+  * `complete.yml` - Configuration complète
+  * `empty.yml` - Fichier vide
+  * `invalid-syntax.yml` - Syntaxe YAML invalide
+  * `invalid-profile.yml` - Profil invalide
+  * `invalid-type.yml` - Types invalides
 
-**Fonctionnalités**:
-- ✅ Lecture du fichier `.deploy-manifest.yml`
-- ✅ Parsing YAML vers objets Java
-- ✅ Gestion des erreurs de syntaxe YAML
-- ✅ Conversion type-safe (Boolean, Integer, String, List)
-- ✅ Messages d'erreur clairs
-- ✅ Support des fichiers vides ou absents
+**Tests couverts**:
+- ✅ Chargement configuration minimale
+- ✅ Chargement configuration complète
+- ✅ Fichier absent (retourne null)
+- ✅ Fichier vide (retourne défauts)
+- ✅ Erreur syntaxe YAML
+- ✅ Erreur profil invalide
+- ✅ Erreur type invalide
+- ✅ Conversion string → boolean
+- ✅ Conversion string → integer
+- ✅ Valeur unique → liste
+- ✅ Enum GitFetchMode
+- ✅ Configuration partielle
+- ✅ Préservation des défauts
 
-**Prochaine étape**: Créer des tests unitaires pour le YamlConfigurationLoader
+**Reste à faire**: Phase 1.4 - Tester schéma dans éditeurs (manuel)
+
+**Prochaine étape**: Sprint 2 - Variables d'environnement et ligne de commande
 
 ---
 

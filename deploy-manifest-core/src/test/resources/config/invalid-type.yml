@@ -1,0 +1,5 @@
+profile: standard
+dependencies:
+  tree:
+    enabled: maybe  # Should be boolean
+    depth: "not-a-number"  # Should be integer

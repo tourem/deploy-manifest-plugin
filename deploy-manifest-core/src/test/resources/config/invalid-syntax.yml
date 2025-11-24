@@ -1,0 +1,5 @@
+profile: standard
+output:
+  formats:
+    - json
+  - html  # Invalid indentation
