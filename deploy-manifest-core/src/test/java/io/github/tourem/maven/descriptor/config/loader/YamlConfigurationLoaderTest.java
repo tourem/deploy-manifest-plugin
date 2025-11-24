@@ -30,7 +30,7 @@ class YamlConfigurationLoaderTest {
         File yamlFile = getResourceFile("config/minimal.yml");
         
         // When
-        ManifestConfiguration config = loader.load(yamlFile);
+        ManifestConfiguration config = loader.loadFromFile(yamlFile);
         
         // Then
         assertThat(config).isNotNull();
@@ -43,7 +43,7 @@ class YamlConfigurationLoaderTest {
         File yamlFile = getResourceFile("config/complete.yml");
         
         // When
-        ManifestConfiguration config = loader.load(yamlFile);
+        ManifestConfiguration config = loader.loadFromFile(yamlFile);
         
         // Then
         assertThat(config).isNotNull();
@@ -124,7 +124,7 @@ class YamlConfigurationLoaderTest {
         File nonExistentFile = tempDir.resolve("non-existent.yml").toFile();
         
         // When
-        ManifestConfiguration config = loader.load(nonExistentFile);
+        ManifestConfiguration config = loader.loadFromFile(nonExistentFile);
         
         // Then
         assertThat(config).isNull();
@@ -136,7 +136,7 @@ class YamlConfigurationLoaderTest {
         File yamlFile = getResourceFile("config/empty.yml");
         
         // When
-        ManifestConfiguration config = loader.load(yamlFile);
+        ManifestConfiguration config = loader.loadFromFile(yamlFile);
         
         // Then
         assertThat(config).isNotNull();
@@ -149,7 +149,7 @@ class YamlConfigurationLoaderTest {
         File yamlFile = getResourceFile("config/invalid-syntax.yml");
         
         // When/Then
-        assertThatThrownBy(() -> loader.load(yamlFile))
+        assertThatThrownBy(() -> loader.loadFromFile(yamlFile))
             .isInstanceOf(ConfigurationLoadException.class)
             .hasMessageContaining("Invalid YAML syntax");
     }
@@ -160,7 +160,7 @@ class YamlConfigurationLoaderTest {
         File yamlFile = getResourceFile("config/invalid-profile.yml");
         
         // When/Then
-        assertThatThrownBy(() -> loader.load(yamlFile))
+        assertThatThrownBy(() -> loader.loadFromFile(yamlFile))
             .isInstanceOf(ConfigurationLoadException.class)
             .hasMessageContaining("Invalid configuration value")
             .hasCauseInstanceOf(IllegalArgumentException.class);
@@ -172,7 +172,7 @@ class YamlConfigurationLoaderTest {
         File yamlFile = getResourceFile("config/invalid-type.yml");
         
         // When/Then
-        assertThatThrownBy(() -> loader.load(yamlFile))
+        assertThatThrownBy(() -> loader.loadFromFile(yamlFile))
             .isInstanceOf(ConfigurationLoadException.class)
             .hasMessageContaining("Invalid configuration value");
     }
@@ -183,7 +183,7 @@ class YamlConfigurationLoaderTest {
         File directory = tempDir.toFile();
         
         // When/Then
-        assertThatThrownBy(() -> loader.load(directory))
+        assertThatThrownBy(() -> loader.loadFromFile(directory))
             .isInstanceOf(ConfigurationLoadException.class)
             .hasMessageContaining("not a file");
     }
@@ -212,7 +212,7 @@ class YamlConfigurationLoaderTest {
         );
         
         // When
-        ManifestConfiguration config = loader.load(configFile.toFile());
+        ManifestConfiguration config = loader.loadFromFile(configFile.toFile());
         
         // Then
         assertThat(config.getVerbose()).isTrue();
@@ -230,7 +230,7 @@ class YamlConfigurationLoaderTest {
         );
         
         // When
-        ManifestConfiguration config = loader.load(configFile.toFile());
+        ManifestConfiguration config = loader.loadFromFile(configFile.toFile());
         
         // Then
         assertThat(config.getDependencies().getTree().getDepth()).isEqualTo(7);
@@ -246,7 +246,7 @@ class YamlConfigurationLoaderTest {
         );
         
         // When
-        ManifestConfiguration config = loader.load(configFile.toFile());
+        ManifestConfiguration config = loader.loadFromFile(configFile.toFile());
         
         // Then
         assertThat(config.getOutput().getFormats()).containsExactly("json");
@@ -262,7 +262,7 @@ class YamlConfigurationLoaderTest {
         );
         
         // When
-        ManifestConfiguration config = loader.load(configFile.toFile());
+        ManifestConfiguration config = loader.loadFromFile(configFile.toFile());
         
         // Then
         assertThat(config.getGit().getFetch()).isEqualTo(GitFetchMode.NEVER);
@@ -283,7 +283,7 @@ class YamlConfigurationLoaderTest {
         );
         
         // When
-        ManifestConfiguration config = loader.load(configFile.toFile());
+        ManifestConfiguration config = loader.loadFromFile(configFile.toFile());
         
         // Then
         assertThat(config.getProfile()).isEqualTo(ManifestProfile.STANDARD);
@@ -302,7 +302,7 @@ class YamlConfigurationLoaderTest {
         Files.writeString(configFile, "profile: basic\n");
         
         // When
-        ManifestConfiguration config = loader.load(configFile.toFile());
+        ManifestConfiguration config = loader.loadFromFile(configFile.toFile());
         
         // Then
         // Check that defaults are preserved
