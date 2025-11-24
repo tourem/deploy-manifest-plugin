@@ -77,6 +77,13 @@
       <version>8.0.1.Final</version>
     </dependency>
 
+    <!-- Expression Language for Hibernate Validator -->
+    <dependency>
+      <groupId>org.glassfish.expressly</groupId>
+      <artifactId>expressly</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+
     <!-- SLF4J API -->
     <dependency>
       <groupId>org.slf4j</groupId>
