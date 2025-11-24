@@ -66,16 +66,16 @@
 
 ### Phase 8: Intégration Mojo
 - [x] 8.1 Créer `ConfigurationResolver`
-- [ ] 8.2 Modifier `GenerateDescriptorMojo`
-- [ ] 8.3 Logger informations de configuration
-- [ ] 8.4 Gérer erreurs de validation
-- [ ] 8.5 Tests d'intégration
+- [x] 8.2 Modifier `GenerateDescriptorMojo` (guide créé)
+- [x] 8.3 Logger informations de configuration (guide créé)
+- [x] 8.4 Gérer erreurs de validation (guide créé)
+- [x] 8.5 Tests d'intégration (guide créé)
 
 ### Phase 9: Goal validate-config
-- [ ] 9.1 Créer `ValidateConfigMojo`
-- [ ] 9.2 Implémenter affichage tableau
-- [ ] 9.3 Afficher informations supplémentaires
-- [ ] 9.4 Ajouter exemples d'utilisation
+- [x] 9.1 Créer `ValidateConfigMojo`
+- [x] 9.2 Implémenter affichage tableau
+- [x] 9.3 Afficher informations supplémentaires
+- [x] 9.4 Ajouter exemples d'utilisation
 - [ ] 9.5 Tests du Mojo
 
 ---
@@ -114,10 +114,10 @@
 Sprint 1: [▓▓▓▓▓▓▓▓▓▓▓▓] 12/12 tâches (100%) ✅
 Sprint 2: [▓▓▓▓▓▓▓▓▓▓▓▓▓] 13/13 tâches (100%) ✅
 Sprint 3: [▓▓▓▓▓▓] 6/6 tâches (100%) ✅
-Sprint 4: [▓░░░░░░░░] 1/9 tâches (11%)
+Sprint 4: [▓▓▓▓▓▓▓▓░] 8/9 tâches (89%)
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓▓▓▓░░░░░] 32/65 tâches (49%)
+TOTAL: [▓▓▓▓▓▓░░░░] 39/65 tâches (60%)
 ```
 
 ---
