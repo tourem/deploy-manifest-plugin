@@ -18,7 +18,7 @@ Ever deployed to production and asked yourself:
 **One command. Complete answers.**
 
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate
+mvn io.github.tourem:deploy-manifest-plugin:3.0.0:generate
 ```
 
 ✅ **Zero configuration** — Auto-detects everything  
@@ -75,13 +75,13 @@ mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate
 
 ```bash
 # Generate deployment manifest
-mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate
+mvn io.github.tourem:deploy-manifest-plugin:3.0.0:generate
 
 # With HTML report
-mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.generateHtml=true
+mvn io.github.tourem:deploy-manifest-plugin:3.0.0:generate -Dmanifest.generateHtml=true
 
 # Use predefined profile (NEW in 2.8.0)
-mvn io.github.tourem:deploy-manifest-plugin:2.8.1:generate -Dmanifest.profile=standard
+mvn io.github.tourem:deploy-manifest-plugin:3.0.0:generate -Dmanifest.profile=standard
 ```
 
 **Output:** `target/deployment-manifest-report.json` (+ HTML if requested)
@@ -96,7 +96,7 @@ Add to `pom.xml`:
         <plugin>
             <groupId>io.github.tourem</groupId>
             <artifactId>deploy-manifest-plugin</artifactId>
-            <version>2.8.1</version>
+            <version>3.0.0</version>
             <executions>
                 <execution>
                     <phase>package</phase>
@@ -156,7 +156,7 @@ mvn deploy-manifest:generate \
 ### Quick example
 
 ```bash
-mvn io.github.tourem:deploy-manifest-plugin:2.8.1:analyze-dependencies
+mvn io.github.tourem:deploy-manifest-plugin:3.0.0:analyze-dependencies
 ```
 
 **Result:** `target/dependency-analysis.html` with actionable recommendations
