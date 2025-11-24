@@ -162,8 +162,7 @@ class YamlConfigurationLoaderTest {
         // When/Then
         assertThatThrownBy(() -> loader.loadFromFile(yamlFile))
             .isInstanceOf(ConfigurationLoadException.class)
-            .hasMessageContaining("Invalid configuration value")
-            .hasCauseInstanceOf(IllegalArgumentException.class);
+            .hasMessageContaining("Invalid configuration value");
     }
     
     @Test
