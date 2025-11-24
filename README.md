@@ -379,9 +379,14 @@ See `examples/` directory for complete configuration examples:
 
 ## 📚 Documentation
 
+### User Guides
 - 🇬🇧 **[English Documentation](./doc-en.md)** — Complete guide with all options
 - 🇫🇷 **[Documentation Française](./doc.md)** — Guide complet avec toutes les options
 - 📋 **[CHANGELOG](./CHANGELOG.md)** — Version history and release notes
+
+### Developer Guides
+- 🔧 **[Integration Guide](./docs/INTEGRATION_STEP_BY_STEP.md)** — Step-by-step integration into your Mojo
+- 📖 **[Implementation Details](./docs/YAML_CONFIG_SUMMARY.md)** — Complete technical documentation
 
 ---
 

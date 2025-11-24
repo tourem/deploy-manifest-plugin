@@ -616,9 +616,9 @@ mvn deploy-manifest:generate \
 
 ### Plus d'Informations
 
-- Guide de démarrage rapide : `QUICKSTART_YAML.md`
 - Exemples complets : `examples/`
-- Documentation technique : `YAML_CONFIG_SUMMARY.md`
+- Guide d'intégration : `docs/INTEGRATION_STEP_BY_STEP.md`
+- Documentation technique : `docs/YAML_CONFIG_SUMMARY.md`
 
 ---
 
