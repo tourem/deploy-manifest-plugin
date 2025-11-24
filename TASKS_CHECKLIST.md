@@ -30,15 +30,15 @@
 ## 🎯 Sprint 2: Sources de Configuration (2-3 jours)
 
 ### Phase 4: Variables d'Environnement
-- [ ] 4.1 Créer `EnvironmentConfigurationLoader`
-- [ ] 4.2 Implémenter conversion de noms (MANIFEST_* → config)
-- [ ] 4.3 Implémenter conversion de types
+- [x] 4.1 Créer `EnvironmentConfigurationLoader`
+- [x] 4.2 Implémenter conversion de noms (MANIFEST_* → config)
+- [x] 4.3 Implémenter conversion de types
 - [ ] 4.4 Tests unitaires
 
 ### Phase 5: Ligne de Commande
-- [ ] 5.1 Créer `CommandLineConfigurationLoader`
-- [ ] 5.2 Implémenter conversion de noms (manifest.* → config)
-- [ ] 5.3 Réutiliser convertisseur de types
+- [x] 5.1 Créer `CommandLineConfigurationLoader`
+- [x] 5.2 Implémenter conversion de noms (manifest.* → config)
+- [x] 5.3 Réutiliser convertisseur de types
 - [ ] 5.4 Tests unitaires
 
 ### Phase 6: Fusion
@@ -112,12 +112,12 @@
 
 ```
 Sprint 1: [▓▓▓▓▓▓▓▓▓▓░░] 11/12 tâches (92%)
-Sprint 2: [ ] 0/13 tâches
+Sprint 2: [▓▓▓▓▓▓░░░░░░░] 6/13 tâches (46%)
 Sprint 3: [ ] 0/6 tâches
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓░░░░░░░░] 11/65 tâches (17%)
+TOTAL: [▓▓▓░░░░░░░] 17/65 tâches (26%)
 ```
 
 ---
@@ -125,40 +125,41 @@ TOTAL: [▓▓░░░░░░░░] 11/65 tâches (17%)
 ## 🎯 Tâche Actuelle
 
 **✅ Complété**: 
-- Phase 1: JSON Schema (3/4 tâches) - 75%
-- Phase 2: Modèle Java (4/4 tâches) ✅ COMPLETE
-- Phase 3: Parsing YAML (4/4 tâches) ✅ COMPLETE
+- Sprint 1: 11/12 tâches (92%)
+- Phase 4: Variables d'environnement (3/4 tâches) - 75%
+- Phase 5: Ligne de commande (3/4 tâches) - 75%
 
-**Sprint 1: 92% complété** (11/12 tâches)
+**Sprint 2: 46% complété** (6/13 tâches)
 
-**Fichiers créés (Phase 3.4 - Tests)**:
-- `YamlConfigurationLoaderTest.java` (15 tests)
-- 6 fichiers YAML de test:
-  * `minimal.yml` - Configuration minimale
-  * `complete.yml` - Configuration complète
-  * `empty.yml` - Fichier vide
-  * `invalid-syntax.yml` - Syntaxe YAML invalide
-  * `invalid-profile.yml` - Profil invalide
-  * `invalid-type.yml` - Types invalides
+**Fichiers créés (Phases 4 & 5)**:
+- `TypeConverter.java` - Utilitaire de conversion
+  * toBoolean() - Supporte true/false, yes/no, 1/0
+  * toInteger() - Parse string vers integer
+  * toString() - Trim string
+  * toStringList() - Parse "a,b,c" → ["a", "b", "c"]
+  * envVarToPropertyPath() - MANIFEST_OUTPUT_DIRECTORY → output.directory
+  * cmdLineToPropertyPath() - manifest.output.directory → output.directory
 
-**Tests couverts**:
-- ✅ Chargement configuration minimale
-- ✅ Chargement configuration complète
-- ✅ Fichier absent (retourne null)
-- ✅ Fichier vide (retourne défauts)
-- ✅ Erreur syntaxe YAML
-- ✅ Erreur profil invalide
-- ✅ Erreur type invalide
-- ✅ Conversion string → boolean
-- ✅ Conversion string → integer
-- ✅ Valeur unique → liste
-- ✅ Enum GitFetchMode
-- ✅ Configuration partielle
-- ✅ Préservation des défauts
+- `EnvironmentConfigurationLoader.java` (300+ lignes)
+  * Charge depuis variables MANIFEST_*
+  * Conversion UPPER_SNAKE_CASE → lower.dot.case
+  * Applique toutes les propriétés
+  * Gestion d'erreurs avec warnings
 
-**Reste à faire**: Phase 1.4 - Tester schéma dans éditeurs (manuel)
+- `CommandLineConfigurationLoader.java`
+  * Charge depuis propriétés manifest.*
+  * Réutilise EnvironmentConfigurationLoader
+  * Conversion automatique vers format ENV
 
-**Prochaine étape**: Sprint 2 - Variables d'environnement et ligne de commande
+**Fonctionnalités**:
+- ✅ Lecture variables d'environnement MANIFEST_*
+- ✅ Lecture propriétés ligne de commande manifest.*
+- ✅ Conversion de noms (UPPER_SNAKE_CASE ↔ lower.dot.case)
+- ✅ Conversion de types (Boolean, Integer, String, List)
+- ✅ Support valeurs multiples (json,html,yaml)
+- ✅ Gestion erreurs avec logs
+
+**Prochaine étape**: Tests unitaires pour Phase 4 et 5
 
 ---
 
