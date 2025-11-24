@@ -14,9 +14,9 @@
 - [ ] 1.4 Publier et tester dans VS Code/IntelliJ
 
 ### Phase 2: Modèle Java
-- [ ] 2.1 Créer `ManifestConfiguration.java`
-- [ ] 2.2 Créer sous-classes (Output, Dependencies, Metadata, Git, Docker)
-- [ ] 2.3 Créer enum `ManifestProfile`
+- [x] 2.1 Créer `ManifestConfiguration.java`
+- [x] 2.2 Créer sous-classes (Output, Dependencies, Metadata, Git, Docker)
+- [x] 2.3 Créer enum `ManifestProfile`
 - [ ] 2.4 Ajouter annotations de validation
 
 ### Phase 3: Parsing YAML
@@ -111,33 +111,44 @@
 ## 📊 Progression Globale
 
 ```
-Sprint 1: [▓▓░░░░░░░░░░] 3/12 tâches (25%)
+Sprint 1: [▓▓▓▓▓░░░░░░░] 6/12 tâches (50%)
 Sprint 2: [ ] 0/13 tâches
 Sprint 3: [ ] 0/6 tâches
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓░░░░░░░░░] 3/65 tâches (5%)
+TOTAL: [▓▓░░░░░░░░] 6/65 tâches (9%)
 ```
 
 ---
 
 ## 🎯 Tâche Actuelle
 
-**✅ Complété**: Phase 1.1, 1.2, 1.3 - JSON Schema créé
+**✅ Complété**: 
+- Phase 1.1, 1.2, 1.3 - JSON Schema créé
+- Phase 2.1, 2.2, 2.3 - Modèle Java créé
 
-**À faire maintenant**: Phase 1.4 - Tester dans VS Code/IntelliJ
+**À faire maintenant**: Phase 2.4 - Ajouter annotations de validation
 
-**Fichiers créés**:
-- `.deploy-manifest.schema.json` (schéma complet)
-- `examples/.deploy-manifest-minimal.yml`
-- `examples/.deploy-manifest-standard-profile.yml`
-- `examples/.deploy-manifest-full-profile.yml`
-- `examples/.deploy-manifest-ci-profile.yml`
-- `examples/.deploy-manifest-complete.yml`
-- `.deploy-manifest.yml` (exemple pour le projet)
+**Fichiers créés (Phase 2)**:
+- `ManifestConfiguration.java` (classe principale)
+- `ManifestProfile.java` (enum avec 4 profils)
+- `GitFetchMode.java` (enum)
+- `ConfigurationSource.java` (enum pour tracking)
+- `OutputConfiguration.java`
+- `DependenciesConfiguration.java`
+- `DependencyTreeConfiguration.java`
+- `DependencyAnalysisConfiguration.java`
+- `MetadataConfiguration.java`
+- `GitConfiguration.java`
+- `DockerConfiguration.java`
+- `CiConfiguration.java`
+- `FrameworksConfiguration.java`
+- `ValidationConfiguration.java`
 
-**Prochaine étape**: Tester la validation dans l'éditeur
+**Total**: 14 classes Java créées
+
+**Prochaine étape**: Ajouter annotations de validation (Bean Validation)
 
 ---
 
