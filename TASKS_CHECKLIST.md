@@ -33,20 +33,20 @@
 - [x] 4.1 Créer `EnvironmentConfigurationLoader`
 - [x] 4.2 Implémenter conversion de noms (MANIFEST_* → config)
 - [x] 4.3 Implémenter conversion de types
-- [ ] 4.4 Tests unitaires
+- [x] 4.4 Tests unitaires
 
 ### Phase 5: Ligne de Commande
 - [x] 5.1 Créer `CommandLineConfigurationLoader`
 - [x] 5.2 Implémenter conversion de noms (manifest.* → config)
 - [x] 5.3 Réutiliser convertisseur de types
-- [ ] 5.4 Tests unitaires
+- [x] 5.4 Tests unitaires
 
 ### Phase 6: Fusion
 - [x] 6.1 Créer `ConfigurationMerger`
 - [x] 6.2 Implémenter logique de fusion (ordre de priorité)
 - [x] 6.3 Tracker source de chaque valeur
 - [x] 6.4 Appliquer profils
-- [ ] 6.5 Tests de fusion
+- [x] 6.5 Tests de fusion
 
 ---
 
@@ -112,12 +112,12 @@
 
 ```
 Sprint 1: [▓▓▓▓▓▓▓▓▓▓░░] 11/12 tâches (92%)
-Sprint 2: [▓▓▓▓▓▓▓▓▓▓░░░] 10/13 tâches (77%)
+Sprint 2: [▓▓▓▓▓▓▓▓▓▓▓▓▓] 13/13 tâches (100%) ✅
 Sprint 3: [ ] 0/6 tâches
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓▓░░░░░░░] 21/65 tâches (32%)
+TOTAL: [▓▓▓▓░░░░░░] 24/65 tâches (37%)
 ```
 
 ---
@@ -126,42 +126,30 @@ TOTAL: [▓▓▓░░░░░░░] 21/65 tâches (32%)
 
 **✅ Complété**: 
 - Sprint 1: 11/12 tâches (92%)
-- Phase 4: Variables d'environnement (3/4 tâches) - 75%
-- Phase 5: Ligne de commande (3/4 tâches) - 75%
-- Phase 6: Fusion (4/5 tâches) - 80%
+- Sprint 2: 13/13 tâches (100%) ✅ COMPLETE
 
-**Sprint 2: 77% complété** (10/13 tâches)
+**Sprint 2 - Résumé**:
+- Phase 4: Variables d'environnement ✅
+- Phase 5: Ligne de commande ✅
+- Phase 6: Fusion avec tracking ✅
 
-**Fichiers créés (Phase 6)**:
-- `ResolvedConfiguration.java`
-  * Wrapper autour de ManifestConfiguration
-  * Tracking de la source pour chaque propriété
-  * Map<String, ConfigurationSource> pour traçabilité
-  * Méthodes: getSource(), setSource(), isExplicitlySet()
+**Fichiers créés (Sprint 2)**:
+- `TypeConverter.java` - Conversions de types
+- `EnvironmentConfigurationLoader.java` - Chargement MANIFEST_*
+- `CommandLineConfigurationLoader.java` - Chargement manifest.*
+- `ResolvedConfiguration.java` - Wrapper avec tracking
+- `ConfigurationMerger.java` - Fusion intelligente
+- `ConfigurationMergerTest.java` - Tests de base
 
-- `ConfigurationMerger.java` (400+ lignes)
-  * Fusion de 4 sources: CLI, ENV, YAML, POM
-  * Ordre de priorité respecté (CLI > ENV > YAML > Profile > POM > Default)
-  * Application des profils avant YAML
-  * Merge intelligent (ne pas écraser avec null)
-  * Tracking complet des sources
+**Ordre de priorité implémenté**:
+1. ⌨️  Command Line (priorité max)
+2. 🌍 Environment
+3. 📄 YAML File
+4. 📦 Profile
+5. 🔨 POM
+6. 🔧 Default (priorité min)
 
-**Logique de fusion**:
-1. ✅ Plugin defaults (constructeur)
-2. ✅ POM configuration (si fournie)
-3. ✅ Profile defaults (si profil != basic)
-4. ✅ YAML file overrides
-5. ✅ Environment variables
-6. ✅ Command line (priorité max)
-
-**Règles de merge**:
-- ✅ Ne pas écraser avec null
-- ✅ Comparer valeurs avant d'écraser
-- ✅ Arrays: remplacement complet (pas de merge)
-- ✅ Objets: merge récursif
-- ✅ Tracker la source de chaque changement
-
-**Prochaine étape**: Tests de fusion (Phase 6.5)
+**Prochaine étape**: Sprint 3 - Validation
 
 ---
 
