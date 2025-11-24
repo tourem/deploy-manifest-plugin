@@ -70,6 +70,13 @@
       <version>3.0.2</version>
     </dependency>
 
+    <!-- Hibernate Validator (Bean Validation implementation) -->
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>8.0.1.Final</version>
+    </dependency>
+
     <!-- SLF4J API -->
     <dependency>
       <groupId>org.slf4j</groupId>
