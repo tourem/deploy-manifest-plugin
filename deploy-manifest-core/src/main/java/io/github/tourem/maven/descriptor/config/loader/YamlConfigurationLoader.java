@@ -22,7 +22,7 @@ public class YamlConfigurationLoader {
     private static final String DEFAULT_CONFIG_FILE = ".deploy-manifest.yml";
     
     /**
-     * Loads configuration from the default file (.deploy-manifest.yml) in the given directory.
+     * Loads configuration from the default file (.deploy-manifest.yml) in the project directory.
      *
      * @param projectDirectory the project root directory
      * @return the loaded configuration, or null if file doesn't exist
@@ -30,7 +30,7 @@ public class YamlConfigurationLoader {
      */
     public ManifestConfiguration load(File projectDirectory) throws ConfigurationLoadException {
         File configFile = new File(projectDirectory, DEFAULT_CONFIG_FILE);
-        return load(configFile);
+        return loadFromFile(configFile);
     }
     
     /**
@@ -40,7 +40,7 @@ public class YamlConfigurationLoader {
      * @return the loaded configuration, or null if file doesn't exist
      * @throws ConfigurationLoadException if the file exists but cannot be parsed
      */
-    public ManifestConfiguration load(File yamlFile) throws ConfigurationLoadException {
+    public ManifestConfiguration loadFromFile(File yamlFile) throws ConfigurationLoadException {
         if (!yamlFile.exists()) {
             log.debug("Configuration file not found: {}", yamlFile.getAbsolutePath());
             return null;
