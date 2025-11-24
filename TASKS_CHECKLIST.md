@@ -53,11 +53,11 @@
 ## 🎯 Sprint 3: Validation (2 jours)
 
 ### Phase 7: Validation
-- [ ] 7.1 Créer `ConfigurationValidator`
-- [ ] 7.2 Implémenter validations (enums, ranges, types)
-- [ ] 7.3 Créer messages d'erreur clairs
-- [ ] 7.4 Implémenter "Did you mean?" (Levenshtein)
-- [ ] 7.5 Créer `ValidationResult` et `ValidationError`
+- [x] 7.1 Créer `ConfigurationValidator`
+- [x] 7.2 Implémenter validations (enums, ranges, types)
+- [x] 7.3 Créer messages d'erreur clairs
+- [x] 7.4 Implémenter "Did you mean?" (Levenshtein)
+- [x] 7.5 Créer `ValidationResult` et `ValidationError`
 - [ ] 7.6 Tests de validation
 
 ---
@@ -113,11 +113,11 @@
 ```
 Sprint 1: [▓▓▓▓▓▓▓▓▓▓░░] 11/12 tâches (92%)
 Sprint 2: [▓▓▓▓▓▓▓▓▓▓▓▓▓] 13/13 tâches (100%) ✅
-Sprint 3: [ ] 0/6 tâches
+Sprint 3: [▓▓▓▓▓░] 5/6 tâches (83%)
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓▓▓░░░░░░] 24/65 tâches (37%)
+TOTAL: [▓▓▓▓░░░░░░] 29/65 tâches (45%)
 ```
 
 ---
@@ -127,29 +127,47 @@ TOTAL: [▓▓▓▓░░░░░░] 24/65 tâches (37%)
 **✅ Complété**: 
 - Sprint 1: 11/12 tâches (92%)
 - Sprint 2: 13/13 tâches (100%) ✅ COMPLETE
+- Sprint 3: Phase 7 (5/6 tâches) - 83%
 
-**Sprint 2 - Résumé**:
-- Phase 4: Variables d'environnement ✅
-- Phase 5: Ligne de commande ✅
-- Phase 6: Fusion avec tracking ✅
+**Sprint 3 - Phase 7: Validation**
 
-**Fichiers créés (Sprint 2)**:
-- `TypeConverter.java` - Conversions de types
-- `EnvironmentConfigurationLoader.java` - Chargement MANIFEST_*
-- `CommandLineConfigurationLoader.java` - Chargement manifest.*
-- `ResolvedConfiguration.java` - Wrapper avec tracking
-- `ConfigurationMerger.java` - Fusion intelligente
-- `ConfigurationMergerTest.java` - Tests de base
+**Fichiers créés**:
+- `ValidationError.java`
+  * Représente une erreur de validation
+  * field, value, message, suggestion
+  * toString() formaté
 
-**Ordre de priorité implémenté**:
-1. ⌨️  Command Line (priorité max)
-2. 🌍 Environment
-3. 📄 YAML File
-4. 📦 Profile
-5. 🔨 POM
-6. 🔧 Default (priorité min)
+- `ValidationResult.java`
+  * Collecte toutes les erreurs
+  * isValid(), getErrors(), getErrorCount()
+  * formatErrors() avec affichage élégant
+  * Séparateurs visuels (━━━━)
 
-**Prochaine étape**: Sprint 3 - Validation
+- `LevenshteinDistance.java`
+  * Algorithme de distance d'édition
+  * calculate(s1, s2) - distance entre 2 strings
+  * findClosestMatch() - trouve la meilleure suggestion
+  * Seuil configurable (défaut: 3)
+
+- `ConfigurationValidator.java` (200+ lignes)
+  * Validation complète de ManifestConfiguration
+  * Bean Validation (annotations Jakarta)
+  * Validations personnalisées:
+    - Enums: formats, archiveFormat, treeFormat, scopes, gitFetch
+    - Ranges: depth (1-10), healthThreshold (0-100), git.depth (1-1000)
+  * Messages d'erreur clairs avec suggestions
+  * "Did you mean?" automatique
+
+**Validations implémentées**:
+- ✅ output.formats → json, yaml, html, xml
+- ✅ output.archiveFormat → zip, tar.gz, tar.bz2, jar
+- ✅ dependencies.tree.depth → 1-10
+- ✅ dependencies.tree.format → flat, tree, both
+- ✅ dependencies.tree.scopes → compile, runtime, test, provided, system
+- ✅ dependencies.analysis.healthThreshold → 0-100
+- ✅ git.depth → 1-1000
+
+**Prochaine étape**: Tests de validation (Phase 7.6)
 
 ---
 
