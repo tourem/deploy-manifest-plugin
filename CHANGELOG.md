@@ -10,7 +10,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Nothing yet.
 
+## [3.0.0] - 2025-11-24
 
+### Added - YAML Configuration System
+
+#### Major Features
+- **YAML Configuration File** - Optional `.deploy-manifest.yml` for project configuration
+- **JSON Schema** - Autocompletion and validation in VS Code/IntelliJ IDEA
+- **Multi-Source Configuration** - YAML + Environment Variables + Command Line + POM
+- **Smart Validation** - "Did you mean?" suggestions for typos
+- **New Maven Goal** - `validate-config` to display resolved configuration
+
+#### Configuration Sources (Priority Order)
+1. Command Line (`-Dmanifest.*`) - Highest priority
+2. Environment Variables (`MANIFEST_*`)
+3. YAML File (`.deploy-manifest.yml`)
+4. Profile (profile defaults)
+5. POM (`pom.xml`)
+6. Default (plugin defaults) - Lowest priority
+
+#### New Components
+- 14 Java configuration classes with Bean Validation
+- 3 configuration loaders (YAML, ENV, CLI)
+- Configuration merger with source tracking
+- Validation system with Levenshtein distance for suggestions
+- Configuration resolver orchestrating all sources
+
+#### Examples
+- 5 complete YAML configuration examples
+- Quick start guide (QUICKSTART_YAML.md)
+- Integration guide (INTEGRATION_STEP_BY_STEP.md)
+
+#### Testing
+- 36+ unit and integration tests
+- Complete test coverage for all components
+
+#### Documentation
+- Updated README with YAML section
+- Quick start guide (QUICKSTART_YAML.md)
+- Complete implementation summary (YAML_CONFIG_SUMMARY.md)
+- Integration guide (INTEGRATION_STEP_BY_STEP.md)
+- Updated doc.md and doc-en.md with YAML configuration section
+
+### Changed
+- README.md updated with YAML configuration section
+- doc.md updated with French YAML configuration guide
+- doc-en.md updated with English YAML configuration guide
+
+### Backward Compatibility
+- ✅ 100% backward compatible
+- All old POM configurations continue to work
+- YAML configuration is optional
+- Gradual migration path provided
+
+### Technical Details
+- ~7000 lines of code added
+- 55+ files created
+- Clean architecture with SOLID principles
+- Type-safe configuration
+- Bean Validation integration
+
+See CHANGELOG_YAML_CONFIG.md for complete details.
 
 ## [2.7.0] - 2025-11-16
 

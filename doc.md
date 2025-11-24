@@ -508,6 +508,120 @@ Plugins :
 
 ---
 
+## Configuration YAML (v3.0.0+)
+
+### Introduction
+
+À partir de la version 3.0.0, le plugin supporte la configuration via un fichier YAML `.deploy-manifest.yml` placé à la racine de votre projet.
+
+### Avantages
+
+- ✅ Autocomplétion dans VS Code et IntelliJ IDEA
+- ✅ Validation en temps réel
+- ✅ Messages d'erreur avec suggestions
+- ✅ Configuration multi-sources (YAML + ENV + CLI)
+
+### Démarrage Rapide
+
+Créez `.deploy-manifest.yml` à la racine de votre projet :
+
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+
+profile: standard
+
+output:
+  formats:
+    - json
+    - html
+
+dependencies:
+  tree:
+    enabled: true
+    depth: 5
+
+metadata:
+  licenses: true
+```
+
+### Profils Disponibles
+
+- **basic** : Configuration minimale (JSON uniquement)
+- **standard** : JSON + HTML + arbre de dépendances (profondeur=2)
+- **full** : Tous les formats + analyse complète (profondeur=5)
+- **ci** : Optimisé pour CI/CD avec archive
+
+### Ordre de Priorité
+
+Les valeurs sont résolues dans cet ordre (du plus prioritaire au moins prioritaire) :
+
+1. ⌨️  Ligne de commande (`-Dmanifest.*`)
+2. 🌍 Variables d'environnement (`MANIFEST_*`)
+3. 📄 Fichier YAML (`.deploy-manifest.yml`)
+4. 📦 Profil (valeurs par défaut du profil)
+5. 🔨 POM (`pom.xml`)
+6. 🔧 Défaut (valeurs par défaut du plugin)
+
+### Valider la Configuration
+
+```bash
+mvn deploy-manifest:validate-config
+```
+
+Affiche la configuration résolue avec les sources :
+
+```
+Configuration Summary:
+  Profile:                       standard (📄 YAML)
+  Output directory:              target/reports (📄 YAML)
+  Output formats:                [json, html] (🌍 ENV)
+  Tree Depth:                    10 (⌨️  CLI)
+```
+
+### Exemples
+
+Voir le répertoire `examples/` pour des exemples complets :
+- `.deploy-manifest-minimal.yml` - Configuration minimale
+- `.deploy-manifest-standard-profile.yml` - Documentation d'équipe
+- `.deploy-manifest-full-profile.yml` - Analyse complète
+- `.deploy-manifest-ci-profile.yml` - Optimisé CI/CD
+
+### Variables d'Environnement
+
+Vous pouvez surcharger n'importe quelle option avec des variables d'environnement :
+
+```bash
+export MANIFEST_PROFILE=full
+export MANIFEST_OUTPUT_FORMATS=json,yaml,html
+export MANIFEST_DEPENDENCIES_TREE_DEPTH=10
+mvn deploy-manifest:generate
+```
+
+### Ligne de Commande
+
+Vous pouvez surcharger avec des options en ligne de commande :
+
+```bash
+mvn deploy-manifest:generate \
+  -Dmanifest.profile=full \
+  -Dmanifest.output.formats=json,yaml \
+  -Dmanifest.dependencies.tree.depth=10
+```
+
+### Rétrocompatibilité
+
+✅ Toutes les anciennes configurations POM continuent de fonctionner  
+✅ La configuration YAML est optionnelle  
+✅ Migration progressive possible
+
+### Plus d'Informations
+
+- Guide de démarrage rapide : `QUICKSTART_YAML.md`
+- Exemples complets : `examples/`
+- Documentation technique : `YAML_CONFIG_SUMMARY.md`
+
+---
+
 ## Exemples CI/CD
 
 GitHub Actions (extrait) :
