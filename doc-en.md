@@ -578,6 +578,120 @@ Plugins:
 
 ---
 
+## YAML Configuration (v3.0.0+)
+
+### Introduction
+
+Starting from version 3.0.0, the plugin supports configuration via a YAML file `.deploy-manifest.yml` placed at the root of your project.
+
+### Benefits
+
+- ✅ Autocompletion in VS Code and IntelliJ IDEA
+- ✅ Real-time validation
+- ✅ Error messages with suggestions
+- ✅ Multi-source configuration (YAML + ENV + CLI)
+
+### Quick Start
+
+Create `.deploy-manifest.yml` at your project root:
+
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+
+profile: standard
+
+output:
+  formats:
+    - json
+    - html
+
+dependencies:
+  tree:
+    enabled: true
+    depth: 5
+
+metadata:
+  licenses: true
+```
+
+### Available Profiles
+
+- **basic**: Minimal configuration (JSON only)
+- **standard**: JSON + HTML + dependency tree (depth=2)
+- **full**: All formats + complete analysis (depth=5)
+- **ci**: Optimized for CI/CD with archive
+
+### Priority Order
+
+Values are resolved in this order (highest to lowest priority):
+
+1. ⌨️  Command Line (`-Dmanifest.*`)
+2. 🌍 Environment Variables (`MANIFEST_*`)
+3. 📄 YAML File (`.deploy-manifest.yml`)
+4. 📦 Profile (profile defaults)
+5. 🔨 POM (`pom.xml`)
+6. 🔧 Default (plugin defaults)
+
+### Validate Configuration
+
+```bash
+mvn deploy-manifest:validate-config
+```
+
+Shows resolved configuration with sources:
+
+```
+Configuration Summary:
+  Profile:                       standard (📄 YAML)
+  Output directory:              target/reports (📄 YAML)
+  Output formats:                [json, html] (🌍 ENV)
+  Tree Depth:                    10 (⌨️  CLI)
+```
+
+### Examples
+
+See `examples/` directory for complete examples:
+- `.deploy-manifest-minimal.yml` - Minimal setup
+- `.deploy-manifest-standard-profile.yml` - Team documentation
+- `.deploy-manifest-full-profile.yml` - Complete analysis
+- `.deploy-manifest-ci-profile.yml` - CI/CD optimized
+
+### Environment Variables
+
+You can override any option with environment variables:
+
+```bash
+export MANIFEST_PROFILE=full
+export MANIFEST_OUTPUT_FORMATS=json,yaml,html
+export MANIFEST_DEPENDENCIES_TREE_DEPTH=10
+mvn deploy-manifest:generate
+```
+
+### Command Line
+
+You can override with command line options:
+
+```bash
+mvn deploy-manifest:generate \
+  -Dmanifest.profile=full \
+  -Dmanifest.output.formats=json,yaml \
+  -Dmanifest.dependencies.tree.depth=10
+```
+
+### Backward Compatibility
+
+✅ All old POM configurations continue to work  
+✅ YAML configuration is optional  
+✅ Gradual migration possible
+
+### More Information
+
+- Complete examples: `examples/`
+- Integration guide: `docs/INTEGRATION_STEP_BY_STEP.md`
+- Technical documentation: `docs/YAML_CONFIG_SUMMARY.md`
+
+---
+
 ## CI/CD examples
 
 GitHub Actions (excerpt):

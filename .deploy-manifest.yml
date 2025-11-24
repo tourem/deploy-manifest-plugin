@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=./.deploy-manifest.schema.json
+
+# Example configuration for the plugin itself
+profile: standard
+
+output:
+  formats:
+    - json
+    - html
+
+dependencies:
+  tree:
+    enabled: true
+    depth: 3
+
+metadata:
+  licenses: true
+  plugins: true

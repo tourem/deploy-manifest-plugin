@@ -1,0 +1,87 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+
+# Complete configuration example showing all available options
+# This is a reference - you typically don't need all of these
+
+# Predefined profile (basic, standard, full, ci)
+profile: standard
+
+# Output configuration
+output:
+  directory: target
+  filename: deployment-manifest-report
+  formats:
+    - json
+    - html
+  archive: false
+  archiveFormat: zip
+  attach: false
+  classifier: manifest
+
+# Dependencies configuration
+dependencies:
+  tree:
+    enabled: true
+    depth: 3
+    format: flat
+    includeTransitive: true
+    scopes:
+      - compile
+      - runtime
+    includeOptional: false
+  analysis:
+    enabled: false
+    healthThreshold: 80
+    filterSpringStarters: true
+    filterLombok: true
+    filterAnnotationProcessors: true
+    generateRecommendations: true
+
+# Metadata to include
+metadata:
+  licenses: false
+  properties: false
+  plugins: false
+  checksums: false
+  includeSystemProperties: true
+  includeEnvironmentVariables: false
+  filterSensitive: true
+
+# Git information
+git:
+  fetch: auto
+  includeUncommitted: false
+  depth: 50
+  includeBranch: true
+  includeTags: true
+  includeRemote: true
+
+# Docker/Container configuration
+docker:
+  autoDetect: true
+  registries:
+    - docker.io
+    - ghcr.io
+  includeImageDigest: false
+
+# CI/CD configuration
+ci:
+  autoDetect: true
+  includeEnvironment: true
+
+# Framework detection
+frameworks:
+  autoDetect: true
+  includeProfiles: true
+  includeConfiguration: false
+
+# Validation
+validation:
+  enabled: true
+  failOnError: true
+  warnOnDeprecated: true
+
+# Debug options
+verbose: false
+dryRun: false
+skip: false

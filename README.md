@@ -301,6 +301,75 @@ mvn deploy-manifest:generate -Dmanifest.profile=standard
 
 ---
 
+## 🆕 YAML Configuration (v3.0.0+)
+
+### Quick Start with YAML
+
+Create `.deploy-manifest.yml` in your project root:
+
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+
+profile: standard
+
+output:
+  formats:
+    - json
+    - html
+  
+dependencies:
+  tree:
+    enabled: true
+    depth: 5
+
+metadata:
+  licenses: true
+```
+
+### Benefits
+
+✅ **Autocompletion** in VS Code/IntelliJ  
+✅ **Real-time validation** with helpful error messages  
+✅ **"Did you mean?" suggestions** for typos  
+✅ **Multi-source configuration** (YAML + ENV + CLI)
+
+### Configuration Priority
+
+Values are resolved in this order (highest to lowest):
+
+1. ⌨️  **Command Line** (`-Dmanifest.*`)
+2. 🌍 **Environment** (`MANIFEST_*`)
+3. 📄 **YAML File** (`.deploy-manifest.yml`)
+4. 📦 **Profile** (profile defaults)
+5. 🔨 **POM** (`pom.xml` configuration)
+6. 🔧 **Default** (plugin defaults)
+
+### Validate Configuration
+
+```bash
+mvn deploy-manifest:validate-config
+```
+
+Shows resolved configuration with sources:
+
+```
+Configuration Summary:
+  Profile:                       standard (📄 YAML)
+  Output directory:              target/reports (📄 YAML)
+  Output formats:                [json, html] (🌍 ENV)
+  Tree Depth:                    10 (⌨️  CLI)
+```
+
+### Examples
+
+See `examples/` directory for complete configuration examples:
+- `examples/.deploy-manifest-minimal.yml` - Basic setup
+- `examples/.deploy-manifest-standard-profile.yml` - Team documentation
+- `examples/.deploy-manifest-full-profile.yml` - Complete analysis
+- `examples/.deploy-manifest-ci-profile.yml` - CI/CD optimized
+
+---
+
 ## 🔧 Requirements
 
 - **Java:** 17 or higher
@@ -310,9 +379,14 @@ mvn deploy-manifest:generate -Dmanifest.profile=standard
 
 ## 📚 Documentation
 
+### User Guides
 - 🇬🇧 **[English Documentation](./doc-en.md)** — Complete guide with all options
 - 🇫🇷 **[Documentation Française](./doc.md)** — Guide complet avec toutes les options
 - 📋 **[CHANGELOG](./CHANGELOG.md)** — Version history and release notes
+
+### Developer Guides
+- 🔧 **[Integration Guide](./docs/INTEGRATION_STEP_BY_STEP.md)** — Step-by-step integration into your Mojo
+- 📖 **[Implementation Details](./docs/YAML_CONFIG_SUMMARY.md)** — Complete technical documentation
 
 ---
 

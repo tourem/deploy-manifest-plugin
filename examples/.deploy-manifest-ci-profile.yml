@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+
+# CI/CD optimized profile
+# Generates JSON with archive, optimized for automated builds
+profile: ci
+
+# CI-specific configuration
+output:
+  archive: true
+  attach: true  # Attach to Maven build for deployment
+  classifier: manifest
+
+# Ensure Git information is always fetched
+git:
+  fetch: always
+  includeBranch: true
+  includeTags: true
+
+# Include CI/CD environment information
+ci:
+  autoDetect: true
+  includeEnvironment: true
+
+# Lightweight dependency tree for CI
+dependencies:
+  tree:
+    enabled: true
+    depth: 2  # Shallow tree for faster builds

@@ -1,0 +1,75 @@
+profile: full
+
+output:
+  directory: target/reports
+  filename: my-manifest
+  formats:
+    - json
+    - html
+    - yaml
+  archive: true
+  archiveFormat: zip
+  attach: true
+  classifier: docs
+
+dependencies:
+  tree:
+    enabled: true
+    depth: 5
+    format: both
+    includeTransitive: true
+    scopes:
+      - compile
+      - runtime
+      - test
+    includeOptional: false
+  analysis:
+    enabled: true
+    healthThreshold: 90
+    filterSpringStarters: true
+    filterLombok: true
+    filterAnnotationProcessors: true
+    generateRecommendations: true
+
+metadata:
+  licenses: true
+  properties: true
+  plugins: true
+  checksums: true
+  includeSystemProperties: true
+  includeEnvironmentVariables: false
+  filterSensitive: true
+
+git:
+  fetch: always
+  includeUncommitted: true
+  depth: 100
+  includeBranch: true
+  includeTags: true
+  includeRemote: true
+
+docker:
+  autoDetect: true
+  registries:
+    - docker.io
+    - ghcr.io
+    - quay.io
+  includeImageDigest: true
+
+ci:
+  autoDetect: true
+  includeEnvironment: true
+
+frameworks:
+  autoDetect: true
+  includeProfiles: true
+  includeConfiguration: false
+
+validation:
+  enabled: true
+  failOnError: true
+  warnOnDeprecated: true
+
+verbose: true
+dryRun: false
+skip: false
