@@ -551,6 +551,27 @@ metadata:
 - **full** : Tous les formats + analyse complète (profondeur=5)
 - **ci** : Optimisé pour CI/CD avec archive
 
+### Configuration de l'Éditeur
+
+Pour activer l'autocomplétion et la validation dans votre éditeur :
+
+#### VS Code
+1. Installez l'[extension YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
+2. Ajoutez la référence au schéma en haut de votre `.deploy-manifest.yml` :
+   ```yaml
+   # yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+   ```
+3. C'est tout ! Le schéma est téléchargé automatiquement - pas besoin de copier de fichiers.
+
+#### IntelliJ IDEA
+1. Support intégré - ajoutez simplement la référence au schéma :
+   ```yaml
+   # yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+   ```
+2. L'autocomplétion fonctionne immédiatement.
+
+> **Note** : Vous n'avez pas besoin d'exporter ou de copier le fichier JSON schema. La référence URL suffit - votre éditeur le télécharge automatiquement.
+
 ### Ordre de Priorité
 
 Les valeurs sont résolues dans cet ordre (du plus prioritaire au moins prioritaire) :
