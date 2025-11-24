@@ -65,7 +65,7 @@
 ## 🎯 Sprint 4: Intégration (2 jours)
 
 ### Phase 8: Intégration Mojo
-- [ ] 8.1 Créer `ConfigurationResolver`
+- [x] 8.1 Créer `ConfigurationResolver`
 - [ ] 8.2 Modifier `GenerateDescriptorMojo`
 - [ ] 8.3 Logger informations de configuration
 - [ ] 8.4 Gérer erreurs de validation
@@ -114,10 +114,10 @@
 Sprint 1: [▓▓▓▓▓▓▓▓▓▓▓▓] 12/12 tâches (100%) ✅
 Sprint 2: [▓▓▓▓▓▓▓▓▓▓▓▓▓] 13/13 tâches (100%) ✅
 Sprint 3: [▓▓▓▓▓▓] 6/6 tâches (100%) ✅
-Sprint 4: [ ] 0/9 tâches
+Sprint 4: [▓░░░░░░░░] 1/9 tâches (11%)
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓▓▓▓░░░░░] 31/65 tâches (48%)
+TOTAL: [▓▓▓▓▓░░░░░] 32/65 tâches (49%)
 ```
 
 ---
