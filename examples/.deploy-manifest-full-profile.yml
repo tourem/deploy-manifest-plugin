@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+
+# Full profile configuration
+# Generates all formats (JSON + YAML + HTML) with complete metadata
+profile: full
+
+# Optional: Customize output
+output:
+  directory: target/reports
+  archive: true
+  archiveFormat: zip
+
+# Optional: Fine-tune dependency analysis
+dependencies:
+  tree:
+    depth: 7  # Deeper tree for full analysis
+    format: both  # Both flat and tree formats
+  analysis:
+    enabled: true
+    healthThreshold: 90  # Stricter threshold
+
+# Optional: Additional metadata
+metadata:
+  checksums: true
+  includeEnvironmentVariables: false  # Keep secrets safe

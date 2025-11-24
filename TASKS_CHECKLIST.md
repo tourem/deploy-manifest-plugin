@@ -8,9 +8,9 @@
 ## 🎯 Sprint 1: Fondations (2-3 jours)
 
 ### Phase 1: JSON Schema ⭐ PRIORITÉ
-- [ ] 1.1 Créer `.deploy-manifest.schema.json`
-- [ ] 1.2 Définir toutes les propriétés avec types et enums
-- [ ] 1.3 Ajouter descriptions et exemples
+- [x] 1.1 Créer `.deploy-manifest.schema.json`
+- [x] 1.2 Définir toutes les propriétés avec types et enums
+- [x] 1.3 Ajouter descriptions et exemples
 - [ ] 1.4 Publier et tester dans VS Code/IntelliJ
 
 ### Phase 2: Modèle Java
@@ -111,40 +111,33 @@
 ## 📊 Progression Globale
 
 ```
-Sprint 1: [ ] 0/12 tâches
+Sprint 1: [▓▓░░░░░░░░░░] 3/12 tâches (25%)
 Sprint 2: [ ] 0/13 tâches
 Sprint 3: [ ] 0/6 tâches
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [ ] 0/65 tâches (0%)
+TOTAL: [▓░░░░░░░░░] 3/65 tâches (5%)
 ```
 
 ---
 
 ## 🎯 Tâche Actuelle
 
-**À faire maintenant**: Phase 1.1 - Créer `.deploy-manifest.schema.json`
+**✅ Complété**: Phase 1.1, 1.2, 1.3 - JSON Schema créé
 
-**Fichier à créer**: `.deploy-manifest.schema.json`
+**À faire maintenant**: Phase 1.4 - Tester dans VS Code/IntelliJ
 
-**Contenu minimal pour démarrer**:
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Deploy Manifest Configuration",
-  "description": "Configuration file for Maven Deploy Manifest Plugin",
-  "type": "object",
-  "properties": {
-    "profile": {
-      "type": "string",
-      "enum": ["basic", "standard", "full", "ci"],
-      "default": "basic",
-      "description": "Predefined profile"
-    }
-  }
-}
-```
+**Fichiers créés**:
+- `.deploy-manifest.schema.json` (schéma complet)
+- `examples/.deploy-manifest-minimal.yml`
+- `examples/.deploy-manifest-standard-profile.yml`
+- `examples/.deploy-manifest-full-profile.yml`
+- `examples/.deploy-manifest-ci-profile.yml`
+- `examples/.deploy-manifest-complete.yml`
+- `.deploy-manifest.yml` (exemple pour le projet)
+
+**Prochaine étape**: Tester la validation dans l'éditeur
 
 ---
 

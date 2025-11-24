@@ -1,0 +1,394 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json",
+  "title": "Deploy Manifest Configuration",
+  "description": "Configuration file for Maven Deploy Manifest Plugin",
+  "type": "object",
+  "properties": {
+    "profile": {
+      "type": "string",
+      "enum": ["basic", "standard", "full", "ci"],
+      "default": "basic",
+      "description": "Predefined configuration profile:\n• basic - Minimal (JSON only)\n• standard - JSON + HTML + dependency tree\n• full - All formats + metadata\n• ci - Optimized for CI/CD"
+    },
+    "output": {
+      "type": "object",
+      "description": "Output configuration",
+      "properties": {
+        "directory": {
+          "type": "string",
+          "default": "target",
+          "description": "Output directory path (absolute or relative to project root)"
+        },
+        "filename": {
+          "type": "string",
+          "default": "deployment-manifest-report",
+          "description": "Output filename (without extension)",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "formats": {
+          "type": "array",
+          "description": "Output format(s)",
+          "items": {
+            "type": "string",
+            "enum": ["json", "yaml", "html", "xml"]
+          },
+          "uniqueItems": true,
+          "default": ["json"],
+          "minItems": 1
+        },
+        "archive": {
+          "type": "boolean",
+          "default": false,
+          "description": "Create a ZIP archive containing all generated files"
+        },
+        "archiveFormat": {
+          "type": "string",
+          "enum": ["zip", "tar.gz", "tar.bz2", "jar"],
+          "default": "zip",
+          "description": "Archive format"
+        },
+        "attach": {
+          "type": "boolean",
+          "default": false,
+          "description": "Attach archive to Maven build for deployment"
+        },
+        "classifier": {
+          "type": "string",
+          "default": "manifest",
+          "description": "Classifier for attached artifact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dependencies": {
+      "type": "object",
+      "description": "Dependencies configuration",
+      "properties": {
+        "tree": {
+          "type": "object",
+          "description": "Dependency tree configuration",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable dependency tree collection"
+            },
+            "depth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 3,
+              "description": "Maximum depth of dependency tree (1-10)\nDeep trees can cause performance issues"
+            },
+            "format": {
+              "type": "string",
+              "enum": ["flat", "tree", "both"],
+              "default": "flat",
+              "description": "Dependency tree output format"
+            },
+            "includeTransitive": {
+              "type": "boolean",
+              "default": true,
+              "description": "Include transitive dependencies"
+            },
+            "scopes": {
+              "type": "array",
+              "description": "Dependency scopes to include",
+              "items": {
+                "type": "string",
+                "enum": ["compile", "runtime", "test", "provided", "system"]
+              },
+              "uniqueItems": true,
+              "default": ["compile", "runtime"]
+            },
+            "includeOptional": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include optional dependencies"
+            }
+          },
+          "additionalProperties": false
+        },
+        "analysis": {
+          "type": "object",
+          "description": "Dependency analysis configuration",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable smart dependency analysis (unused/undeclared detection)"
+            },
+            "healthThreshold": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 80,
+              "description": "Minimum health score threshold (0-100)\nBuild fails if score is below this value"
+            },
+            "filterSpringStarters": {
+              "type": "boolean",
+              "default": true,
+              "description": "Filter Spring Boot starters from unused dependencies (false positives)"
+            },
+            "filterLombok": {
+              "type": "boolean",
+              "default": true,
+              "description": "Filter Lombok from unused dependencies (annotation processor)"
+            },
+            "filterAnnotationProcessors": {
+              "type": "boolean",
+              "default": true,
+              "description": "Filter all annotation processors from unused dependencies"
+            },
+            "generateRecommendations": {
+              "type": "boolean",
+              "default": true,
+              "description": "Generate actionable recommendations with POM patches"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata to include in the manifest",
+      "properties": {
+        "licenses": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include license information for all dependencies"
+        },
+        "properties": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include Maven/project/system properties"
+        },
+        "plugins": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include build plugins information"
+        },
+        "checksums": {
+          "type": "boolean",
+          "default": false,
+          "description": "Generate SHA-256 checksums for all artifacts"
+        },
+        "includeSystemProperties": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include Java system properties (when properties=true)"
+        },
+        "includeEnvironmentVariables": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include environment variables (use with care - may expose secrets)"
+        },
+        "filterSensitive": {
+          "type": "boolean",
+          "default": true,
+          "description": "Filter sensitive properties (password, token, apikey, etc.)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "git": {
+      "type": "object",
+      "description": "Git information configuration",
+      "properties": {
+        "fetch": {
+          "type": "string",
+          "enum": ["auto", "always", "never"],
+          "default": "auto",
+          "description": "When to fetch Git information:\n• auto - Fetch if .git directory exists\n• always - Always fetch (fails if not a Git repo)\n• never - Never fetch Git information"
+        },
+        "includeUncommitted": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include uncommitted changes information"
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 50,
+          "description": "Git history depth to analyze (1-1000)"
+        },
+        "includeBranch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include current branch name"
+        },
+        "includeTags": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include Git tags"
+        },
+        "includeRemote": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include remote repository URL"
+        }
+      },
+      "additionalProperties": false
+    },
+    "docker": {
+      "type": "object",
+      "description": "Docker/Container configuration",
+      "properties": {
+        "autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-detect Docker image configuration (Jib, Spring Boot, Fabric8, etc.)"
+        },
+        "registries": {
+          "type": "array",
+          "description": "Docker registries to check",
+          "items": {
+            "type": "string"
+          },
+          "default": ["docker.io", "ghcr.io"],
+          "uniqueItems": true
+        },
+        "includeImageDigest": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include Docker image digest (SHA256)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ci": {
+      "type": "object",
+      "description": "CI/CD configuration",
+      "properties": {
+        "autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-detect CI/CD environment (GitHub Actions, GitLab CI, Jenkins, etc.)"
+        },
+        "includeEnvironment": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include CI/CD environment variables"
+        }
+      },
+      "additionalProperties": false
+    },
+    "frameworks": {
+      "type": "object",
+      "description": "Framework detection configuration",
+      "properties": {
+        "autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-detect frameworks (Spring Boot, Quarkus, Micronaut)"
+        },
+        "includeProfiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include framework profiles (Spring profiles, Quarkus profiles, etc.)"
+        },
+        "includeConfiguration": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include framework configuration files"
+        }
+      },
+      "additionalProperties": false
+    },
+    "validation": {
+      "type": "object",
+      "description": "Validation configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable configuration validation"
+        },
+        "failOnError": {
+          "type": "boolean",
+          "default": true,
+          "description": "Fail build on validation errors"
+        },
+        "warnOnDeprecated": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when using deprecated options"
+        }
+      },
+      "additionalProperties": false
+    },
+    "verbose": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable verbose logging"
+    },
+    "dryRun": {
+      "type": "boolean",
+      "default": false,
+      "description": "Dry-run mode: validate configuration and show what would be generated without creating files"
+    },
+    "skip": {
+      "type": "boolean",
+      "default": false,
+      "description": "Skip plugin execution"
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "profile": "standard"
+    },
+    {
+      "profile": "standard",
+      "output": {
+        "formats": ["json", "html"]
+      },
+      "dependencies": {
+        "tree": {
+          "enabled": true,
+          "depth": 5
+        }
+      },
+      "metadata": {
+        "licenses": true
+      }
+    },
+    {
+      "profile": "full",
+      "output": {
+        "formats": ["json", "yaml", "html"],
+        "archive": true
+      },
+      "dependencies": {
+        "tree": {
+          "enabled": true,
+          "depth": 5
+        },
+        "analysis": {
+          "enabled": true,
+          "healthThreshold": 85
+        }
+      },
+      "metadata": {
+        "licenses": true,
+        "properties": true,
+        "plugins": true
+      }
+    },
+    {
+      "profile": "ci",
+      "output": {
+        "formats": ["json"],
+        "archive": true,
+        "attach": true
+      },
+      "git": {
+        "fetch": "always"
+      }
+    }
+  ]
+}

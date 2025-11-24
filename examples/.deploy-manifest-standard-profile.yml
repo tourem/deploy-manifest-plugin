@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tourem/deploy-manifest-plugin/main/.deploy-manifest.schema.json
+
+# Standard profile configuration
+# Generates JSON + HTML with dependency tree (depth=3)
+profile: standard
+
+# Optional: Override profile defaults
+dependencies:
+  tree:
+    depth: 5  # Override default depth of 3
+
+metadata:
+  licenses: true  # Add license information
