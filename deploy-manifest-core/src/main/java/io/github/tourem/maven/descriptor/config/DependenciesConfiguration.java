@@ -1,11 +1,19 @@
 package io.github.tourem.maven.descriptor.config;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 /**
  * Configuration for dependencies analysis and tree.
  */
 public class DependenciesConfiguration {
     
+    @NotNull
+    @Valid
     private DependencyTreeConfiguration tree;
+    
+    @NotNull
+    @Valid
     private DependencyAnalysisConfiguration analysis;
     
     public DependenciesConfiguration() {

@@ -17,7 +17,7 @@
 - [x] 2.1 Créer `ManifestConfiguration.java`
 - [x] 2.2 Créer sous-classes (Output, Dependencies, Metadata, Git, Docker)
 - [x] 2.3 Créer enum `ManifestProfile`
-- [ ] 2.4 Ajouter annotations de validation
+- [x] 2.4 Ajouter annotations de validation
 
 ### Phase 3: Parsing YAML
 - [ ] 3.1 Ajouter dépendance YAML au pom.xml
@@ -111,13 +111,13 @@
 ## 📊 Progression Globale
 
 ```
-Sprint 1: [▓▓▓▓▓░░░░░░░] 6/12 tâches (50%)
+Sprint 1: [▓▓▓▓▓▓░░░░░░] 7/12 tâches (58%)
 Sprint 2: [ ] 0/13 tâches
 Sprint 3: [ ] 0/6 tâches
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓░░░░░░░░] 6/65 tâches (9%)
+TOTAL: [▓▓░░░░░░░░] 7/65 tâches (11%)
 ```
 
 ---

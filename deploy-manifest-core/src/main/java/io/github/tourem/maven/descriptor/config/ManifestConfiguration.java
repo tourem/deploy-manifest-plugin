@@ -1,5 +1,8 @@
 package io.github.tourem.maven.descriptor.config;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 /**
  * Main configuration class for the Maven Deploy Manifest Plugin.
  * <p>
@@ -9,17 +12,48 @@ package io.github.tourem.maven.descriptor.config;
  */
 public class ManifestConfiguration {
     
+    @NotNull
     private ManifestProfile profile = ManifestProfile.BASIC;
+    
+    @NotNull
+    @Valid
     private OutputConfiguration output;
+    
+    @NotNull
+    @Valid
     private DependenciesConfiguration dependencies;
+    
+    @NotNull
+    @Valid
     private MetadataConfiguration metadata;
+    
+    @NotNull
+    @Valid
     private GitConfiguration git;
+    
+    @NotNull
+    @Valid
     private DockerConfiguration docker;
+    
+    @NotNull
+    @Valid
     private CiConfiguration ci;
+    
+    @NotNull
+    @Valid
     private FrameworksConfiguration frameworks;
+    
+    @NotNull
+    @Valid
     private ValidationConfiguration validation;
+    
+    @NotNull
     private Boolean verbose;
+    
+    @NotNull
     private Boolean dryRun;
+    
+    @NotNull
     private Boolean skip;
     
     /**

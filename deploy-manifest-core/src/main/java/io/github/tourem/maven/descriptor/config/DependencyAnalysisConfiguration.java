@@ -1,15 +1,32 @@
 package io.github.tourem.maven.descriptor.config;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 /**
  * Configuration for dependency analysis (unused/undeclared detection).
  */
 public class DependencyAnalysisConfiguration {
     
+    @NotNull
     private Boolean enabled = false;
+    
+    @NotNull
+    @Min(value = 0, message = "Health threshold must be at least 0")
+    @Max(value = 100, message = "Health threshold must be at most 100")
     private Integer healthThreshold = 80;
+    
+    @NotNull
     private Boolean filterSpringStarters = true;
+    
+    @NotNull
     private Boolean filterLombok = true;
+    
+    @NotNull
     private Boolean filterAnnotationProcessors = true;
+    
+    @NotNull
     private Boolean generateRecommendations = true;
     
     public Boolean getEnabled() {

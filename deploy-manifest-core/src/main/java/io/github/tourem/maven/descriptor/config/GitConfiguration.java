@@ -1,15 +1,32 @@
 package io.github.tourem.maven.descriptor.config;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 /**
  * Configuration for Git information collection.
  */
 public class GitConfiguration {
     
+    @NotNull
     private GitFetchMode fetch = GitFetchMode.AUTO;
+    
+    @NotNull
     private Boolean includeUncommitted = false;
+    
+    @NotNull
+    @Min(value = 1, message = "Git history depth must be at least 1")
+    @Max(value = 1000, message = "Git history depth must be at most 1000")
     private Integer depth = 50;
+    
+    @NotNull
     private Boolean includeBranch = true;
+    
+    @NotNull
     private Boolean includeTags = true;
+    
+    @NotNull
     private Boolean includeRemote = true;
     
     public GitFetchMode getFetch() {

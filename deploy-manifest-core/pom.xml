@@ -63,6 +63,13 @@
       <artifactId>snakeyaml</artifactId>
     </dependency>
 
+    <!-- Bean Validation -->
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+
     <!-- SLF4J API -->
     <dependency>
       <groupId>org.slf4j</groupId>

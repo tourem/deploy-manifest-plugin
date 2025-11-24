@@ -1,5 +1,9 @@
 package io.github.tourem.maven.descriptor.config;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,12 +12,31 @@ import java.util.List;
  */
 public class OutputConfiguration {
     
+    @NotNull
+    @NotEmpty(message = "Output directory cannot be empty")
     private String directory = "target";
+    
+    @NotNull
+    @NotEmpty(message = "Output filename cannot be empty")
+    @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Filename must contain only alphanumeric characters, underscores, and hyphens")
     private String filename = "deployment-manifest-report";
+    
+    @NotNull
+    @NotEmpty(message = "At least one output format must be specified")
     private List<String> formats = new ArrayList<>();
+    
+    @NotNull
     private Boolean archive = false;
+    
+    @NotNull
+    @Pattern(regexp = "zip|tar\\.gz|tar\\.bz2|jar", message = "Archive format must be one of: zip, tar.gz, tar.bz2, jar")
     private String archiveFormat = "zip";
+    
+    @NotNull
     private Boolean attach = false;
+    
+    @NotNull
+    @NotEmpty(message = "Classifier cannot be empty")
     private String classifier = "manifest";
     
     public OutputConfiguration() {
