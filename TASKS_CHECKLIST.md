@@ -20,9 +20,9 @@
 - [x] 2.4 Ajouter annotations de validation
 
 ### Phase 3: Parsing YAML
-- [ ] 3.1 Ajouter dépendance YAML au pom.xml
-- [ ] 3.2 Créer `YamlConfigurationLoader`
-- [ ] 3.3 Gérer erreurs de parsing
+- [x] 3.1 Ajouter dépendance YAML au pom.xml
+- [x] 3.2 Créer `YamlConfigurationLoader`
+- [x] 3.3 Gérer erreurs de parsing
 - [ ] 3.4 Tests avec différents fichiers YAML
 
 ---
@@ -111,13 +111,13 @@
 ## 📊 Progression Globale
 
 ```
-Sprint 1: [▓▓▓▓▓▓░░░░░░] 7/12 tâches (58%)
+Sprint 1: [▓▓▓▓▓▓▓▓▓░░░] 10/12 tâches (83%)
 Sprint 2: [ ] 0/13 tâches
 Sprint 3: [ ] 0/6 tâches
 Sprint 4: [ ] 0/9 tâches
 Sprint 5: [ ] 0/25 tâches
 
-TOTAL: [▓▓░░░░░░░░] 7/65 tâches (11%)
+TOTAL: [▓▓░░░░░░░░] 10/65 tâches (15%)
 ```
 
 ---
@@ -125,30 +125,29 @@ TOTAL: [▓▓░░░░░░░░] 7/65 tâches (11%)
 ## 🎯 Tâche Actuelle
 
 **✅ Complété**: 
-- Phase 1.1, 1.2, 1.3 - JSON Schema créé
-- Phase 2.1, 2.2, 2.3 - Modèle Java créé
+- Phase 1: JSON Schema (3/4 tâches)
+- Phase 2: Modèle Java (4/4 tâches) ✅ COMPLETE
+- Phase 3: Parsing YAML (3/4 tâches)
 
-**À faire maintenant**: Phase 2.4 - Ajouter annotations de validation
+**À faire maintenant**: Phase 3.4 - Tests avec différents fichiers YAML
 
-**Fichiers créés (Phase 2)**:
-- `ManifestConfiguration.java` (classe principale)
-- `ManifestProfile.java` (enum avec 4 profils)
-- `GitFetchMode.java` (enum)
-- `ConfigurationSource.java` (enum pour tracking)
-- `OutputConfiguration.java`
-- `DependenciesConfiguration.java`
-- `DependencyTreeConfiguration.java`
-- `DependencyAnalysisConfiguration.java`
-- `MetadataConfiguration.java`
-- `GitConfiguration.java`
-- `DockerConfiguration.java`
-- `CiConfiguration.java`
-- `FrameworksConfiguration.java`
-- `ValidationConfiguration.java`
+**Fichiers créés (Phase 3)**:
+- `YamlConfigurationLoader.java` (500+ lignes)
+  * Parsing complet de tous les champs
+  * Gestion des erreurs YAML
+  * Conversion type-safe (Map → Objects)
+  * Support des valeurs par défaut
+- `ConfigurationLoadException.java`
 
-**Total**: 14 classes Java créées
+**Fonctionnalités**:
+- ✅ Lecture du fichier `.deploy-manifest.yml`
+- ✅ Parsing YAML vers objets Java
+- ✅ Gestion des erreurs de syntaxe YAML
+- ✅ Conversion type-safe (Boolean, Integer, String, List)
+- ✅ Messages d'erreur clairs
+- ✅ Support des fichiers vides ou absents
 
-**Prochaine étape**: Ajouter annotations de validation (Bean Validation)
+**Prochaine étape**: Créer des tests unitaires pour le YamlConfigurationLoader
 
 ---
 
